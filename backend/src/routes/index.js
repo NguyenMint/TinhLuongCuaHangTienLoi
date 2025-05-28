@@ -7,6 +7,9 @@ const caLamRoute = require('./caLam');
 const heSoPhuCapRoute = require('./heSoPhuCap');
 const khenThuongKyLuatRoute = require("./khenthuongkyluat");
 const NguoiPhuThuocRoute = require("./nguoiphuthuoc");
+const HopDongLD = require("./hopdong");
+const express = require('express');
+const path = require("path");
 const initRoutes = (app) =>{
     app.use("/taikhoan",TaiKhoanRoute);
     app.use("/chinhanh",ChiNhanhRoute);
@@ -17,6 +20,8 @@ const initRoutes = (app) =>{
     app.use("/hesophucap",heSoPhuCapRoute);
     app.use("/khenthuongkyluat",khenThuongKyLuatRoute);
     app.use("/nguoiphuthuoc",NguoiPhuThuocRoute);
+    app.use("/hopdong",HopDongLD);
+    app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 }
 
 module.exports = initRoutes;
