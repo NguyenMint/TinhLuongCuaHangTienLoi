@@ -37,6 +37,7 @@ class CaLamController {
 
     async update(req, res) {
         try {
+            //add check caLam
             const caLam = await CaLam.findByPk(req.params.id);
             if (!caLam) {
                 return res.status(404).json({ message: "Ca làm không tồn tại" });
