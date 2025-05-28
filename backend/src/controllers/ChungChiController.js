@@ -33,7 +33,7 @@ class ChungChiController {
                 return res.status(400).json({ message: "Vui lòng tải lên file chứng chỉ" });
             }
 
-            const filePath = `/uploads/chungchi/${req.file.filename}`;
+            const filePath = `${req.file.filename}`;
             const chungChiData = {
                 ...req.body,
                 FileCC: filePath
@@ -64,7 +64,7 @@ class ChungChiController {
                         fs.unlinkSync(oldFilePath);
                     }
                 }
-                updateData.FileCC = `/uploads/chungchi/${req.file.filename}`;
+                updateData.FileCC = `${req.file.filename}`;
             }
 
             await chungChi.update(updateData);
