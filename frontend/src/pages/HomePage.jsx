@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Sidebar } from "../components/Sidebar";
-import { FilterSidebar } from "../components/Home/LeftSidebar.jsx";
-import { EmployeeTable } from "../components/Home/EmployeeTable.jsx";
-import { EmployeeDetail } from "../components/Home/EmployeeDetail.jsx";
+import { FilterSidebar } from "../components/HomePage/LeftSidebar.jsx";
+import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
+import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import { employeeData } from "../utils/mockData.ts";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien } from "../api.js";
