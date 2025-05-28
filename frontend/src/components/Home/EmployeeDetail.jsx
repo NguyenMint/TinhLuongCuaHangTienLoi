@@ -51,7 +51,7 @@ export const EmployeeDetail = ({
             <div className="md:col-span-1">
               <div className="bg-gray-100 p-4 flex items-center justify-center h-52 rounded-lg">
                 <div className="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center">
-                  {employee.avatar ? <img src={employee.avatar} alt={employee.name} className="h-40 w-40 rounded-full" /> : <span className="text-gray-500 text-4xl">
+                  {employee.avatar ? <img src={employee.avatar} alt={employee.HoTen} className="h-40 w-40 rounded-full" /> : <span className="text-gray-500 text-4xl">
                       {employee.HoTen.charAt(0)}
                     </span>}
                 </div>
@@ -61,7 +61,7 @@ export const EmployeeDetail = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Mã nhân viên:</p>
-                  <p className="font-medium">{employee.code}</p>
+                  <p className="font-medium">{employee.MaTK}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">
@@ -71,7 +71,7 @@ export const EmployeeDetail = ({
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Tên nhân viên:</p>
-                  <p className="font-medium">{employee.name}</p>
+                  <p className="font-medium">{employee.HoTen}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Chi nhánh trả lương:</p>
@@ -82,49 +82,38 @@ export const EmployeeDetail = ({
                   <p className="font-medium">{employee.timekeepingCode}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Tài khoản KiotViet:</p>
-                  <p className="font-medium">{employee.kiotVietAccount}</p>
-                </div>
+                  <p className="text-sm text-gray-500">Tài khoản Ngân hàng:</p>
+                  <p className="font-medium">{employee.STK} - {employee.TenNganHang}</p>
+                </div> 
                 <div>
                   <p className="text-sm text-gray-500">Ngày sinh:</p>
-                  <p className="font-medium">{employee.birthDate}</p>
+                  <p className="font-medium">{employee.NgaySinh}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Số điện thoại:</p>
-                  <p className="font-medium">{employee.phone}</p>
+                  <p className="font-medium">{employee.SoDienThoai}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Giới tính:</p>
-                  <p className="font-medium">{employee.gender}</p>
+                  <p className="font-medium">{employee.GioiTinh ? "Nam" : "Nữ"}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Email:</p>
-                  <p className="font-medium">{employee.email}</p>
+                  <p className="font-medium">{employee.Email}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Số CMND/CCCD:</p>
-                  <p className="font-medium">{employee.idNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Facebook:</p>
-                  <p className="font-medium">{employee.facebook}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Phòng ban:</p>
-                  <p className="font-medium">{employee.department}</p>
-                </div>
+                  <p className="font-medium">{employee.CCCD}</p>
+                </div>  
                 <div>
                   <p className="text-sm text-gray-500">Địa chỉ:</p>
-                  <p className="font-medium">{employee.address}</p>
+                  <p className="font-medium">{employee.DiaChi}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Chức danh:</p>
-                  <p className="font-medium">{employee.position}</p>
+                  <p className="font-medium">{employee.LoaiNV}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Thiết bị đi động:</p>
-                  <p className="font-medium">{employee.mobileDevice}</p>
-                </div>
+
               </div>
             </div>
           </div>}

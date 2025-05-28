@@ -24,7 +24,6 @@ export function HomePage() {
   const getAllNhanVien = async () => {
     try {
       const data = await fetchAllNhanVien();
-      console.log("Danh sách Nhân viên", data);
       setEmployees(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
