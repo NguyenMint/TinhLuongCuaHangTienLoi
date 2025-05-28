@@ -9,9 +9,9 @@ export const FilterSidebar = ({
   setPosition,
 }) => {
   return (
-    <div className="w-64 bg-white border-r border-gray-200 p-4 hidden lg:block ml-16 md:ml-64">
+    <div className="w-64 border-r border-gray-200 p-4 hidden lg:block ml-16 md:ml-64">
       {/* Employee Status Filter */}
-      <div className="mb-6">
+      <div className="mb-6 border-b pb-4 rounded-lg bg-white p-2">
         <h3 className="text-sm font-medium text-gray-700 mb-3">
           Trạng thái nhân viên
         </h3>
@@ -41,13 +41,13 @@ export const FilterSidebar = ({
         </div>
       </div>
       {/* Workplace Branch Filter */}
-      <div className="mb-6">
+      <div className="mb-6 border-b pb-4 rounded-lg bg-white p-2">
         <h3 className="text-sm font-medium text-gray-700 mb-2">
           Chi nhánh làm việc
         </h3>
         <div className="relative">
           <select
-            value={0}
+            value={workplaceBranch}
             onChange={(e) => setWorkplaceBranch(e.target.value)}
             className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
@@ -59,7 +59,7 @@ export const FilterSidebar = ({
       </div>
 
       {/* Position Filter */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-sm font-medium text-gray-700">Chức danh</h3>
           <button className="text-blue-600 hover:text-blue-800">
@@ -78,7 +78,7 @@ export const FilterSidebar = ({
             <option value="intern">Thực tập sinh</option>
           </select>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
