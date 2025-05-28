@@ -25,14 +25,14 @@ export const EmployeeTable = ({
     setSelectedRows(newSelectedRows);
     // Check if all rows are selected
     const allSelected = employees.every(
-      (employee) => newSelectedRows[employee.id]
+      (employee) => newSelectedRows[employee.MaTK]
     );
     setSelectAll(allSelected);
     // Set selected employee for detail view
-    const employee = employees.find((emp) => emp.id === employeeId);
+    const employee = employees.find((emp) => emp.MaTK === employeeId);
     if (newSelectedRows[employeeId]) {
       setSelectedEmployee(employee);
-    } else if (selectedEmployee && selectedEmployee.id === employeeId) {
+    } else if (selectedEmployee && selectedEmployee.MaTK === employeeId) {
       setSelectedEmployee(null);
     }
   };
@@ -105,19 +105,19 @@ export const EmployeeTable = ({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {employees.map((employee) => (
-              <React.Fragment key={employee.id}>
+              <React.Fragment key={employee.MaTK}>
                 <tr
                   className={`${
-                    selectedRows[employee.id]
+                    selectedRows[employee.MaTK]
                       ? "bg-blue-50"
                       : "hover:bg-gray-50"
                   } cursor-pointer`}
-                  onClick={() => handleSelectRow(employee.id)}
+                  onClick={() => handleSelectRow(employee.MaTK)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
                       type="checkbox"
-                      checked={!!selectedRows[employee.id]}
+                      checked={!!selectedRows[employee.MaTK]}
                       onChange={() => {}}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                     />
