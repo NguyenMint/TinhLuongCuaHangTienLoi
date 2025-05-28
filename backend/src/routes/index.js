@@ -6,6 +6,7 @@ const thangLuongRoute = require('./thangLuong');
 const caLamRoute = require('./caLam');
 const heSoPhuCapRoute = require('./heSoPhuCap');
 const khenThuongKyLuatRoute = require("./khenthuongkyluat");
+const NguoiPhuThuocRoute = require("./nguoiphuthuoc");
 const initRoutes = (app) =>{
     app.use("/taikhoan",TaiKhoanRoute);
     app.use("/chinhanh",ChiNhanhRoute);
@@ -15,6 +16,7 @@ const initRoutes = (app) =>{
     app.use("/calam",caLamRoute);
     app.use("/hesophucap",heSoPhuCapRoute);
     app.use("/khenthuongkyluat",khenThuongKyLuatRoute);
+    app.use("/nguoiphuthuoc",NguoiPhuThuocRoute);
 }
 
 module.exports = initRoutes;

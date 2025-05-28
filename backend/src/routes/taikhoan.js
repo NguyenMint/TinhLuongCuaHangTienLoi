@@ -1,6 +1,6 @@
 const express = require('express');
 const route = express.Router();
-route.get('/',(req,res)=>{
-    res.status(200).json("Chay ngon!!!!");
-});
+const TaiKhoanController = require("../controllers/TaiKhoanController");
+route.get('/',TaiKhoanController.getAll);
+route.get('/:MaTK',TaiKhoanController.getById);
 module.exports = route;
