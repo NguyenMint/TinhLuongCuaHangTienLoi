@@ -1,5 +1,8 @@
 const { where } = require("sequelize");
 const db = require("../models");
+const path = require("path");
+const fs = require("fs");
+const {Op} = db.Sequelize;
 const TaiKhoan = db.TaiKhoan;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
 class TaiKhoanController {
@@ -12,9 +15,9 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async getById(req,res){
+  async getById(req, res) {
     try {
-        const {MaTK} = req.params;
+      const { MaTK } = req.params;
       const taikhoan = await TaiKhoan.findByPk(MaTK);
       res.status(200).json(taikhoan);
     } catch (error) {
@@ -22,57 +25,109 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async create (req, res) {
-  try {
-    const {
-      HoTen, GioiTinh, NgaySinh, DiaChi, SoDienThoai, CCCD,
-      LoaiNV, TenNganHang, STK, TrangThai, Email, Password,
-      BacLuong, LuongCoBanHienTai, SoNgayNghiPhep, SoNgayChuaNghi,
-      MaVaiTro, MaCN, QuanLyBoi
-    } = req.body;
-    const existCCCD = await TaiKhoan.findOne({where:{CCCD}});
-    const existCCCDNPT = await NguoiPhuThuoc.findOne({where:{CCCD}});
-    if(existCCCD || existCCCDNPT){
-      return res.status(409).json({message:"Đã tồn tại CCCD này rồi"});
+  async create(req, res) {
+    try {
+      const { CCCD, STK, Email } = req.body;
+      const deleteUploadedFile = () => {
+        if (req.file) {
+          const filePath = path.join(
+            __dirname,
+            "../../uploads/avatars",
+            req.file.filename
+          );
+          fs.unlink(filePath, (err) => {
+            if (err) console.error("Không thể xóa file:", err);
+          });
+        }
+      };
+      const existCCCD = await TaiKhoan.findOne({ where: { CCCD } });
+      const existCCCDNPT = await NguoiPhuThuoc.findOne({ where: { CCCD } });
+      if (existCCCD || existCCCDNPT) {
+        deleteUploadedFile();
+        return res.status(409).json({ message: "Đã tồn tại CCCD này rồi" });
+      }
+      const existSTK = await TaiKhoan.findOne({ where: { STK } });
+      if (existSTK) {
+        deleteUploadedFile();
+        return res.status(409).json({ message: "Đã tồn tại STK này rồi" });
+      }
+      const existEmail = await TaiKhoan.findOne({ where: { Email } });
+      if (existEmail) {
+        deleteUploadedFile();
+        return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
+      }
+      if (!req.file) {
+        return res.status(400).json({ message: "Vui lòng upload avatar" });
+      }
+      const avatarPath = path.join("uploads/avatars/", req.file.filename);
+      const newTaiKhoan = await TaiKhoan.create({
+        ...req.body,
+        Avatar: avatarPath,
+        STK,
+        Email,
+      });
+      return res.status(201).json(newTaiKhoan);
+    } catch (error) {
+      console.error("Lỗi khi tạo tài khoản:", error);
+      return res.status(500).json({ message: "Internal server error" });
     }
-    const existSTK = await NguoiPhuThuoc.findOne({where:{STK}});
-    if(existSTK){
-      return res.status(409).json({message:"Đã tồn tại CCCD này rồi"})
-    }
-    if (!req.file) {
-      return res.status(400).json({ message: 'Vui lòng upload avatar' });
-    }
-
-    const avatarPath = path.join('uploads/avatars/', req.file.filename);
-    const newTaiKhoan = await TaiKhoan.create({
-      HoTen,
-      GioiTinh,
-      NgaySinh,
-      DiaChi,
-      SoDienThoai,
-      CCCD,
-      Avatar: avatarPath,
-      LoaiNV,
-      TenNganHang,
-      STK,
-      TrangThai,
-      Email,
-      Password,
-      BacLuong,
-      LuongCoBanHienTai,
-      SoNgayNghiPhep,
-      SoNgayChuaNghi,
-      MaVaiTro,
-      MaCN,
-      QuanLyBoi
-    });
-
-    return res.status(201).json(newTaiKhoan);
-
-  } catch (error) {
-    console.error('Lỗi khi tạo tài khoản:', error);
-    return res.status(500).json({ message: 'Đã xảy ra lỗi khi tạo tài khoản', error: error.message });
   }
-};
+  async update(req, res) {
+    try {
+      const { MaTK } = req.params;
+      const taikhoan = await TaiKhoan.findByPk(MaTK);
+      if (!taikhoan) {
+        return res.status(404).json({ message: "Không tồn tại tài khoản này" });
+      }
+      const deleteUploadedFile = () => {
+        if (req.file) {
+          const filePath = path.join(
+            __dirname,
+            "../../uploads/avatars",
+            req.file.filename
+          );
+          fs.unlink(filePath, (err) => {
+            if (err) console.error("Không thể xóa file:", err);
+          });
+        }
+      };
+      const { CCCD, STK, Email } = req.body;
+      const existCCCD = await TaiKhoan.findOne({ where: { CCCD, MaTK: {[Op.ne]:MaTK} } });
+      const existCCCDNPT = await NguoiPhuThuoc.findOne({ where: { CCCD } });
+      if (existCCCD || existCCCDNPT) {
+        deleteUploadedFile();
+        return res.status(409).json({ message: "Đã tồn tại CCCD này rồi" });
+      }
+      const existSTK = await TaiKhoan.findOne({ where: { STK, MaTK: {[Op.ne]:MaTK} } });
+      if (existSTK) {
+        deleteUploadedFile();
+        return res.status(409).json({ message: "Đã tồn tại STK này rồi" });
+      }
+      const existEmail = await TaiKhoan.findOne({ where: { Email, MaTK: {[Op.ne]:MaTK} } });
+      if (existEmail) {
+        deleteUploadedFile();
+        return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
+      }
+      if (req.file) {
+        const oldAvatarPath = path.join(__dirname, "../../", taikhoan.Avatar);
+        fs.unlink(oldAvatarPath, (err) => {
+          if (err) console.error("Không thể xóa avatar cũ:", err);
+        });
+      }
+      const avatarPath = path.join('uploads/avatars',req.file.filename);
+      await taikhoan.update({
+        ...req.body,
+        Avatar:avatarPath,
+        CCCD,
+        Email,
+        STK
+      });
+      res.status(200).json(taikhoan);
+    } catch (error) {
+      console.error("Lỗi khi tạo tài khoản:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  
 }
 module.exports = new TaiKhoanController();

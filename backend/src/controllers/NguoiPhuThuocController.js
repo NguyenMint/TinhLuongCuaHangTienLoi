@@ -1,6 +1,6 @@
 const { where } = require('sequelize');
 const db = require('../models');
-const Op = db.Sequilize;
+const {Op} = db.Sequelize;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
 const TaiKhoan = db.TaiKhoan;
 class NguoiPhuThuocController {
