@@ -1,44 +1,70 @@
-import React from 'react';
-import { CalendarIcon, DollarSignIcon, CoinsIcon } from 'lucide-react';
-export const EmployeeDetail = ({
-  employee,
-  activeTab,
-  setActiveTab
-}) => {
+import React from "react";
+import { CalendarIcon, DollarSignIcon, CoinsIcon } from "lucide-react";
+import { API_IMG } from "../../api";
+export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
   const handleUpdateEmployee = () => {
-    console.log('Update employee clicked');
+    console.log("Update employee clicked");
     // Implementation would go here
   };
   const handleStopWorking = () => {
-    console.log('Stop working clicked');
+    console.log("Stop working clicked");
     // Implementation would go here
   };
   const handleGetConfirmationCode = () => {
-    console.log('Get confirmation code clicked');
+    console.log("Get confirmation code clicked");
     // Implementation would go here
   };
-  return <div>
+  return (
+    <div>
       {/* Tabs */}
       <div className="flex border-b">
-        <button className={`px-4 py-2 text-sm font-medium ${activeTab === 'info' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('info')}>
+        <button
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "info"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          onClick={() => setActiveTab("info")}
+        >
           <div className="flex items-center">
             <div className="h-4 w-4 mr-2" />
             <span>Thông tin</span>
           </div>
         </button>
-        <button className={`px-4 py-2 text-sm font-medium ${activeTab === 'schedule' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('schedule')}>
+        <button
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "schedule"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          onClick={() => setActiveTab("schedule")}
+        >
           <div className="flex items-center">
             <CalendarIcon className="h-4 w-4 mr-2" />
             <span>Lịch làm việc</span>
           </div>
         </button>
-        <button className={`px-4 py-2 text-sm font-medium ${activeTab === 'salary' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('salary')}>
+        <button
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "salary"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          onClick={() => setActiveTab("salary")}
+        >
           <div className="flex items-center">
             <DollarSignIcon className="h-4 w-4 mr-2" />
             <span>Thiết lập lương</span>
           </div>
         </button>
-        <button className={`px-4 py-2 text-sm font-medium ${activeTab === 'debt' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveTab('debt')}>
+        <button
+          className={`px-4 py-2 text-sm font-medium ${
+            activeTab === "debt"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          onClick={() => setActiveTab("debt")}
+        >
           <div className="flex items-center">
             <CoinsIcon className="h-4 w-4 mr-2" />
             <span>Nợ và tạm ứng</span>
@@ -47,13 +73,22 @@ export const EmployeeDetail = ({
       </div>
       {/* Tab content */}
       <div className="p-4">
-        {activeTab === 'info' && <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {activeTab === "info" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1">
               <div className="bg-gray-100 p-4 flex items-center justify-center h-52 rounded-lg">
                 <div className="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center">
-                  {employee.avatar ? <img src={employee.avatar} alt={employee.HoTen} className="h-40 w-40 rounded-full" /> : <span className="text-gray-500 text-4xl">
+                  {employee.Avatar ? (
+                    <img
+                      src={`${API_IMG}/${employee.Avatar}`}
+                      alt={employee.HoTen}
+                      className="h-40 w-40 rounded-full"
+                    />
+                  ) : (
+                    <span className="text-gray-500 text-4xl">
                       {employee.HoTen.charAt(0)}
-                    </span>}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -83,8 +118,10 @@ export const EmployeeDetail = ({
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Tài khoản Ngân hàng:</p>
-                  <p className="font-medium">{employee.STK} - {employee.TenNganHang}</p>
-                </div> 
+                  <p className="font-medium">
+                    {employee.STK} - {employee.TenNganHang}
+                  </p>
+                </div>
                 <div>
                   <p className="text-sm text-gray-500">Ngày sinh:</p>
                   <p className="font-medium">{employee.NgaySinh}</p>
@@ -95,7 +132,9 @@ export const EmployeeDetail = ({
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Giới tính:</p>
-                  <p className="font-medium">{employee.GioiTinh ? "Nam" : "Nữ"}</p>
+                  <p className="font-medium">
+                    {employee.GioiTinh ? "Nam" : "Nữ"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Email:</p>
@@ -104,7 +143,7 @@ export const EmployeeDetail = ({
                 <div>
                   <p className="text-sm text-gray-500">Số CMND/CCCD:</p>
                   <p className="font-medium">{employee.CCCD}</p>
-                </div>  
+                </div>
                 <div>
                   <p className="text-sm text-gray-500">Địa chỉ:</p>
                   <p className="font-medium">{employee.DiaChi}</p>
@@ -113,31 +152,47 @@ export const EmployeeDetail = ({
                   <p className="text-sm text-gray-500">Chức danh:</p>
                   <p className="font-medium">{employee.LoaiNV}</p>
                 </div>
-
               </div>
             </div>
-          </div>}
-        {activeTab === 'schedule' && <div className="p-4 text-gray-500">
+          </div>
+        )}
+        {activeTab === "schedule" && (
+          <div className="p-4 text-gray-500">
             Thông tin lịch làm việc sẽ hiển thị ở đây.
-          </div>}
-        {activeTab === 'salary' && <div className="p-4 text-gray-500">
+          </div>
+        )}
+        {activeTab === "salary" && (
+          <div className="p-4 text-gray-500">
             Thông tin thiết lập lương sẽ hiển thị ở đây.
-          </div>}
-        {activeTab === 'debt' && <div className="p-4 text-gray-500">
+          </div>
+        )}
+        {activeTab === "debt" && (
+          <div className="p-4 text-gray-500">
             Thông tin nợ và tạm ứng sẽ hiển thị ở đây.
-          </div>}
+          </div>
+        )}
       </div>
       {/* Action buttons */}
       <div className="flex justify-end space-x-2 p-4 border-t">
-        <button onClick={handleGetConfirmationCode} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+        <button
+          onClick={handleGetConfirmationCode}
+          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+        >
           Lấy mã xác nhận
         </button>
-        <button onClick={handleUpdateEmployee} className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md">
+        <button
+          onClick={handleUpdateEmployee}
+          className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
+        >
           Cập nhật
         </button>
-        <button onClick={handleStopWorking} className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">
+        <button
+          onClick={handleStopWorking}
+          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+        >
           Ngừng làm việc
         </button>
       </div>
-    </div>;
+    </div>
+  );
 };
