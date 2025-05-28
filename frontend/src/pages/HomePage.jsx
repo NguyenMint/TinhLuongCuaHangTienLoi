@@ -5,6 +5,9 @@ import { EmployeeTable } from "../components/Home/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/Home/EmployeeDetail.jsx";
 import { employeeData } from "../utils/mockData.ts";
 import Search from "../components/search.jsx";
+import { fetchAllNhanVien } from "../api.js";
+import { useEffect } from "react";
+
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -16,7 +19,22 @@ export function HomePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
   // Mock data
-  const [employees, setEmployees] = useState(employeeData);
+  const [employees, setEmployees] = useState([]);
+
+  const getAllNhanVien = async () => {
+    try {
+      const data = await fetchAllNhanVien();
+      console.log("Danh sách Nhân viên", data);
+      setEmployees(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllNhanVien();
+  }, []);
+
   // Event handlers
   const handleAddEmployee = () => {
     console.log("Add employee clicked");

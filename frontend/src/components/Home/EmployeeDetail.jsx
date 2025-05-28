@@ -52,7 +52,7 @@ export const EmployeeDetail = ({
               <div className="bg-gray-100 p-4 flex items-center justify-center h-52 rounded-lg">
                 <div className="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center">
                   {employee.avatar ? <img src={employee.avatar} alt={employee.name} className="h-40 w-40 rounded-full" /> : <span className="text-gray-500 text-4xl">
-                      {employee.name.charAt(0)}
+                      {employee.HoTen.charAt(0)}
                     </span>}
                 </div>
               </div>
