@@ -26,14 +26,13 @@ class ChungChiController {
             res.status(500).json({ message: "Internal server error" });
         }
     }
-//test
     async create(req, res) {
         try {
             if (!req.file) {
                 return res.status(400).json({ message: "Vui lòng tải lên file chứng chỉ" });
             }
 
-            const filePath = `${req.file.filename}`;
+            const filePath = `uploads/chungchi/${req.file.filename}`;
             const chungChiData = {
                 ...req.body,
                 FileCC: filePath

@@ -2,7 +2,7 @@ const { where } = require("sequelize");
 const db = require("../models");
 const path = require("path");
 const fs = require("fs");
-const {Op} = db.Sequelize;
+const { Op } = db.Sequelize;
 const TaiKhoan = db.TaiKhoan;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
 class TaiKhoanController {
@@ -17,7 +17,7 @@ class TaiKhoanController {
   }
   async getAllNhanVien(req, res) {
     try {
-      const taikhoans = await TaiKhoan.findAll({where:{MaVaiTro:2}});
+      const taikhoans = await TaiKhoan.findAll({ where: { MaVaiTro: 2 } });
       res.status(200).json(taikhoans);
     } catch (error) {
       console.log("ERROR: " + error);
@@ -101,18 +101,24 @@ class TaiKhoanController {
         }
       };
       const { CCCD, STK, Email } = req.body;
-      const existCCCD = await TaiKhoan.findOne({ where: { CCCD, MaTK: {[Op.ne]:MaTK} } });
+      const existCCCD = await TaiKhoan.findOne({
+        where: { CCCD, MaTK: { [Op.ne]: MaTK } },
+      });
       const existCCCDNPT = await NguoiPhuThuoc.findOne({ where: { CCCD } });
       if (existCCCD || existCCCDNPT) {
         deleteUploadedFile();
         return res.status(409).json({ message: "Đã tồn tại CCCD này rồi" });
       }
-      const existSTK = await TaiKhoan.findOne({ where: { STK, MaTK: {[Op.ne]:MaTK} } });
+      const existSTK = await TaiKhoan.findOne({
+        where: { STK, MaTK: { [Op.ne]: MaTK } },
+      });
       if (existSTK) {
         deleteUploadedFile();
         return res.status(409).json({ message: "Đã tồn tại STK này rồi" });
       }
-      const existEmail = await TaiKhoan.findOne({ where: { Email, MaTK: {[Op.ne]:MaTK} } });
+      const existEmail = await TaiKhoan.findOne({
+        where: { Email, MaTK: { [Op.ne]: MaTK } },
+      });
       if (existEmail) {
         deleteUploadedFile();
         return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
@@ -123,13 +129,13 @@ class TaiKhoanController {
           if (err) console.error("Không thể xóa avatar cũ:", err);
         });
       }
-      const avatarPath = path.join('uploads/avatars',req.file.filename);
+      const avatarPath = path.join("uploads/avatars", req.file.filename);
       await taikhoan.update({
         ...req.body,
-        Avatar:avatarPath,
+        Avatar: avatarPath,
         CCCD,
         Email,
-        STK
+        STK,
       });
       res.status(200).json(taikhoan);
     } catch (error) {
@@ -137,6 +143,5 @@ class TaiKhoanController {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
-  
 }
 module.exports = new TaiKhoanController();
