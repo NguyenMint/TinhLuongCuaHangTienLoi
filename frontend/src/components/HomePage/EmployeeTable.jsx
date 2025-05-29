@@ -4,20 +4,23 @@ export const EmployeeTable = ({
   employees,
   selectedEmployee,
   setSelectedEmployee,
+  setShowDetail,
 }) => {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
+
   const handleSelectAll = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
     const newSelectedRows = {};
     if (newSelectAll) {
       employees.forEach((employee) => {
-        newSelectedRows[employee.id] = true;
+        newSelectedRows[employee.MaTK] = true;
       });
     }
     setSelectedRows(newSelectedRows);
   };
+
   const handleSelectRow = (employeeId) => {
     const newSelectedRows = {
       ...selectedRows,
@@ -29,14 +32,20 @@ export const EmployeeTable = ({
       (employee) => newSelectedRows[employee.MaTK]
     );
     setSelectAll(allSelected);
-    // Set selected employee for detail view
+  };
+
+  const handleDetail = (employeeId) => {
     const employee = employees.find((emp) => emp.MaTK === employeeId);
-    if (newSelectedRows[employeeId]) {
-      setSelectedEmployee(employee);
-    } else if (selectedEmployee && selectedEmployee.MaTK === employeeId) {
+
+    if (selectedEmployee && selectedEmployee.MaTK === employeeId) {
       setSelectedEmployee(null);
+      setShowDetail(false);
+    } else if (employee) {
+      setSelectedEmployee(employee);
+      setShowDetail(true);
     }
   };
+
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -113,13 +122,13 @@ export const EmployeeTable = ({
                       ? "bg-blue-50"
                       : "hover:bg-gray-50"
                   } cursor-pointer`}
-                  onClick={() => handleSelectRow(employee.MaTK)}
+                  onClick={() => handleDetail(employee.MaTK)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={!!selectedRows[employee.MaTK]}
-                      onChange={() => {}}
+                      onChange={() => handleSelectRow(employee.MaTK)}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                     />
                   </td>

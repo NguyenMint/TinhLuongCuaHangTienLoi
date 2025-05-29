@@ -17,6 +17,7 @@ export function HomePage() {
   const [position, setPosition] = useState("");
   // State for selected employee and active tab
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
   // Mock data
   const [employees, setEmployees] = useState([]);
@@ -74,15 +75,19 @@ export function HomePage() {
             onImportFile={handleImportFile}
             onExportFile={handleExportFile}
           /> */}
-          <Search placeholder="Tìm kiếm nhân viên..." />
+          <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+            <Search placeholder="Tìm kiếm nhân viên..." />
+            {/* <CreateInvoice /> */}
+          </div>
           <div className="mt-6">
             <EmployeeTable
               employees={employees}
               selectedEmployee={selectedEmployee}
               setSelectedEmployee={setSelectedEmployee}
+              setShowDetail={setShowDetail}
             />
           </div>
-          {selectedEmployee && (
+          {showDetail && (
             <div className="mt-4 bg-white rounded-lg shadow">
               <EmployeeDetail
                 employee={selectedEmployee}
