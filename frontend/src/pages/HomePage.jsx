@@ -53,8 +53,7 @@ export function HomePage() {
     // Implementation would go here
   };
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
+    <div className="flex min-h-screen  px-9 bg-gray-50">
       <div className="flex flex-1">
         <FilterSidebar
           statusFilter={statusFilter}

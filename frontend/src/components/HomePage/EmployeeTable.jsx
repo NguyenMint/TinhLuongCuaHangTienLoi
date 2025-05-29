@@ -50,7 +50,7 @@ export const EmployeeTable = ({
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-200">
             <tr>
               <th
                 scope="col"
@@ -71,7 +71,7 @@ export const EmployeeTable = ({
               </th>
               <th
                 scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
               >
                 Mã nhân viên
               </th>
@@ -147,7 +147,7 @@ export const EmployeeTable = ({
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                     {employee.MaTK}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
