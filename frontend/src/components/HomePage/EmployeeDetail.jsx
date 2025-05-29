@@ -2,6 +2,8 @@ import React from "react";
 import { CalendarIcon, DollarSignIcon, CoinsIcon } from "lucide-react";
 import { API_IMG } from "../../api";
 export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
+
+
   const handleUpdateEmployee = () => {
     console.log("Update employee clicked");
     // Implementation would go here
