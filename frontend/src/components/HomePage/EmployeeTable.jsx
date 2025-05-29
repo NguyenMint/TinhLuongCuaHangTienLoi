@@ -124,7 +124,10 @@ export const EmployeeTable = ({
                   } cursor-pointer`}
                   onClick={() => handleDetail(employee.MaTK)}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <input
                       type="checkbox"
                       checked={!!selectedRows[employee.MaTK]}

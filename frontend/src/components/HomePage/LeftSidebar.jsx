@@ -9,7 +9,8 @@ export const FilterSidebar = ({
   setPosition,
 }) => {
   return (
-    <div className="w-64 border-r border-gray-200 p-4 hidden lg:block mt-10">
+    <div className="min-w-64 border-r border-gray-200 p-6 md:mt-10">
+    {/* <div className="w-64 border-r border-gray-200 p-6 hidden lg:block mt-10"> */}
       {/* Employee Status Filter */}
       <div className="mb-6 border-b pb-4 rounded-lg bg-white p-2">
         <h3 className="text-sm font-medium text-gray-700 mb-3">
@@ -41,7 +42,7 @@ export const FilterSidebar = ({
         </div>
       </div>
       {/* Workplace Branch Filter */}
-      <div className="mb-6 border-b pb-4 rounded-lg bg-white p-2">
+      <div className="md:mb-6 border-b pb-4 rounded-lg bg-white p-2">
         <h3 className="text-sm font-medium text-gray-700 mb-2">
           Chi nhánh làm việc
         </h3>
