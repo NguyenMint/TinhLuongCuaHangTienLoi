@@ -1,32 +1,67 @@
-import React, { useState } from 'react';
-import { XIcon, PlusIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import React, { useState } from "react";
+import { XIcon, PlusIcon } from "lucide-react";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
+import Shift from "./Shift";
+import { API_IMG } from "../../api";
 export const AddShiftModal = ({
   isOpen,
   onClose,
   employee,
-  date
+  date,
+  shifts,
+  onSuccess,
 }) => {
-  const [selectedShifts, setSelectedShifts] = useState({
-    morning: false,
-    afternoon: false,
-    evening: false
-  });
+  const [selectedShifts, setSelectedShifts] = useState({});
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [applyToOthers, setApplyToOthers] = useState(false);
-  const handleSubmit = () => {
-    console.log({
-      employee,
-      date,
-      selectedShifts,
-      repeatWeekly,
-      applyToOthers
-    });
-    onClose();
+  const handleSubmit = async () => {
+    try {
+      console.log({
+        employee,
+        date,
+        selectedShifts,
+        repeatWeekly,
+        applyToOthers,
+      });
+
+      const selectedShiftIds = Object.keys(selectedShifts).filter(
+        (key) => selectedShifts[key]
+      );
+
+      if (selectedShiftIds.length === 0) {
+        alert("Vui lòng chọn ít nhất một ca làm việc.");
+        return;
+      }
+
+      const requests = selectedShiftIds.map((MaCaLam) =>
+        fetch(API_IMG + "/dangkyca", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            MaNS: employee.MaTK,
+            NgayDangKy: format(date, "yyyy-MM-dd"),
+            MaCaLam: MaCaLam,
+            TrangThai: "Đã đăng ký",
+            // repeatWeekly,
+            // applyToOthers,
+          }),
+        })
+      );
+      await Promise.all(requests);
+      onClose();
+      if (onSuccess) onSuccess();
+      
+    } catch (error) {
+      console.error("Error submitting shift:", error);
+    }
   };
+
   if (!isOpen) return null;
-  return <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg max-w-lg w-full mx-4">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
@@ -35,19 +70,23 @@ export const AddShiftModal = ({
               Thêm lịch làm việc
             </h3>
             <p className="text-sm text-gray-500">
-              {employee?.name} -{' '}
-              {format(date, 'EEEE, dd/MM/yyyy', {
-              locale: vi
-            })}
+              {employee?.name} -{" "}
+              {format(date, "EEEE, dd/MM/yyyy", {
+                locale: vi,
+              })}
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500"
+          >
             <XIcon className="h-5 w-5" />
           </button>
         </div>
         {/* Content */}
         <div className="p-6 space-y-6">
           {/* Shifts Section */}
+
           <div>
             <div className="flex justify-between items-center mb-4">
               <h4 className="text-sm font-medium text-gray-900">
@@ -57,49 +96,13 @@ export const AddShiftModal = ({
                 <PlusIcon className="h-5 w-5" />
               </button>
             </div>
+
             <div className="space-y-4">
-              <label className="flex items-center">
-                <input type="checkbox" checked={selectedShifts.morning} onChange={e => setSelectedShifts({
-                ...selectedShifts,
-                morning: e.target.checked
-              })} className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                <span className="ml-3">
-                  <span className="text-sm font-medium text-gray-900">
-                    Ca sáng
-                  </span>
-                  <span className="text-sm text-gray-500 ml-2">
-                    08:00 - 12:00
-                  </span>
-                </span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" checked={selectedShifts.afternoon} onChange={e => setSelectedShifts({
-                ...selectedShifts,
-                afternoon: e.target.checked
-              })} className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                <span className="ml-3">
-                  <span className="text-sm font-medium text-gray-900">
-                    Ca chiều
-                  </span>
-                  <span className="text-sm text-gray-500 ml-2">
-                    13:00 - 17:00
-                  </span>
-                </span>
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" checked={selectedShifts.evening} onChange={e => setSelectedShifts({
-                ...selectedShifts,
-                evening: e.target.checked
-              })} className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                <span className="ml-3">
-                  <span className="text-sm font-medium text-gray-900">
-                    Ca tối
-                  </span>
-                  <span className="text-sm text-gray-500 ml-2">
-                    18:00 - 22:00
-                  </span>
-                </span>
-              </label>
+              <Shift
+                shifts={shifts}
+                setSelectedShifts={setSelectedShifts}
+                selectedShifts={selectedShifts}
+              />
             </div>
           </div>
           {/* Toggles Section */}
@@ -115,8 +118,17 @@ export const AddShiftModal = ({
                     tuần.
                   </span>
                 </div>
-                <button onClick={() => setRepeatWeekly(!repeatWeekly)} className={`${repeatWeekly ? 'bg-blue-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}>
-                  <span className={`${repeatWeekly ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out mt-1`} />
+                <button
+                  onClick={() => setRepeatWeekly(!repeatWeekly)}
+                  className={`${
+                    repeatWeekly ? "bg-blue-600" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}
+                >
+                  <span
+                    className={`${
+                      repeatWeekly ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out mt-1`}
+                  />
                 </button>
               </label>
             </div>
@@ -130,8 +142,17 @@ export const AddShiftModal = ({
                     Ca làm việc sẽ được áp dụng cho các nhân viên được chọn.
                   </span>
                 </div>
-                <button onClick={() => setApplyToOthers(!applyToOthers)} className={`${applyToOthers ? 'bg-blue-600' : 'bg-gray-200'} relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}>
-                  <span className={`${applyToOthers ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out mt-1`} />
+                <button
+                  onClick={() => setApplyToOthers(!applyToOthers)}
+                  className={`${
+                    applyToOthers ? "bg-blue-600" : "bg-gray-200"
+                  } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}
+                >
+                  <span
+                    className={`${
+                      applyToOthers ? "translate-x-6" : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out mt-1`}
+                  />
                 </button>
               </label>
             </div>
@@ -139,13 +160,20 @@ export const AddShiftModal = ({
         </div>
         {/* Footer */}
         <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3 rounded-b-lg">
-          <button onClick={onClose} className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
             Hủy
           </button>
-          <button onClick={handleSubmit} className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-green-500 hover:bg-green-600">
+          <button
+            onClick={handleSubmit}
+            className="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-green-500 hover:bg-green-600"
+          >
             Xong
           </button>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };

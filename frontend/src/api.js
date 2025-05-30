@@ -12,11 +12,42 @@ export const fetchAllNhanVien = async () => {
   }
 };
 export const fetchChiNhanh = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/chinhanh`);
-      return response.data;
-    } catch (error) {
-      console.error("Lỗi lấy Chi nhánh:", error);
-      return { success: false, message: "Lỗi kết nối đến server" };
-    }
-  };
+  try {
+    const response = await axios.get(`${BASE_URL}/chinhanh`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Chi nhánh:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+
+export const fetchCaLam = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/calam`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Ca làm:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+
+export const fetchDangKyCa = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/dangkyca`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Ca làm:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+
+
+// export const createDangKyCaByMaNS = async (MaNS) => {
+//   try {
+//     const response = await axios.post(`${BASE_URL}/dangkyca/${MaNS}`);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Lỗi lấy Ca làm:", error);
+//     return { success: false, message: "Lỗi kết nối đến server" };
+//   }
+// };

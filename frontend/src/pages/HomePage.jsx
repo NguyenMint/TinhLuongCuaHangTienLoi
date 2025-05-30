@@ -53,8 +53,8 @@ export function HomePage() {
     // Implementation would go here
   };
   return (
-    <div className="flex min-h-screen  px-9 bg-gray-50">
-      <div className="flex flex-1">
+    <div className="flex">
+      <div className="md:flex flex-1">
         <FilterSidebar
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
@@ -67,7 +67,7 @@ export function HomePage() {
           position={position}
           setPosition={setPosition}
         />
-        <div className="flex-1 p-6">
+        <div className="flex-1 px-6 md:p-6">
           {/* <Header
             onSearch={handleSearch}
             onAddEmployee={handleAddEmployee}

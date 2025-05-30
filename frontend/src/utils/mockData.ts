@@ -4,7 +4,9 @@ export const mockScheduleData = {
     "2025-05-27": "Ca tối",
     "2025-05-29": "Ca sáng"
   },
-  "NV000003": {}
+  "NV000003": {
+    "2025-05-28": "Ca chiều",
+  }
 };
 export const mockEmployees = [{
   id: "NV000002",
