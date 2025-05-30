@@ -153,6 +153,7 @@ export const WorkSchedule = () => {
           onClose={handleModalClose}
           employee={selectedEmployee}
           date={selectedDate}
+          onSuccess={getAllDangKyCa}
         />
       )}
     </div>

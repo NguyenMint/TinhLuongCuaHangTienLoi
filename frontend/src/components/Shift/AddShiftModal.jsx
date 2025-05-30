@@ -4,11 +4,18 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import Shift from "./Shift";
 import { API_IMG } from "../../api";
-export const AddShiftModal = ({ isOpen, onClose, employee, date, shifts }) => {
+export const AddShiftModal = ({
+  isOpen,
+  onClose,
+  employee,
+  date,
+  shifts,
+  onSuccess,
+}) => {
   const [selectedShifts, setSelectedShifts] = useState({});
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [applyToOthers, setApplyToOthers] = useState(false);
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
       console.log({
         employee,
@@ -43,11 +50,13 @@ export const AddShiftModal = ({ isOpen, onClose, employee, date, shifts }) => {
           }),
         })
       );
-      Promise.all(requests);
+      await Promise.all(requests);
+      onClose();
+      if (onSuccess) onSuccess();
+      
     } catch (error) {
       console.error("Error submitting shift:", error);
     }
-    onClose();
   };
 
   if (!isOpen) return null;
