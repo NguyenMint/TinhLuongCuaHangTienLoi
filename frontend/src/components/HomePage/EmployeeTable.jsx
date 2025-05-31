@@ -114,7 +114,7 @@ export const EmployeeTable = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {employees.map((employee) => (
+            {employees && employees.length > 0 ? employees.map((employee) => (
               <React.Fragment key={employee.MaTK}>
                 <tr
                   className={`${
@@ -172,8 +172,14 @@ export const EmployeeTable = ({
                     {employee.notes}
                   </td>
                 </tr>
-              </React.Fragment>
-            ))}
+              </React.Fragment>)
+            ) : (
+              <tr>
+                <td colSpan="9" className="text-center py-8 text-gray-500">
+                  Không có nhân viên nào để hiển thị.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
