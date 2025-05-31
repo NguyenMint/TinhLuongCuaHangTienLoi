@@ -2,18 +2,20 @@ import React, { useEffect, useState } from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  SearchIcon,
   FileIcon,
   ChevronDownIcon,
 } from "lucide-react";
 import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks } from "date-fns";
+import Search from "../components/search.jsx";
+
 // import { vi } from "date-fns/locale";
-import { fetchAllNhanVien, fetchCaLam, fetchDangKyCa } from "../api";
+import { fetchAllNhanVien, fetchCaLam, fetchDangKyCa, searchEmployee } from "../api";
+
 export const WorkSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [viewType, setViewType] = useState("employee");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -22,6 +24,7 @@ export const WorkSchedule = () => {
   const [schedules, setSchedules] = useState([]);
 
   const [employees, setEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getAllNhanVien = async () => {
     try {
@@ -35,7 +38,7 @@ export const WorkSchedule = () => {
   const getAllCaLam = async () => {
     try {
       const data = await fetchCaLam();
-      setShifts(data);      
+      setShifts(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
@@ -44,7 +47,7 @@ export const WorkSchedule = () => {
   const getAllDangKyCa = async () => {
     try {
       const data = await fetchDangKyCa();
-      setSchedules(data);      
+      setSchedules(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
@@ -75,6 +78,20 @@ export const WorkSchedule = () => {
     setSelectedEmployee(null);
     setSelectedDate(null);
   };
+
+  const handleSearch = async (query) => {
+    try {
+      if (!query.trim()) {
+        await getAllNhanVien();
+        return;
+      }
+      const results = await searchEmployee(query);
+      setEmployees(results);
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm:", error);
+    }
+  };
+
   const weekNumber = Math.ceil(currentDate.getDate() / 7);
   const monthYear = format(currentDate, "MM.yyyy");
   const weekLabel = `Tuần ${weekNumber} - Th.${monthYear}`;
@@ -87,14 +104,12 @@ export const WorkSchedule = () => {
           {/* Search and View Type */}
           <div className="flex flex-1 max-w-xl space-x-4">
             <div className="relative flex-1">
-              <input
-                type="text"
-                placeholder="Tìm kiếm nhân viên"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              <Search
+                placeholder="Tìm kiếm nhân viên..."
+                onSearch={handleSearch}
+                setQuery={setSearchQuery}
               />
-              <SearchIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              {/* <CreateInvoice /> */}
             </div>
             <div className="relative">
               <select

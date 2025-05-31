@@ -5,7 +5,7 @@ import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import { employeeData } from "../utils/mockData.ts";
 import Search from "../components/search.jsx";
-import { fetchAllNhanVien } from "../api.js";
+import { fetchAllNhanVien, searchEmployee } from "../api.js";
 import { useEffect } from "react";
 
 export function HomePage() {
@@ -19,8 +19,8 @@ export function HomePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
-  // Mock data
   const [employees, setEmployees] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const getAllNhanVien = async () => {
     try {
@@ -48,9 +48,18 @@ export function HomePage() {
     console.log("Export file clicked");
     // Implementation would go here
   };
-  const handleSearch = (query) => {
-    console.log("Searching for:", query);
-    // Implementation would go here
+  const handleSearch = async (query) => {
+    try {
+      
+      if (!query.trim()) {
+        await getAllNhanVien();
+        return;
+      }
+      const results = await searchEmployee(query);
+      setEmployees(results);
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm:", error);
+    }
   };
   return (
     <div className="flex">
@@ -68,14 +77,13 @@ export function HomePage() {
           setPosition={setPosition}
         />
         <div className="flex-1 px-6 md:p-6">
-          {/* <Header
-            onSearch={handleSearch}
-            onAddEmployee={handleAddEmployee}
-            onImportFile={handleImportFile}
-            onExportFile={handleExportFile}
-          /> */}
+
           <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-            <Search placeholder="Tìm kiếm nhân viên..." />
+            <Search 
+              placeholder="Tìm kiếm nhân viên..." 
+              onSearch={handleSearch} 
+              setQuery={setSearchQuery} 
+            />
             {/* <CreateInvoice /> */}
           </div>
           <div className="mt-6">

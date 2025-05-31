@@ -41,6 +41,18 @@ export const fetchDangKyCa = async () => {
   }
 };
 
+export const searchEmployee = async (keyword) => {
+  try {
+    
+    const response = await axios.get(`${BASE_URL}/taikhoan/search`, {
+      params: { keyword }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tìm kiếm nhân viên:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
 
 // export const createDangKyCaByMaNS = async (MaNS) => {
 //   try {

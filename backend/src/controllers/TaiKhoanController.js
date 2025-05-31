@@ -143,5 +143,23 @@ class TaiKhoanController {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
+  async searchEmployee(req, res) {
+    try {
+      const { keyword } = req.query;
+
+      const filterTK = await TaiKhoan.findAll({
+        where: {
+          [Op.or]: [
+            { MaTK: { [Op.like]: `%${keyword}%` } },
+            { HoTen: { [Op.like]: `%${keyword}%` } },
+          ],
+        },
+      });
+      res.status(200).json(filterTK);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
 module.exports = new TaiKhoanController();
