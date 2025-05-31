@@ -1,4 +1,4 @@
-import { HomeIcon, FileTextIcon, UsersIcon } from "lucide-react";
+import { HomeIcon, FileTextIcon, UsersIcon,SettingsIcon } from "lucide-react";
 
 import { Link, Route, useLocation, useNavigate } from "react-router-dom";
 // Map of links to display in the side navigation.
@@ -11,6 +11,11 @@ const links = [
     icon: FileTextIcon,
   },
   { name: "Bảng chấm công", href: "/dashboard/customers", icon: UsersIcon },
+  {
+    name: "Thiết lập",
+    href:"/settings",
+    icon: SettingsIcon
+  }
 ];
 
 export default function NavLinks() {

@@ -6,12 +6,13 @@ import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { MainLayout } from "./components/layout";
 import { WorkSchedule } from "./pages/WorkSchedulePage";
-
+import { SettingsPage } from "./pages/SettingPage/SettingsPage";
+import {ShiftPage} from "./pages/SettingPage/ShiftPage";
 
 function App() {
   return (
     <BrowserRouter>
-    <Routes>
+      <Routes>
         <Route path="/login" element={<LoginPage />} />
 
         <Route
@@ -30,6 +31,22 @@ function App() {
             </MainLayout>
           }
         />
+        <Route
+          path="/settings"
+          element={
+            <MainLayout>
+              <SettingsPage />
+            </MainLayout>
+          }
+        ></Route>
+        <Route
+          path="/settings/shift"
+          element={
+            <MainLayout>
+              <ShiftPage/>
+            </MainLayout>
+          }
+        ></Route>
       </Routes>
     </BrowserRouter>
   );
