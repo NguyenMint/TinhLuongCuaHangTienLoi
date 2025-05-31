@@ -1,6 +1,7 @@
+const { where } = require('sequelize');
 const db = require('../models');
 const CaLam = db.CaLam;
-
+const {Op} = db.Sequelize;
 class CaLamController {
     async getAll(req, res) {
         try {
@@ -27,6 +28,11 @@ class CaLamController {
 
     async create(req, res) {
         try {
+            const {TenCa} = req.body;
+            const existTenCaLam = await CaLam.findOne({where:{TenCa}});
+            if(existTenCaLam){
+                return res.status(409).json({message:"Tên ca làm đã tồn tại"});
+            }
             const caLam = await CaLam.create(req.body);
             res.status(201).json(caLam);
         } catch (error) {
@@ -42,6 +48,11 @@ class CaLamController {
             if (!caLam) {
                 return res.status(404).json({ message: "Ca làm không tồn tại" });
             }
+            const {TenCa} = req.body;
+            const existTenCaLam = await CaLam.findOne({where:{TenCa,MaCa:{[Op.ne]:req.params.id}}});
+            if(existTenCaLam){
+                return res.status(409).json({message:"Tên ca làm đã tồn tại"});
+            }
             await caLam.update(req.body);
             res.status(200).json(caLam);
         } catch (error) {
@@ -56,6 +67,7 @@ class CaLamController {
             if (!caLam) {
                 return res.status(404).json({ message: "Ca làm không tồn tại" });
             }
+            
             await caLam.destroy();
             res.status(200).json({ message: "Xóa ca làm thành công" });
         } catch (error) {
