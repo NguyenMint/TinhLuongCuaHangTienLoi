@@ -9,6 +9,6 @@ route.get('/getAllNhanVien',TaiKhoanController.getAllNhanVien);
 route.get('/:MaTK',TaiKhoanController.getById);
 route.post('/',uploadAvatar.single('avatar'),TaiKhoanController.create);
 route.put('/:MaTK',uploadAvatar.single('avatar'),TaiKhoanController.update);
-
+route.post('/login',TaiKhoanController.login);
 
 module.exports = route;

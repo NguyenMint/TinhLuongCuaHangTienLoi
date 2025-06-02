@@ -3,7 +3,7 @@ require('dotenv').config();
 const auto = new SequelizeAuto(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
   dialect: 'mysql',
-  directory: './src/models', // thư mục lưu models
+  directory: './src/models', 
   additional: {
     timestamps: false 
   },

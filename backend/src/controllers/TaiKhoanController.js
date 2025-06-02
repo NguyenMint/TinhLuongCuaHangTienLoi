@@ -5,6 +5,7 @@ const fs = require("fs");
 const { Op } = db.Sequelize;
 const TaiKhoan = db.TaiKhoan;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
+const bcrypt = require("bcrypt");
 class TaiKhoanController {
   async getAll(req, res) {
     try {
@@ -36,7 +37,7 @@ class TaiKhoanController {
   }
   async create(req, res) {
     try {
-      const { CCCD, STK, Email } = req.body;
+      const { CCCD, STK, Email, Password } = req.body;
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -69,11 +70,13 @@ class TaiKhoanController {
         return res.status(400).json({ message: "Vui lòng upload avatar" });
       }
       const avatarPath = path.join("uploads/avatars/", req.file.filename);
+      const hashedPassword = await bcrypt.hash(Password,10);
       const newTaiKhoan = await TaiKhoan.create({
         ...req.body,
         Avatar: avatarPath,
         STK,
         Email,
+        Password: hashedPassword
       });
       return res.status(201).json(newTaiKhoan);
     } catch (error) {
@@ -100,7 +103,7 @@ class TaiKhoanController {
           });
         }
       };
-      const { CCCD, STK, Email } = req.body;
+      const { CCCD, STK, Email, Password } = req.body;
       const existCCCD = await TaiKhoan.findOne({
         where: { CCCD, MaTK: { [Op.ne]: MaTK } },
       });
@@ -130,12 +133,14 @@ class TaiKhoanController {
         });
       }
       const avatarPath = path.join("uploads/avatars", req.file.filename);
+      const hashedPassword = await bcrypt.hash(Password,10);
       await taikhoan.update({
         ...req.body,
         Avatar: avatarPath,
         CCCD,
         Email,
         STK,
+        Password: hashedPassword
       });
       res.status(200).json(taikhoan);
     } catch (error) {
@@ -160,6 +165,23 @@ class TaiKhoanController {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
     }
+  }
+  async login(req,res){
+    try {
+    const { Email, Password } = req.body;
+    const user = await TaiKhoan.findOne({ where: { Email } });
+    if (!user) {
+      return res.status(404).json({ message: "Email không tồn tại" });
+    }
+    const isMatch = await bcrypt.compare(Password, user.Password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Mật khẩu không đúng" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("ERROR:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
   }
 }
 module.exports = new TaiKhoanController();
