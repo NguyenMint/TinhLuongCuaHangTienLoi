@@ -1,12 +1,10 @@
 import React from "react";
-import { ChevronDownIcon, PlusIcon } from "lucide-react";
 export const FilterSidebar = ({
   statusFilter,
   setStatusFilter,
   workplaceBranch,
   setWorkplaceBranch,
-  position,
-  setPosition,
+
 }) => {
   return (
     <div className="min-w-64 border-r border-gray-200 p-6 md:mt-10">

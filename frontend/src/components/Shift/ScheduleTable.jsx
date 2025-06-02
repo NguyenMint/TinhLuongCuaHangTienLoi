@@ -2,7 +2,6 @@ import React from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { vi } from "date-fns/locale";
 import { PlusIcon } from "lucide-react";
-import { mockScheduleData } from "../../utils/mockData.ts";
 export const ScheduleTable = ({
   currentDate,
   onAddShift,
