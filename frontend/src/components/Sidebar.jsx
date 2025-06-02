@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { HomeIcon, FileTextIcon, UsersIcon, LogOutIcon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import NavLinks from "./nav-links";
 
 export const Sidebar = () => {
