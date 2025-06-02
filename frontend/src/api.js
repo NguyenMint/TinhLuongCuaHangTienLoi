@@ -1,10 +1,8 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:5000";
-export const API_IMG = `${BASE_URL}`;
 
 export const fetchAllNhanVien = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/taikhoan/getAllNhanVien`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllNhanVien`);
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy user:", error);
@@ -13,7 +11,7 @@ export const fetchAllNhanVien = async () => {
 };
 export const fetchChiNhanh = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/chinhanh`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/chinhanh`);
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy Chi nhánh:", error);
@@ -23,7 +21,7 @@ export const fetchChiNhanh = async () => {
 
 export const fetchCaLam = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/calam`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/calam`);
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy Ca làm:", error);
@@ -33,7 +31,7 @@ export const fetchCaLam = async () => {
 
 export const fetchDangKyCa = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/dangkyca`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/dangkyca`);
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy Ca làm:", error);
@@ -44,7 +42,7 @@ export const fetchDangKyCa = async () => {
 export const searchEmployee = async (keyword) => {
   try {
     
-    const response = await axios.get(`${BASE_URL}/taikhoan/search`, {
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/taikhoan/search`, {
       params: { keyword }
     });
     return response.data;
@@ -56,7 +54,7 @@ export const searchEmployee = async (keyword) => {
 
 // export const createDangKyCaByMaNS = async (MaNS) => {
 //   try {
-//     const response = await axios.post(`${BASE_URL}/dangkyca/${MaNS}`);
+//     const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/dangkyca/${MaNS}`);
 //     return response.data;
 //   } catch (error) {
 //     console.error("Lỗi lấy Ca làm:", error);
@@ -66,7 +64,7 @@ export const searchEmployee = async (keyword) => {
 
 export const createCaLam = async (caLamData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/calam`, caLamData);
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/calam`, caLamData);
     return { success: true, data: response.data };
   } catch (error) {
     if (error.response.status === 409) {
@@ -78,7 +76,7 @@ export const createCaLam = async (caLamData) => {
 };
 export const updateCaLam = async (caLamData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/calam/${caLamData.MaCa}`, caLamData);
+    const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/calam/${caLamData.MaCa}`, caLamData);
     return { success: true, data: response.data };
   } catch (error) {
     if (error.response.status === 404) {
@@ -92,7 +90,7 @@ export const updateCaLam = async (caLamData) => {
 };
 export const deleteCaLam = async (MaCaLam) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/calam/${MaCaLam}`);
+    const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/calam/${MaCaLam}`);
     return { success: true, data: response.data.message };
   } catch (error) {
     if (error.response?.status === 404) {

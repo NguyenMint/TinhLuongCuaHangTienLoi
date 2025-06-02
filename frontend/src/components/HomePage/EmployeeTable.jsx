@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { API_IMG } from "../../api";
 export const EmployeeTable = ({
   employees,
   selectedEmployee,
@@ -139,7 +138,7 @@ export const EmployeeTable = ({
                     <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
                       {employee.Avatar ? (
                         <img
-                          src={`${API_IMG}/${employee.Avatar}`}
+                          src={`${process.env.REACT_APP_BACKEND_URL}/${employee.Avatar}`}
                           alt={employee.HoTen}
                           className="h-10 w-10 rounded-full"
                         />

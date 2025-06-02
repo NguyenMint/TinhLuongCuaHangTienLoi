@@ -1,6 +1,6 @@
 import { HomeIcon, FileTextIcon, UsersIcon,SettingsIcon } from "lucide-react";
 
-import { Link, Route, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
@@ -20,7 +20,6 @@ const links = [
 
 export default function NavLinks() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   return (
     <>
