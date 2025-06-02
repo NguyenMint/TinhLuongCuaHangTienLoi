@@ -196,7 +196,7 @@ class TaiKhoanController {
             { expiresIn: "1h" }
           );
           // user.token = token; // Thêm token vào đối tượng người dùng
-          return res.status(200).json(access_token);
+          return res.status(200).json({access_token, user: payload});
         }
       }
 

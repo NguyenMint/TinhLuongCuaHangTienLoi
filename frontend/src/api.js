@@ -1,6 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:5000";
-export const API_IMG = `${BASE_URL}`;
+import { BASE_URL } from "./environments/environment";
 
 export const fetchAllNhanVien = async () => {
   try {
