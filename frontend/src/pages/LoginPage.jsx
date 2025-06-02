@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api";
 
 export const LoginPage = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const navigate = useNavigate();
@@ -16,11 +17,11 @@ export const LoginPage = () => {
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
-      username: "",
+      email: "",
       password: "",
     };
-    if (!username.trim()) {
-      newErrors.username = "Vui lòng nhập tên đăng nhập";
+    if (!email.trim()) {
+      newErrors.email = "Vui lòng nhập email";
       isValid = false;
     }
     if (!password.trim()) {
@@ -30,44 +31,54 @@ export const LoginPage = () => {
     setErrors(newErrors);
     return isValid;
   };
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log({
-        username,
-        password,
-        rememberMe,
-      });
-      navigate("/");
+      const result = await login(email, password);
+      if (result.success) {
+        localStorage.setItem("token", result.data.access_token);
+        localStorage.setItem("user", JSON.stringify(result.data.user));
+        if(result.data.user.MaVaiTro===2){
+          navigate("/employee-home");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setErrors({
+          ...errors,
+          password: result.message || "Đăng nhập thất bại",
+        });
+      }
     }
+    console.log("User",localStorage.getItem("user"));
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
         <div>
-          <div className="flex justify-center">
-            Logo
-          </div>
+          <div className="flex justify-center">Logo</div>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="sr-only">
-                Tên đăng nhập
+              <label htmlFor="email" className="sr-only">
+                Email
               </label>
               <input
-                id="username"
-                name="username"
+                id="email"
+                name="email"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className={`appearance-none relative block w-full px-3 py-3 border ${
-                  errors.username ? "border-red-300" : "border-gray-300"
+                  errors.email ? "border-red-300" : "border-gray-300"
                 } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                placeholder="Tên đăng nhập"
+                placeholder="Email"
               />
-              {errors.username && (
-                <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
               )}
             </div>
             <div className="relative">

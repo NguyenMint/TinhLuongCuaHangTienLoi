@@ -1,11 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { HomeIcon, FileTextIcon, UsersIcon, LogOutIcon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import NavLinks from "./nav-links";
 
 export const Sidebar = () => {
   const navigate = useNavigate();
-
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
   return (
     <div className="w-16 md:w-64 bg-white shadow-lg flex flex-col h-screen fixed">
       {/* Logo section */}
@@ -20,10 +24,7 @@ export const Sidebar = () => {
 
       <div className="p-4 border-t">
         <button
-          onClick={() => {
-            // Clear auth data here if needed
-            navigate("/login");
-          }}
+          onClick={handleLogout}
           className="flex items-center text-gray-700 hover:text-red-500 w-full"
         >
           <LogOutIcon className="h-5 w-5 mr-3" />

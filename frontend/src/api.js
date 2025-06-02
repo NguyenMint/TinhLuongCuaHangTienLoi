@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchAllNhanVien = async () => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllNhanVien`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllNhanVienVaQuanLy`);
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy user:", error);
@@ -64,10 +64,19 @@ export const searchEmployee = async (keyword) => {
 
 export const createCaLam = async (caLamData) => {
   try {
-    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/calam`, caLamData);
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/calam`,
+      caLamData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return { success: true, data: response.data };
   } catch (error) {
-    if (error.response.status === 409) {
+    if (error.response?.status === 409) {
       return { success: false, message: "Tên ca làm đã tồn tại" };
     }
     console.error("Lỗi tạo Ca làm:", error);
@@ -76,7 +85,16 @@ export const createCaLam = async (caLamData) => {
 };
 export const updateCaLam = async (caLamData) => {
   try {
-    const response = await axios.put(`${process.env.REACT_APP_BACKEND_URL}/calam/${caLamData.MaCa}`, caLamData);
+    const token = localStorage.getItem("token");
+    const response = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/calam/${caLamData.MaCa}`,
+      caLamData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return { success: true, data: response.data };
   } catch (error) {
     if (error.response.status === 404) {
@@ -90,7 +108,15 @@ export const updateCaLam = async (caLamData) => {
 };
 export const deleteCaLam = async (MaCaLam) => {
   try {
-    const response = await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/calam/${MaCaLam}`);
+    const token = localStorage.getItem("token");
+    const response = await axios.delete(
+      `${process.env.REACT_APP_BACKEND_URL}/calam/${MaCaLam}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return { success: true, data: response.data.message };
   } catch (error) {
     if (error.response?.status === 404) {
@@ -100,3 +126,20 @@ export const deleteCaLam = async (MaCaLam) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const login = async (Email, Password) => {
+  try {
+    const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/taikhoan/login`, {
+      Email,
+      Password
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return { success: false, message: "Email không tồn tại" };
+    } else if (error.response?.status === 401) {
+      return { success: false, message: "Mật khẩu không đúng" };
+    }
+    console.error("Lỗi đăng nhập:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+}

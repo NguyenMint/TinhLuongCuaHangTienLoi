@@ -102,7 +102,7 @@ export const EmployeeTable = ({
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Nợ và tạm ứng
+                Chức vụ
               </th>
               <th
                 scope="col"
@@ -165,7 +165,7 @@ export const EmployeeTable = ({
                     {employee.CCCD}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.debt}
+                    {employee.MaVaiTro===1 ?"Quản lý" : "Nhân viên"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {employee.notes}

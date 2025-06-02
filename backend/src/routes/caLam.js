@@ -1,11 +1,12 @@
-const express = require('express');
+const express = require("express");
 const route = express.Router();
-const CaLamController = require('../controllers/CaLamController');
+const CaLamController = require("../controllers/CaLamController");
+const { authMiddleware } = require("../middleware/authMiddleware");
+const { authorizeRoles } = require("../middleware/authMiddleware");
+route.get("/", CaLamController.getAll);
+route.get("/:id", CaLamController.getById);
+route.post("/", authMiddleware, authorizeRoles(3), CaLamController.create);
+route.put("/:id", authMiddleware, authorizeRoles(3), CaLamController.update);
+route.delete("/:id", authMiddleware, authorizeRoles(3), CaLamController.delete);
 
-route.get('/', CaLamController.getAll);
-route.get('/:id', CaLamController.getById);
-route.post('/', CaLamController.create);
-route.put('/:id', CaLamController.update);
-route.delete('/:id', CaLamController.delete);
-
-module.exports = route; 
+module.exports = route;
