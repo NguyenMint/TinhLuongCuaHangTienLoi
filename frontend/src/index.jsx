@@ -7,44 +7,60 @@ import { LoginPage } from "./pages/LoginPage";
 import { MainLayout } from "./components/layout";
 import { WorkSchedule } from "./pages/WorkSchedulePage";
 import { SettingsPage } from "./pages/SettingPage/SettingsPage";
-import {ShiftPage} from "./pages/SettingPage/ShiftPage";
-
+import { ShiftPage } from "./pages/SettingPage/ShiftPage";
+import ProtectedRoute from "./ProtectedRoute";
+import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-
         <Route
           path="/"
           element={
-            <MainLayout>
-              <HomePage />
-            </MainLayout>
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <HomePage />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/lich-lam-viec"
           element={
-            <MainLayout>
-              <WorkSchedule />
-            </MainLayout>
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <WorkSchedule />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/settings"
           element={
-            <MainLayout>
-              <SettingsPage />
-            </MainLayout>
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <SettingsPage />
+              </MainLayout>
+            </ProtectedRoute>
           }
         ></Route>
         <Route
           path="/settings/shift"
           element={
-            <MainLayout>
-              <ShiftPage/>
-            </MainLayout>
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <ShiftPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/employee-home"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+                <EmployeeHomePage />
+            </ProtectedRoute>
           }
         ></Route>
          <Route

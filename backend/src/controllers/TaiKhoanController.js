@@ -19,9 +19,9 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async getAllNhanVien(req, res) {
+  async getAllNhanVienVaQuanLy(req, res) {
     try {
-      const taikhoans = await TaiKhoan.findAll({ where: { MaVaiTro: 2 } });
+      const taikhoans = await TaiKhoan.findAll({ where: { MaVaiTro: { [Op.in]: [2, 1] } } });
       res.status(200).json(taikhoans);
     } catch (error) {
       console.log("ERROR: " + error);
@@ -172,34 +172,43 @@ class TaiKhoanController {
   async login(req, res) {
     try {
       const { Email, Password } = req.body;
-      
+
       const user = await TaiKhoan.findOne({ where: { Email } });
       if (!user) {
         return res.status(404).json({ message: "Email không tồn tại" });
-      } else {
-        const isMatch = await bcrypt.compare(Password, user.Password);
-        if (!isMatch) {
-          return res.status(401).json({ message: "Mật khẩu không đúng" });
-        }
-        else{
-          // Tạo token
-          const payload = {
-            MaTK: user.MaTK,
-            Email: user.Email,
-            HoTen: user.HoTen,
-            MaVaiTro: user.MaVaiTro,
-          };
-
-          const access_token = jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-          );
-          // user.token = token; // Thêm token vào đối tượng người dùng
-          return res.status(200).json({access_token, user: payload});
-        }
       }
+      const isMatch = await bcrypt.compare(Password, user.Password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Mật khẩu không đúng" });
+      }
+      // Tạo token
+      const payload = {
+        MaTK: user.MaTK,
+        Email: user.Email,
+        HoTen: user.HoTen,
+        GioiTinh: user.GioiTinh,
+        NgaySinh: user.NgaySinh,
+        DiaChi: user.DiaChi,
+        SoDienThoai: user.SoDienThoai,
+        CCCD: user.CCCD,
+        Avatar: user.Avatar,
+        LoaiNV: user.LoaiNV,
+        TenNganHang: user.TenNganHang,
+        STK: user.STK,
+        TrangThai: user.TrangThai,
+        BacLuong:user.Bacluong,
+        LuongCoBanHienTai: user.LuongCoBanHienTai,
+        SoNgayNghiPhep: user.SoNgayNghiPhep,
+        SoNgayChuaNghi: user.SoNgayChuaNghi,
+        MaCN: user.MaCN,
+        QuanLyBoi: user.QuanLyBoi,
+        MaVaiTro: user.MaVaiTro,
+      };
 
+      const access_token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      return res.status(200).json({ access_token, user: payload });
     } catch (error) {
       console.error("ERROR:", error);
       res.status(500).json({ message: "Internal server error" });
