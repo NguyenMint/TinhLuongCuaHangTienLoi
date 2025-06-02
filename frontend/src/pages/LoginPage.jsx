@@ -46,7 +46,7 @@ export const LoginPage = () => {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
         <div>
           <div className="flex justify-center">
-            <img src="/image.png" alt="KiotViet Logo" className="h-12" />
+            Logo
           </div>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
