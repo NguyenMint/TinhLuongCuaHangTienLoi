@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { where } = require("sequelize");
 const db = require("../models");
 const path = require("path");
@@ -6,6 +7,8 @@ const { Op } = db.Sequelize;
 const TaiKhoan = db.TaiKhoan;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 class TaiKhoanController {
   async getAll(req, res) {
     try {
@@ -70,13 +73,13 @@ class TaiKhoanController {
         return res.status(400).json({ message: "Vui lòng upload avatar" });
       }
       const avatarPath = path.join("uploads/avatars/", req.file.filename);
-      const hashedPassword = await bcrypt.hash(Password,10);
+      const hashedPassword = await bcrypt.hash(Password, 10);
       const newTaiKhoan = await TaiKhoan.create({
         ...req.body,
         Avatar: avatarPath,
         STK,
         Email,
-        Password: hashedPassword
+        Password: hashedPassword,
       });
       return res.status(201).json(newTaiKhoan);
     } catch (error) {
@@ -133,14 +136,14 @@ class TaiKhoanController {
         });
       }
       const avatarPath = path.join("uploads/avatars", req.file.filename);
-      const hashedPassword = await bcrypt.hash(Password,10);
+      const hashedPassword = await bcrypt.hash(Password, 10);
       await taikhoan.update({
         ...req.body,
         Avatar: avatarPath,
         CCCD,
         Email,
         STK,
-        Password: hashedPassword
+        Password: hashedPassword,
       });
       res.status(200).json(taikhoan);
     } catch (error) {
@@ -166,22 +169,41 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async login(req,res){
+  async login(req, res) {
     try {
-    const { Email, Password } = req.body;
-    const user = await TaiKhoan.findOne({ where: { Email } });
-    if (!user) {
-      return res.status(404).json({ message: "Email không tồn tại" });
+      const { Email, Password } = req.body;
+      
+      const user = await TaiKhoan.findOne({ where: { Email } });
+      if (!user) {
+        return res.status(404).json({ message: "Email không tồn tại" });
+      } else {
+        const isMatch = await bcrypt.compare(Password, user.Password);
+        if (!isMatch) {
+          return res.status(401).json({ message: "Mật khẩu không đúng" });
+        }
+        else{
+          // Tạo token
+          const payload = {
+            MaTK: user.MaTK,
+            Email: user.Email,
+            HoTen: user.HoTen,
+            MaVaiTro: user.MaVaiTro,
+          };
+
+          const access_token = jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+          );
+          // user.token = token; // Thêm token vào đối tượng người dùng
+          return res.status(200).json(access_token);
+        }
+      }
+
+    } catch (error) {
+      console.error("ERROR:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    const isMatch = await bcrypt.compare(Password, user.Password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Mật khẩu không đúng" });
-    }
-    return res.status(200).json(user);
-  } catch (error) {
-    console.error("ERROR:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
   }
 }
 module.exports = new TaiKhoanController();
