@@ -1,6 +1,5 @@
 import React from "react";
 import { CalendarIcon, DollarSignIcon, CoinsIcon } from "lucide-react";
-import { BASE_URL } from "../../environments/environment";
 export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
 
 
@@ -82,7 +81,7 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
                 <div className="h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center">
                   {employee.Avatar ? (
                     <img
-                      src={`${BASE_URL}/${employee.Avatar}`}
+                      src={`${process.env.REACT_APP_BACKEND_URL}/${employee.Avatar}`}
                       alt={employee.HoTen}
                       className="h-40 w-40 rounded-full"
                     />

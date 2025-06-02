@@ -22,4 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-environment.js
+.env
+.env.production
+.env.staging

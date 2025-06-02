@@ -3,7 +3,6 @@ import { XIcon, PlusIcon } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import Shift from "./Shift";
-import { BASE_URL } from "../../environments/environment";
 export const AddShiftModal = ({
   isOpen,
   onClose,
@@ -35,7 +34,7 @@ export const AddShiftModal = ({
       }
 
       const requests = selectedShiftIds.map((MaCaLam) =>
-        fetch(BASE_URL + "/dangkyca", {
+        fetch(process.env.REACT_APP_BACKEND_URL + "/dangkyca", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
