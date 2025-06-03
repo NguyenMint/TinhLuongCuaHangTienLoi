@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { updateCaLam } from "../../api/apiCaLam.js";
 
-export default function UpdateShiftForm({ setShowModalUpdate, getDataShift,shift }) {
+export default function UpdateShiftForm({
+  setShowModalUpdate,
+  getDataShift,
+  shift,
+}) {
   const [form, setForm] = useState({
     MaCa: shift.MaCa,
     TenCa: shift.TenCa,
@@ -10,7 +14,9 @@ export default function UpdateShiftForm({ setShowModalUpdate, getDataShift,shift
     MoTa: shift.MoTa,
     HeSoLuong: shift.HeSoLuong,
   });
-
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i < 10 ? `0${i}` : `${i}`
+  );
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -54,7 +60,9 @@ export default function UpdateShiftForm({ setShowModalUpdate, getDataShift,shift
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded shadow-lg w-full max-w-xl mx-auto relative z-10"
       >
-        <h2 className="text-xl font-bold mb-4 text-center">Update ca làm việc</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">
+          Update ca làm việc
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -82,24 +90,32 @@ export default function UpdateShiftForm({ setShowModalUpdate, getDataShift,shift
 
           <div>
             <label className="block mb-1 font-medium">Thời gian bắt đầu</label>
-            <input
-              type="time"
+            <select
               name="ThoiGianBatDau"
               value={form.ThoiGianBatDau}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
-            />
+            >
+              <option value="">Chọn giờ</option>
+              {hours.map((h) => (
+                <option key={h} value={`${h}:00`}>{`${h}:00`}</option>
+              ))}
+            </select>
           </div>
 
           <div>
             <label className="block mb-1 font-medium">Thời gian kết thúc</label>
-            <input
-              type="time"
+            <select
               name="ThoiGianKetThuc"
               value={form.ThoiGianKetThuc}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
-            />
+            >
+              <option value="">Chọn giờ</option>
+              {hours.map((h) => (
+                <option key={h} value={`${h}:00`}>{`${h}:00`}</option>
+              ))}
+            </select>
           </div>
         </div>
 

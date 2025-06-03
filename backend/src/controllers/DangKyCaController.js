@@ -1,6 +1,6 @@
 const db = require("../models");
 const DangKyCa = db.DangKyCa;
-
+const { Op } = require("sequelize");
 class DangKyCaController {
   async getAll(req, res) {
     try {
@@ -16,17 +16,43 @@ class DangKyCaController {
 
   async getById(req, res) {
     try {
-      const DangKyCa = await DangKyCa.findByPk(req.params.id);
-      if (!DangKyCa) {
+      const dangKyCa = await DangKyCa.findByPk(req.params.id);
+      if (!dangKyCa) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
       }
-      res.status(200).json(DangKyCa);
+      res.status(200).json(dangKyCa);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
-
+  async getCaLamByNhanVien(req, res) {
+    try {
+      const { MaTK } = req.params;
+      const { NgayDangKy } = req.query;
+      const where = {
+      MaNS: MaTK,
+      TrangThai: { [Op.in]: ["Đã Đăng Ký", "Chuyển Ca"] },
+    };
+    if (NgayDangKy) {
+      where.NgayDangKy = NgayDangKy;
+    }
+      const caLam = await DangKyCa.findAll({
+        where,
+        include: [
+          { model: db.CaLam, as: "MaCaLam_ca_lam" },
+          {
+            model: db.ChamCong,
+            as: "cham_congs",
+          },
+        ],
+      });
+      res.status(200).json(caLam);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
   async create(req, res) {
     try {
       console.log("Creating DangKyCa with data: ", req.body);
