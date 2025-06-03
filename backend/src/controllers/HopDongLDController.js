@@ -24,7 +24,7 @@ class HopDongController {
         ...req.body,
         File: filePath,
       });
-      res.status(200).json(hopdongLD);
+      res.status(201).json(hopdongLD);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });

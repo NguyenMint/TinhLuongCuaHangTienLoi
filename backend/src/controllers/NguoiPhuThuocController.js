@@ -23,7 +23,7 @@ class NguoiPhuThuocController {
       }
     }
     const nguoiphuthuoc = await NguoiPhuThuoc.create(req.body);
-    res.status(200).json(nguoiphuthuoc);
+    res.status(201).json(nguoiphuthuoc);
   }
   async update(req, res) {
     const { MaNPT } = req.params;

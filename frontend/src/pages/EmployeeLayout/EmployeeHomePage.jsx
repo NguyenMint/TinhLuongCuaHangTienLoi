@@ -107,14 +107,28 @@ export function EmployeeHomePage() {
                   </td>
                   <td className="p-2 border">{shift.MaCaLam_ca_lam?.MoTa}</td>
                   <td className="p-2 border">
-                    {shift.cham_congs.length > 0 ? (
-                      <span className="text-green-600 font-semibold">
-                        Đã chấm công
+                    {shift.cham_congs.length === 0 ? (
+                      <span className="text-yellow-600 font-semibold">
+                       Chưa chấm công
                       </span>
                     ) : (
-                      <span className="text-yellow-600 font-semibold">
-                        Chưa chấm công
-                      </span>
+                      <>
+                        {shift.cham_congs[0].trangthai === "Hoàn thành" && (
+                          <span className="text-green-600 font-semibold">
+                            {shift.cham_congs[0].trangthai}
+                          </span>
+                        )}
+                        {shift.cham_congs[0].trangthai === "Chờ duyệt" && (
+                          <span className="text-yellow-600 font-semibold">
+                            {shift.cham_congs[0].trangthai}
+                          </span>
+                        )}
+                        {shift.cham_congs[0].trangthai === "Từ chối" && (
+                          <span className="text-red-600 font-semibold">
+                            {shift.cham_congs[0].trangthai}
+                          </span>
+                        )}
+                      </>
                     )}
                   </td>
                   <td className="p-2 border">
