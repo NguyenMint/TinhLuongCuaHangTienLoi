@@ -6,9 +6,9 @@ class ChamCongController {
       const chamCong = await ChamCong.create(req.body);
       return res.status(201).json(chamCong);
     } catch (error) {
-      onsole.log("ERROR: " + error);
+      console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
 }
-module.exports = ChamCongController;
+module.exports = new ChamCongController();

@@ -45,7 +45,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     MaCTBL: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'chi_tiet_bang_luong',
         key: 'MaCTBL'
