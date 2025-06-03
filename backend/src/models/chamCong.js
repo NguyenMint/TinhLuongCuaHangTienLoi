@@ -13,19 +13,19 @@ module.exports = function(sequelize, DataTypes) {
     },
     GioVao: {
       type: DataTypes.TIME,
-      allowNull: false
+      allowNull: true
     },
     GioRa: {
       type: DataTypes.TIME,
-      allowNull: false
+      allowNull: true
     },
     DiTre: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     VeSom: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     MaDKC: {
       type: DataTypes.INTEGER,
@@ -40,7 +40,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     trangthai: {
-      type: DataTypes.ENUM('Chờ duyệt','Duyệt vào','Hoàn thoành','Từ chối'),
+      type: DataTypes.ENUM('Chờ duyệt','Hoàn thoành','Từ chối'),
       allowNull: false
     },
     MaCTBL: {

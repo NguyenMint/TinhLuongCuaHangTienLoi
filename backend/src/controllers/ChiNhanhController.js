@@ -24,7 +24,7 @@ class ChiNhanhController {
             return res.status(409).json({message:"Địa chỉ đã tồn tại"});
         }
       const chinhanh = await ChiNhanh.create(req.body);
-      res.status(200).json(chinhanh);
+      res.status(201).json(chinhanh);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });

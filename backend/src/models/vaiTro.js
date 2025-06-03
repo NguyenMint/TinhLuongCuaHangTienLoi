@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true
     },
     Quyen: {
-      type: DataTypes.ENUM('QuanLy','NhanVien'),
+      type: DataTypes.ENUM('QuanLy','NhanVien','Admin'),
       allowNull: false,
       unique: "Quyen"
     }
