@@ -5,6 +5,9 @@ import NavLinks from "./nav-links";
 
 export const Sidebar = () => {
   const navigate = useNavigate();
+
+  const user = (JSON.parse(localStorage.getItem("user")).HoTen) || "User";
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -28,7 +31,7 @@ export const Sidebar = () => {
           className="flex items-center text-gray-700 hover:text-red-500 w-full"
         >
           <LogOutIcon className="h-5 w-5 mr-3" />
-          <span className="hidden md:block">Đăng xuất</span>
+          <span className="hidden md:block">{user}</span>
         </button>
       </div>
       {/* </div> */}
