@@ -10,7 +10,7 @@ const links = [
     href: "/lich-lam-viec",
     icon: FileTextIcon,
   },
-  { name: "Bảng chấm công", href: "/", icon: UsersIcon },
+  { name: "Bảng chấm công", href: "/bangchamcong", icon: UsersIcon },
   {
     name: "Thiết lập",
     href:"/settings",

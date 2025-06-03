@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Sidebar } from "../components/Sidebar";
 import { FilterSidebar } from "../components/HomePage/LeftSidebar.jsx";
 import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
-import { employeeData } from "../utils/mockData.ts";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
 import { useEffect } from "react";
@@ -38,15 +36,12 @@ export function HomePage() {
   // Event handlers
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
-    // Implementation would go here
   };
   const handleImportFile = () => {
     console.log("Import file clicked");
-    // Implementation would go here
   };
   const handleExportFile = () => {
     console.log("Export file clicked");
-    // Implementation would go here
   };
   const handleSearch = async (query) => {
     try {
