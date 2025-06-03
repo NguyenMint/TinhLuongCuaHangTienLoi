@@ -10,7 +10,14 @@ import { SettingsPage } from "./pages/SettingPage/SettingsPage";
 import { ShiftPage } from "./pages/SettingPage/ShiftPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
+import { SidebarEmployee } from "./components/SidebarEmployee";
 function App() {
+  const getRole = () => {
+    const user = localStorage.getItem("user");
+    if (!user) return null;
+    const MaVaiTro = JSON.parse(user).MaVaiTro;
+    return MaVaiTro;
+  };
   return (
     <BrowserRouter>
       <Routes>
@@ -59,19 +66,34 @@ function App() {
           path="/employee-home"
           element={
             <ProtectedRoute allowedRoles={[2]}>
-                <EmployeeHomePage />
+              <div className="flex min-h-screen">
+                <SidebarEmployee />
+                <div className="flex-1">
+                  <EmployeeHomePage />
+                </div>
+              </div>
             </ProtectedRoute>
           }
-        ></Route>
-         <Route
+        />
+        <Route
           path="*"
           element={
-            <MainLayout>
-              <div className="p-6 bg-gray-100 min-h-screen">
-                <h1 className="text-2xl font-bold">404 - Not Found</h1>
-                <p>The page you are looking for does not exist.</p>
+            getRole() === 2 ? (
+              <div className="flex min-h-screen">
+                <SidebarEmployee />
+                <div className="flex-1 p-6 bg-gray-100 flex flex-col items-center justify-center">
+                  <h1 className="text-2xl font-bold">404 - Not Found</h1>
+                  <p>The page you are looking for does not exist.</p>
+                </div>
               </div>
-            </MainLayout>
+            ) : (
+              <MainLayout>
+                <div className="flex-1 p-6 bg-gray-100 flex flex-col items-center justify-center">
+                  <h1 className="text-2xl font-bold">404 - Not Found</h1>
+                  <p>The page you are looking for does not exist.</p>
+                </div>
+              </MainLayout>
+            )
           }
         />
       </Routes>

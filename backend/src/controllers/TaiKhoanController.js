@@ -21,7 +21,9 @@ class TaiKhoanController {
   }
   async getAllNhanVienVaQuanLy(req, res) {
     try {
-      const taikhoans = await TaiKhoan.findAll({ where: { MaVaiTro: { [Op.in]: [2, 1] } } });
+      const taikhoans = await TaiKhoan.findAll({
+        where: { MaVaiTro: { [Op.in]: [2, 1] } },
+      });
       res.status(200).json(taikhoans);
     } catch (error) {
       console.log("ERROR: " + error);
@@ -31,7 +33,9 @@ class TaiKhoanController {
   async getById(req, res) {
     try {
       const { MaTK } = req.params;
-      const taikhoan = await TaiKhoan.findByPk(MaTK);
+      const taikhoan = await TaiKhoan.findByPk(MaTK, {
+        include: [{ model: db.ChiNhanh, as: "MaCN_chi_nhanh" }],
+      });
       res.status(200).json(taikhoan);
     } catch (error) {
       console.log("ERROR: " + error);
@@ -173,7 +177,10 @@ class TaiKhoanController {
     try {
       const { Email, Password } = req.body;
 
-      const user = await TaiKhoan.findOne({ where: { Email } });
+      const user = await TaiKhoan.findOne({
+        where: { Email },
+        include: [{ model: db.ChiNhanh, as: "MaCN_chi_nhanh" }],
+      });
       if (!user) {
         return res.status(404).json({ message: "Email không tồn tại" });
       }
@@ -196,13 +203,15 @@ class TaiKhoanController {
         TenNganHang: user.TenNganHang,
         STK: user.STK,
         TrangThai: user.TrangThai,
-        BacLuong:user.Bacluong,
+        BacLuong: user.Bacluong,
         LuongCoBanHienTai: user.LuongCoBanHienTai,
         SoNgayNghiPhep: user.SoNgayNghiPhep,
         SoNgayChuaNghi: user.SoNgayChuaNghi,
         MaCN: user.MaCN,
         QuanLyBoi: user.QuanLyBoi,
         MaVaiTro: user.MaVaiTro,
+        TenChiNhanh: user.MaCN_chi_nhanh?.TenChiNhanh,
+        DiaChiCN: user.MaCN_chi_nhanh?.DiaChi,
       };
 
       const access_token = jwt.sign(payload, process.env.JWT_SECRET, {
