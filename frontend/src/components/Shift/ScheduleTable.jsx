@@ -48,22 +48,20 @@ export const ScheduleTable = ({
         {shift.length > 0 ? (
           <div className="space-y-1 w-full">
             {shift.map((shift, index) => (
-              <>
-                <div
-                  key={index}
-                  className="p-2 rounded w-full bg-blue-50 text-blue-700 text-center"
-                >
-                  {shift}
-                </div>
-                <button
+              <div
+                key={index}
+                className="p-2 rounded w-full bg-blue-50 text-blue-700 text-center"
+              >
+                {shift}
+              </div>
+            ))}
+            <button
                   onClick={() => onAddShift(employee, date)}
                   className="flex items-center text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity  inset-0 justify-center"
                 >
                   <PlusIcon className="h-4 w-4 mr-1" />
                   <span>Thêm ca</span>
                 </button>
-              </>
-            ))}
           </div>
         ) : (
           <button
