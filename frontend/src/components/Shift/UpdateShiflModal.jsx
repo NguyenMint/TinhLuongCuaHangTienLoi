@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateCaLam } from "../../api";
+import { updateCaLam } from "../../api/apiCaLam.js";
 
 export default function UpdateShiftForm({ setShowModalUpdate, getDataShift,shift }) {
   const [form, setForm] = useState({

@@ -11,8 +11,8 @@ import { format, addWeeks, subWeeks } from "date-fns";
 import Search from "../components/search.jsx";
 
 // import { vi } from "date-fns/locale";
-import { fetchAllNhanVien, fetchCaLam, fetchDangKyCa, searchEmployee } from "../api";
-
+import { fetchAllNhanVien, fetchDangKyCa, searchEmployee } from "../api/api.js";
+import { fetchCaLam } from "../api/apiCaLam.js";
 export const WorkSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   // const [searchQuery, setSearchQuery] = useState("");

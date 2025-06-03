@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { deleteCaLam, fetchCaLam } from "../../api";
+import { deleteCaLam, fetchCaLam } from "../../api/apiCaLam.js";
 import AddShiftForm from "../../components/Shift/AddNewShiftModal";
 import DelteShiftForm from "../../components/ModalDelete";
 import UpdateShiftForm from "../../components/Shift/UpdateShiflModal";

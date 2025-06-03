@@ -5,7 +5,7 @@ import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import { employeeData } from "../utils/mockData.ts";
 import Search from "../components/search.jsx";
-import { fetchAllNhanVien, searchEmployee } from "../api.js";
+import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
 import { useEffect } from "react";
 
 export function HomePage() {
