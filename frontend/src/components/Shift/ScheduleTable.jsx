@@ -50,23 +50,23 @@ export const ScheduleTable = ({
             {shift.map((shift, index) => (
               <div
                 key={index}
-                className="p-2 rounded w-full bg-blue-50 text-blue-700 text-center"
+                className="p-2 text-xs font-bold rounded w-full bg-blue-50 text-blue-700 text-center"
               >
                 {shift}
               </div>
             ))}
             <button
-                  onClick={() => onAddShift(employee, date)}
-                  className="flex items-center text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity  inset-0 justify-center"
-                >
-                  <PlusIcon className="h-4 w-4 mr-1" />
-                  <span>Thêm ca</span>
-                </button>
+              onClick={() => onAddShift(employee, date)}
+              className="flex text-xs items-center text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity  inset-0 justify-center"
+            >
+              <PlusIcon className="h-4 w-4 mr-1" />
+              <span>Thêm ca</span>
+            </button>
           </div>
         ) : (
           <button
             onClick={() => onAddShift(employee, date)}
-            className="flex items-center text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity absolute inset-0 justify-center"
+            className="flex text-xs items-center text-blue-600 hover:text-blue-800 opacity-0 group-hover:opacity-100 transition-opacity absolute inset-0 justify-center"
           >
             <PlusIcon className="h-4 w-4 mr-1" />
             <span>Thêm ca</span>
@@ -93,12 +93,6 @@ export const ScheduleTable = ({
                 })}
               </th>
             ))}
-            {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              <div className="flex items-center">
-                Lương dự kiến
-                <InfoIcon className="h-4 w-4 ml-1 text-gray-400" />
-              </div>
-            </th> */}
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">

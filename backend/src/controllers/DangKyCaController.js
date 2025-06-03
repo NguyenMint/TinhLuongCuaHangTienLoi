@@ -5,7 +5,11 @@ class DangKyCaController {
   async getAll(req, res) {
     try {
       const DangKyCas = await DangKyCa.findAll({
-        include: [{ model: db.CaLam, as: "MaCaLam_ca_lam" }],
+        include: [
+          { model: db.ChamCong, as: "cham_congs" },
+          { model: db.CaLam, as: "MaCaLam_ca_lam" },
+          { model: db.TaiKhoan, as: "MaNS_tai_khoan", attributes: ["MaTK", "HoTen"] },
+        ],
       });
       res.status(200).json(DangKyCas);
     } catch (error) {
@@ -31,12 +35,12 @@ class DangKyCaController {
       const { MaTK } = req.params;
       const { NgayDangKy } = req.query;
       const where = {
-      MaNS: MaTK,
-      TrangThai: { [Op.in]: ["Đã Đăng Ký", "Chuyển Ca"] },
-    };
-    if (NgayDangKy) {
-      where.NgayDangKy = NgayDangKy;
-    }
+        MaNS: MaTK,
+        TrangThai: { [Op.in]: ["Đã Đăng Ký", "Chuyển Ca"] },
+      };
+      if (NgayDangKy) {
+        where.NgayDangKy = NgayDangKy;
+      }
       const caLam = await DangKyCa.findAll({
         where,
         include: [
@@ -53,6 +57,7 @@ class DangKyCaController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
   async create(req, res) {
     try {
       console.log("Creating DangKyCa with data: ", req.body);

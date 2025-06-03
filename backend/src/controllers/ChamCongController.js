@@ -61,5 +61,6 @@ class ChamCongController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  
 }
 module.exports = new ChamCongController();
