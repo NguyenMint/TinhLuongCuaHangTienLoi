@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import { UserIcon, AlertCircle } from "lucide-react";
 import { fetchDKCByNhanVien } from "../../api/apiDangKyCa";
+import { chamCongVao,chamCongRa } from "../../api/apiChamCong";
 export function EmployeeHomePage() {
   // Dữ liệu mẫu
   const [shifts, setShifts] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
-
-  useEffect(() => {
-    getDKCByNhanVien();
-  }, []);
   const now = new Date();
+  const ngay = now.toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
   const timeStr = now.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
@@ -21,11 +19,37 @@ export function EmployeeHomePage() {
     month: "2-digit",
     year: "numeric",
   });
+  const gioHienTai = now.toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  useEffect(() => {
+    getDKCByNhanVien();
+  }, []);
   const getDKCByNhanVien = async () => {
     const manv = user.MaTK;
-    const ngay = now.toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
     const response = await fetchDKCByNhanVien(manv, ngay);
     setShifts(response);
+  };
+  const ChamCongVao = async (MaDKC) => {
+    //const gioVao = gioHienTai;
+    const gioVao = "06:05:00";
+    const response = await chamCongVao(ngay,gioVao,MaDKC,false);
+    if( !response.success) {
+      alert(response.message || "Chấm công thất bại");
+    }
+    getDKCByNhanVien();
+  };
+  const ChamCongRa = async (MaDKC) => {
+    //const gioRa = gioHienTai;
+    const gioRa = "13:49:00";
+    const response = await chamCongRa(ngay,gioRa,MaDKC,false);
+    if( !response.success) {
+      alert(response.message || "Chấm công thất bại");
+    }
+    getDKCByNhanVien();
   };
   if (shifts === null) {
     return (
@@ -109,7 +133,7 @@ export function EmployeeHomePage() {
                   <td className="p-2 border">
                     {shift.cham_congs.length === 0 ? (
                       <span className="text-yellow-600 font-semibold">
-                       Chưa chấm công
+                        Chưa chấm công
                       </span>
                     ) : (
                       <>
@@ -132,17 +156,62 @@ export function EmployeeHomePage() {
                     )}
                   </td>
                   <td className="p-2 border">
-                    {shift.DaChamCong ? (
-                      <span className="text-green-600 font-bold text-xl">
-                        ✓
-                      </span>
-                    ) : (
+                    {shift.cham_congs.length === 0 ? (
                       <button
                         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-semibold"
-                        onClick={() => {}}
+                        onClick={() => {
+                          ChamCongVao(shift.MaDKC);
+                        }}
                       >
                         Chấm công vào ca
                       </button>
+                    ) : (
+                      <div>
+                        <div className="mb-2">
+                          <span className="block text-sm text-gray-700">
+                            Giờ vào:{" "}
+                            <span className="font-semibold">
+                              {shift.cham_congs[0].GioVao}
+                            </span>
+                          </span>
+                          <span className="block text-sm text-gray-700">
+                            Đi trễ:{" "}
+                            <span className="font-semibold">
+                              {shift.cham_congs[0].DiTre} phút
+                            </span>
+                          </span>
+                          {shift.cham_congs[0].GioRa && (
+                            <>
+                              <span className="block text-sm text-gray-700">
+                                Giờ ra:{" "}
+                                <span className="font-semibold">
+                                  {shift.cham_congs[0].GioRa}
+                                </span>
+                              </span>
+                              <span className="block text-sm text-gray-700">
+                                Về sớm:{" "}
+                                <span className="font-semibold">
+                                  {shift.cham_congs[0].VeSom} phút
+                                </span>
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        {!shift.cham_congs[0].GioRa ? (
+                          <button
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-semibold"
+                            onClick={() => {
+                              ChamCongRa(shift.MaDKC);
+                            }}
+                          >
+                            Chấm công ra ca
+                          </button>
+                        ) : (
+                          <span className="text-green-600 font-bold text-xl">
+                            ✓
+                          </span>
+                        )}
+                      </div>
                     )}
                   </td>
                 </tr>
