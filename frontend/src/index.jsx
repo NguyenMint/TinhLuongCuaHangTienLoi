@@ -11,6 +11,7 @@ import { ShiftPage } from "./pages/SettingPage/ShiftPage";
 import ProtectedRoute from "./ProtectedRoute";
 import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
+import { AttendancePage } from "./pages/AttendancePage";
 function App() {
   const getRole = () => {
     const user = localStorage.getItem("user");
@@ -38,6 +39,16 @@ function App() {
             <ProtectedRoute allowedRoles={[3, 1]}>
               <MainLayout>
                 <WorkSchedule />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bang-cham-cong"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <AttendancePage />
               </MainLayout>
             </ProtectedRoute>
           }
