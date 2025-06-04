@@ -6,27 +6,16 @@ import { fetchCaLam } from "../api/apiCaLam";
 import { fetchDangKyCa } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
-import { mockEmployees, mockShifts, mockSchedules } from '../utils/mockData';
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentWeek, setCurrentWeek] = useState("Tuần 1 - Th.6 2025");
   const [viewMode, setViewMode] = useState("Xem theo ca");
   const [searchQuery, setSearchQuery] = useState("");
-  const [employees, setEmployees] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const getAllNhanVien = async () => {
-    try {
-      const data = await fetchAllNhanVien();
-      setEmployees(data);
-    } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
-    }
-  };
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const getAllCaLam = async () => {
     try {
@@ -47,7 +36,6 @@ export function AttendancePage() {
   };
 
   useEffect(() => {
-    getAllNhanVien();
     getAllCaLam();
     getAllDangKyCa();
   }, []);
@@ -177,13 +165,11 @@ export function AttendancePage() {
                   </button>
                 </div>
               </div>
-              
             </div>
           </div>
           <WeeklyShiftTable
             currentDate={currentDate}
-            shifts={mockShifts}
-            employees={mockEmployees}
+            shifts={shifts}
             schedules={schedules}
             onShiftClick={handleShiftClick}
           />
@@ -192,7 +178,7 @@ export function AttendancePage() {
       {isModalOpen && selectedShift && (
         <ShiftModal
           shift={selectedShift}
-          employees={mockEmployees}
+          employee={selectedEmployee}
           onClose={handleCloseModal}
           onSave={handleSaveShift}
           onDelete={handleDeleteShift}

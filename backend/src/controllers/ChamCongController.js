@@ -11,10 +11,11 @@ class ChamCongController {
           {
             model: db.CaLam,
             as: "MaCaLam_ca_lam",
-          },{
+          },
+          {
             model: db.ChamCong,
-            as : "cham_congs",
-          }
+            as: "cham_congs",
+          },
         ],
       });
       if (!dangKyCa) {
@@ -32,35 +33,34 @@ class ChamCongController {
         if (raChuan - raThucTe > 10) {
           VeSom = raChuan - raThucTe;
         }
-        const chamCong = await ChamCong.findOne({where: { MaDKC }});
-        if(chamCong){ 
+        const chamCong = await ChamCong.findOne({ where: { MaDKC } });
+        if (chamCong) {
           await chamCong.update({
             GioRa,
-            VeSom
-          })
+            VeSom,
+          });
         }
         return res.status(200).json(chamCong);
       }
       const GioVaoChuan = dangKyCa.MaCaLam_ca_lam.ThoiGianBatDau;
-        const [gioVaoChuan, phutVaoChuan] = GioVaoChuan.split(":").map(Number);
-        const [gioVaoThucTe, phutVaoThucTe] = GioVao.split(":").map(Number);
-        const vaoChuan = gioVaoChuan * 60 + phutVaoChuan;
-        const vaoThucTe = gioVaoThucTe * 60 + phutVaoThucTe;
-        let DiTre = 0;
-        if (vaoThucTe - vaoChuan > 10) {
-          DiTre = vaoThucTe - vaoChuan;
-        }
-        const chamCong = await ChamCong.create({
-          ...req.body,
-          DiTre,
-          trangthai: "Chờ duyệt",
-        });
-        return res.status(201).json(chamCong);
+      const [gioVaoChuan, phutVaoChuan] = GioVaoChuan.split(":").map(Number);
+      const [gioVaoThucTe, phutVaoThucTe] = GioVao.split(":").map(Number);
+      const vaoChuan = gioVaoChuan * 60 + phutVaoChuan;
+      const vaoThucTe = gioVaoThucTe * 60 + phutVaoThucTe;
+      let DiTre = 0;
+      if (vaoThucTe - vaoChuan > 10) {
+        DiTre = vaoThucTe - vaoChuan;
+      }
+      const chamCong = await ChamCong.create({
+        ...req.body,
+        DiTre,
+        trangthai: "Chờ duyệt",
+      });
+      return res.status(201).json(chamCong);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  
 }
 module.exports = new ChamCongController();
