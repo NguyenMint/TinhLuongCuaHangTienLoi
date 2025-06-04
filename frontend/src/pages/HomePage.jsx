@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FilterSidebar } from "../components/HomePage/LeftSidebar.jsx";
+import { FilterSidebar } from "../components/HomePage/FilterSidebar.jsx";
 import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import Search from "../components/search.jsx";

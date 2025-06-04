@@ -113,65 +113,67 @@ export const EmployeeTable = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {employees && employees.length > 0 ? employees.map((employee) => (
-              <React.Fragment key={employee.MaTK}>
-                <tr
-                  className={`${
-                    selectedRows[employee.MaTK]
-                      ? "bg-blue-50"
-                      : "hover:bg-gray-50"
-                  } cursor-pointer`}
-                  onClick={() => handleDetail(employee.MaTK)}
-                >
-                  <td
-                    className="px-6 py-4 whitespace-nowrap"
-                    onClick={(e) => e.stopPropagation()}
+            {employees && employees.length > 0 ? (
+              employees.map((employee) => (
+                <React.Fragment key={employee.MaTK}>
+                  <tr
+                    className={`${
+                      selectedRows[employee.MaTK]
+                        ? "bg-blue-50"
+                        : "hover:bg-gray-50"
+                    } cursor-pointer`}
+                    onClick={() => handleDetail(employee.MaTK)}
                   >
-                    <input
-                      type="checkbox"
-                      checked={!!selectedRows[employee.MaTK]}
-                      onChange={() => handleSelectRow(employee.MaTK)}
-                      className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                    />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                      {employee.Avatar ? (
-                        <img
-                          src={`${process.env.REACT_APP_BACKEND_URL}/${employee.Avatar}`}
-                          alt={employee.HoTen}
-                          className="h-10 w-10 rounded-full"
-                        />
-                      ) : (
-                        <span className="text-gray-500">
-                          {employee.HoTen.charAt(0)}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                    {employee.MaTK}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {employee.timekeepingCode}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {employee.HoTen}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.SoDienThoai}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.CCCD}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.MaVaiTro===1 ?"Quản lý" : "Nhân viên"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.notes}
-                  </td>
-                </tr>
-              </React.Fragment>)
+                    <td
+                      className="px-6 py-4 whitespace-nowrap"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!selectedRows[employee.MaTK]}
+                        onChange={() => handleSelectRow(employee.MaTK)}
+                        className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                        {employee.Avatar ? (
+                          <img
+                            src={`${process.env.REACT_APP_BACKEND_URL}/${employee.Avatar}`}
+                            alt={employee.HoTen}
+                            className="h-10 w-10 rounded-full"
+                          />
+                        ) : (
+                          <span className="text-gray-500">
+                            {employee.HoTen.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                      {employee.MaTK}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {employee.timekeepingCode}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {employee.HoTen}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {employee.SoDienThoai}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {employee.CCCD}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {employee.MaVaiTro === 1 ? "Quản lý" : "Nhân viên"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {employee.notes}
+                    </td>
+                  </tr>
+                </React.Fragment>
+              ))
             ) : (
               <tr>
                 <td colSpan="9" className="text-center py-8 text-gray-500">
