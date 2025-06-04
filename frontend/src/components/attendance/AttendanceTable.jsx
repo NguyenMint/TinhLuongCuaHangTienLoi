@@ -85,7 +85,7 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
       <table className="min-w-full divide-y table-fixed divide-gray-200 ">
         <thead className="bg-gray-50">
           <tr>
-            <th className="w-40 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="w-20 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Ca làm việc
             </th>
             {weekDays.map((day, index) => (
