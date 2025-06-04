@@ -3,27 +3,42 @@ import { XIcon } from "lucide-react";
 import { format, parse, differenceInMinutes } from "date-fns";
 import { vi } from "date-fns/locale";
 
-export const CheckInTab = ({ isOpen, onClose, employee, date, shift }) => {
-  // const startTime = "08:00:00";
-  // const endTime = "17:00:00";
-  const startTime = "08:00";
-  const endTime = "17:00";
+export const CheckInTab = ({
+  isOpen,
+  onClose,
+  employee,
+  date,
+  shift,
+  formData,
+  employees,
+  onChange,
+}) => {
+  const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
+  const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
+
+  const getTimeHHmm = (time) => {
+    if (!time) return "";
+    return format(new Date(`2000-01-01T${time}`), "HH:mm");
+  };
 
   const [activeTab, setActiveTab] = useState("timekeeping");
   const [workStatus, setWorkStatus] = useState("working");
   const [notes, setNotes] = useState("");
   // Check-in state
   const [isCheckedIn, setIsCheckedIn] = useState(false);
-  // const [checkInTime, setCheckInTime] = useState(shift.startTime)
-  const [checkInTime, setCheckInTime] = useState(startTime);
+  const [checkInTime, setCheckInTime] = useState(
+    getTimeHHmm(formData.cham_congs[0]?.GioVao) || startTime
+  );
   const [checkInLateHours, setCheckInLateHours] = useState("0");
   const [checkInLateMinutes, setCheckInLateMinutes] = useState("0");
   // Check-out state
   const [isCheckedOut, setIsCheckedOut] = useState(false);
-  // const [checkOutTime, setCheckOutTime] = useState(shift.endTime)
-  const [checkOutTime, setCheckOutTime] = useState("17:00");
+  const [checkOutTime, setCheckOutTime] = useState(
+    getTimeHHmm(formData.cham_congs[0]?.GioRa) || endTime
+  );
   const [checkOutEarlyHours, setCheckOutEarlyHours] = useState("0");
   const [checkOutEarlyMinutes, setCheckOutEarlyMinutes] = useState("0");
+
   const getTimeDifference = (time1, time2) => {
     const [hours1, minutes1] = time1.split(":").map(Number);
     const [hours2, minutes2] = time2.split(":").map(Number);
@@ -109,7 +124,7 @@ export const CheckInTab = ({ isOpen, onClose, employee, date, shift }) => {
               const checked = e.target.checked;
               setIsCheckedIn(checked);
               if (checked) {
-                setCheckInTime(startTime); // auto‑fill start time
+                setCheckInTime(checkInTime); // auto‑fill start time
               } else {
                 setCheckInTime(""); // blank input
                 setCheckInLateHours("0");
@@ -176,7 +191,7 @@ export const CheckInTab = ({ isOpen, onClose, employee, date, shift }) => {
               const checked = e.target.checked;
               setIsCheckedOut(checked);
               if (checked) {
-                setCheckOutTime(endTime);
+                setCheckOutTime(checkOutTime);
               } else {
                 setCheckOutTime("");
                 setCheckOutEarlyHours("0");

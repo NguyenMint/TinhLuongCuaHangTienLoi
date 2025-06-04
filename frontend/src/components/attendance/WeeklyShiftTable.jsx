@@ -96,7 +96,7 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
               </td>
               {weekDays.map((day, index) => (
                 <td
-                  key={index}
+                  key={`${shift.MaCa}-${day}`}
                   className="whitespace-nowrap border p-1 align-top"
                 >
                   {renderShift(shift, day)}

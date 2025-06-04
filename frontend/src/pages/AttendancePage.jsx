@@ -3,7 +3,7 @@ import WeeklyShiftTable from "../components/attendance/WeeklyShiftTable";
 import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchAllNhanVien } from "../api/api";
 import { fetchCaLam } from "../api/apiCaLam";
-import { fetchDangKyCa } from "../api/apiDangKyCa";
+import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 
@@ -57,12 +57,30 @@ export function AttendancePage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  const handleSaveShift = (updatedShift) => {
-    setShifts(
-      shifts.map((shift) =>
-        shift.id === updatedShift.id ? updatedShift : shift
-      )
+
+  const fetchNV = async (ma, ngay) => {
+    const response = await fetchDKCByNhanVien(ma, ngay);
+    return response;
+  };
+
+  const handleSaveShift = async (updatedShift) => {
+    
+    console.log("Updated Shift:", updatedShift);
+    console.log(await fetchNV(updatedShift.MaNS, updatedShift.NgayDangKy));
+    const employeeData = await fetchNV(
+      updatedShift.MaNS,
+      updatedShift.NgayDangKy
     );
+    const employee = employeeData.find(
+      (emp) => emp.MaCaLam === updatedShift.MaCaLam
+    );
+    console.log("Selected Employee:", employee);
+    
+    // setShifts(
+    //   shifts.map((shift) =>
+    //     shift.id === updatedShift.id ? updatedShift : shift
+    //   )
+    // );
     setIsModalOpen(false);
   };
   const handleDeleteShift = (shiftId) => {
