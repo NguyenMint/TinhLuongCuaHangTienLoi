@@ -13,6 +13,7 @@ import { EmployeeHomePage} from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
 import { EmployeeProfile } from "./pages/EmployeeLayout/EmployeeProfile";
+import { PayrollPage } from "./pages/PayrollPage";
 function App() {
   const getRole = () => {
     const user = localStorage.getItem("user");
@@ -70,6 +71,16 @@ function App() {
             <ProtectedRoute allowedRoles={[3, 1]}>
               <MainLayout>
                 <ShiftPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/bang-luong"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <PayrollPage />
               </MainLayout>
             </ProtectedRoute>
           }

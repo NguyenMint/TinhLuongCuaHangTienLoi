@@ -1,4 +1,10 @@
-import { HomeIcon, FileTextIcon, UsersIcon,SettingsIcon } from "lucide-react";
+import {
+  HomeIcon,
+  FileTextIcon,
+  UsersIcon,
+  SettingsIcon,
+  Coins,
+} from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
 // Map of links to display in the side navigation.
@@ -12,10 +18,15 @@ const links = [
   },
   { name: "Bảng chấm công", href: "/bang-cham-cong", icon: UsersIcon },
   {
+    name: "Bảng lương",
+    href: "/bang-luong",
+    icon: Coins,
+  },
+  {
     name: "Thiết lập",
-    href:"/settings",
-    icon: SettingsIcon
-  }
+    href: "/settings",
+    icon: SettingsIcon,
+  },
 ];
 
 export default function NavLinks() {
@@ -32,7 +43,11 @@ export default function NavLinks() {
             // href={link.href}
             className={`flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3
               ${
-                (link.href === "/" ? location.pathname === link.href : location.pathname.startsWith(link.href))
+                (
+                  link.href === "/"
+                    ? location.pathname === link.href
+                    : location.pathname.startsWith(link.href)
+                )
                   ? "bg-sky-100 text-blue-600"
                   : "bg-gray-50 hover:bg-sky-100 hover:text-blue-600"
               }`}
