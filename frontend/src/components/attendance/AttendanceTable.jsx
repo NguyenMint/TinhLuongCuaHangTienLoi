@@ -49,7 +49,7 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
                     {dayShift.MaCaLam_ca_lam.ThoiGianKetThuc}
                   </div>
 
-                  {(late || early) && (
+                  {(late || early || late > 0 || early > 0) && (
                     <div className="text-xs text-purple-700">
                       {late > 0 && `Đi muộn ${late}p`}
                       {late > 0 && early > 0 && ", "}

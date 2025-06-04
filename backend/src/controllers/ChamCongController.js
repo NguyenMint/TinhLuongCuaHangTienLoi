@@ -62,5 +62,47 @@ class ChamCongController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async update_chamcong(req, res) {
+    try {
+      const { GioVao, DiTre, GioRa, VeSom, MaChamCong } = req.body;
+
+      const dangKyCa = await db.ChamCong.findOne({
+        where: { MaChamCong },
+      });
+
+      if (!dangKyCa) {
+        return res
+          .status(404)
+          .json({ message: "Không tồn tại lịch đăng ký ca này" });
+      }
+
+      const chamCong = await ChamCong.update(
+        {
+          GioVao,
+          DiTre,
+          GioRa,
+          VeSom,
+          trangthai: "Hoàn thoành",
+        },
+        {
+          where: { MaChamCong },
+        }
+      );
+
+      const updatedChamCong = await db.ChamCong.findOne({
+        where: { MaChamCong },
+      });
+
+      if (!updatedChamCong) {
+        return res.status(404).json({ message: "Cập nhật không thành công" });
+      }
+
+      return res.status(201).json(updatedChamCong);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
+
 module.exports = new ChamCongController();
