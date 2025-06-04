@@ -21,6 +21,13 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
       (s) => s.MaCaLam === shiftId && s.NgayDangKy === dateKey
     );
   };
+  const getShiftBgColor = (shift) => {
+    const chamCong = shift.cham_congs[0];
+    if (!chamCong || !chamCong.GioRa) return "bg-red-100";
+    if (chamCong.DiTre > 0 || chamCong.VeSom > 0) return "bg-purple-200";
+    if (chamCong.GioVao && chamCong.GioRa) return "bg-blue-100";
+    return "bg-red-100";
+  };
 
   const renderShift = (shift, date) => {
     const dayShifts = getShiftsByShiftIdAndDay(shift.MaCa, date);
@@ -36,25 +43,35 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
                 <div
                   key={dayShift.MaCaLam + dayShift.MaNS + date}
                   className={`p-3 m-1 rounded cursor-pointer 
-                ${late > 0 || early > 0 ? "bg-purple-200" : "bg-blue-100"}
-              `}
+                    ${getShiftBgColor(dayShift)}`}
                   onClick={() => onShiftClick(dayShift)}
                 >
                   <div className="font-medium text-sm">
                     {dayShift.MaNS_tai_khoan.HoTen}
                   </div>
 
-                  <div className="text-xs">
-                    {dayShift.MaCaLam_ca_lam.ThoiGianBatDau} -{" "}
-                    {dayShift.MaCaLam_ca_lam.ThoiGianKetThuc}
-                  </div>
+                  {dayShift.cham_congs[0]?.GioVao ? (
+                    <div className="text-xs">
+                      {dayShift.cham_congs[0]?.GioVao}
+                      {dayShift.cham_congs[0]?.GioRa ? (
+                        <> - {dayShift.cham_congs[0]?.GioRa}</>
+                      ) : (
+                        <div className="text-xs text-red-500">Chưa chấm ra</div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-red-500">Chưa chấm vào</div>
+                  )}
 
-                  {(late || early || late > 0 || early > 0) && (
+                  {late || early || late > 0 || early > 0 ? (
                     <div className="text-xs text-purple-700">
                       {late > 0 && `Đi muộn ${late}p`}
                       {late > 0 && early > 0 && ", "}
                       {early > 0 && `Về sớm ${early}p`}
                     </div>
+                  ) : (
+                    <div></div>
+                    // <div className="text-xs text-red-500">Chưa chấm ra</div>
                   )}
                 </div>
               );
@@ -65,16 +82,16 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
   };
   return (
     <div className="bg-white rounded-lg shadow overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full divide-y table-fixed divide-gray-200 ">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="w-20 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Ca làm việc
             </th>
             {weekDays.map((day, index) => (
               <th
                 key={index}
-                className="text-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="w-32 text-center px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 {format(day, "EEEE d", {
                   locale: vi,
@@ -83,10 +100,10 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white divide-y divide-gray-200 text-sm">
           {shifts.map((shift) => (
             <tr key={shift.MaCa} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-4 py-3">
                 <div>
                   <div className="font-medium">{shift.TenCa}</div>
                   <div className="text-xs text-gray-500">
@@ -94,10 +111,10 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
                   </div>
                 </div>
               </td>
-              {weekDays.map((day, index) => (
+              {weekDays.map((day) => (
                 <td
                   key={`${shift.MaCa}-${day}`}
-                  className="whitespace-nowrap border p-1 align-top"
+                  className=" border p-1 align-top "
                 >
                   {renderShift(shift, day)}
                 </td>
