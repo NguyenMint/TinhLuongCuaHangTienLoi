@@ -2,13 +2,7 @@ import React from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { vi } from "date-fns/locale";
 import { PlusIcon } from "lucide-react";
-const WeeklyShiftTable = ({
-  currentDate,
-  onShiftClick,
-  employees,
-  schedules,
-  shifts,
-}) => {
+const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
   const startDate = startOfWeek(currentDate, {
     weekStartsOn: 1,
   });
@@ -91,7 +85,7 @@ const WeeklyShiftTable = ({
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {shifts.map((shift) => (
-            <tr key={shift.MaCa}>
+            <tr key={shift.MaCa} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div>
                   <div className="font-medium">{shift.TenCa}</div>
@@ -102,7 +96,7 @@ const WeeklyShiftTable = ({
               </td>
               {weekDays.map((day, index) => (
                 <td
-                  key={index}
+                  key={`${shift.MaCa}-${day}`}
                   className="whitespace-nowrap border p-1 align-top"
                 >
                   {renderShift(shift, day)}

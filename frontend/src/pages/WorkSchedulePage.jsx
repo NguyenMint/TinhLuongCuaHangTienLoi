@@ -9,11 +9,10 @@ import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks } from "date-fns";
 import Search from "../components/search.jsx";
-
-// import { vi } from "date-fns/locale";
 import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
 import { fetchDangKyCa } from "../api/apiDangKyCa.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
+
 export const WorkSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   // const [searchQuery, setSearchQuery] = useState("");
@@ -55,7 +54,6 @@ export const WorkSchedule = () => {
   };
 
   useEffect(() => {
-    
     getAllNhanVien();
     getAllCaLam();
     getAllDangKyCa();

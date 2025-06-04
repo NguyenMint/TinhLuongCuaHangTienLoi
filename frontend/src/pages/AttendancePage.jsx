@@ -3,30 +3,19 @@ import WeeklyShiftTable from "../components/attendance/WeeklyShiftTable";
 import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchAllNhanVien } from "../api/api";
 import { fetchCaLam } from "../api/apiCaLam";
-import { fetchDangKyCa } from "../api/apiDangKyCa";
+import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
-import { mockEmployees, mockShifts, mockSchedules } from '../utils/mockData';
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentWeek, setCurrentWeek] = useState("Tuần 1 - Th.6 2025");
   const [viewMode, setViewMode] = useState("Xem theo ca");
   const [searchQuery, setSearchQuery] = useState("");
-  const [employees, setEmployees] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const getAllNhanVien = async () => {
-    try {
-      const data = await fetchAllNhanVien();
-      setEmployees(data);
-    } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
-    }
-  };
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const getAllCaLam = async () => {
     try {
@@ -47,7 +36,6 @@ export function AttendancePage() {
   };
 
   useEffect(() => {
-    getAllNhanVien();
     getAllCaLam();
     getAllDangKyCa();
   }, []);
@@ -69,12 +57,30 @@ export function AttendancePage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  const handleSaveShift = (updatedShift) => {
-    setShifts(
-      shifts.map((shift) =>
-        shift.id === updatedShift.id ? updatedShift : shift
-      )
+
+  const fetchNV = async (ma, ngay) => {
+    const response = await fetchDKCByNhanVien(ma, ngay);
+    return response;
+  };
+
+  const handleSaveShift = async (updatedShift) => {
+    
+    console.log("Updated Shift:", updatedShift);
+    console.log(await fetchNV(updatedShift.MaNS, updatedShift.NgayDangKy));
+    const employeeData = await fetchNV(
+      updatedShift.MaNS,
+      updatedShift.NgayDangKy
     );
+    const employee = employeeData.find(
+      (emp) => emp.MaCaLam === updatedShift.MaCaLam
+    );
+    console.log("Selected Employee:", employee);
+    
+    // setShifts(
+    //   shifts.map((shift) =>
+    //     shift.id === updatedShift.id ? updatedShift : shift
+    //   )
+    // );
     setIsModalOpen(false);
   };
   const handleDeleteShift = (shiftId) => {
@@ -177,13 +183,11 @@ export function AttendancePage() {
                   </button>
                 </div>
               </div>
-              
             </div>
           </div>
           <WeeklyShiftTable
             currentDate={currentDate}
-            shifts={mockShifts}
-            employees={mockEmployees}
+            shifts={shifts}
             schedules={schedules}
             onShiftClick={handleShiftClick}
           />
@@ -192,7 +196,7 @@ export function AttendancePage() {
       {isModalOpen && selectedShift && (
         <ShiftModal
           shift={selectedShift}
-          employees={mockEmployees}
+          employee={selectedEmployee}
           onClose={handleCloseModal}
           onSave={handleSaveShift}
           onDelete={handleDeleteShift}
