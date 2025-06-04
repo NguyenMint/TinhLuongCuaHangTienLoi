@@ -9,9 +9,10 @@ import { WorkSchedule } from "./pages/WorkSchedulePage";
 import { SettingsPage } from "./pages/SettingPage/SettingsPage";
 import { ShiftPage } from "./pages/SettingPage/ShiftPage";
 import ProtectedRoute from "./ProtectedRoute";
-import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
+import { EmployeeHomePage} from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
+import { EmployeeProfile } from "./pages/EmployeeLayout/EmployeeProfile";
 function App() {
   const getRole = () => {
     const user = localStorage.getItem("user");
@@ -86,6 +87,18 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/employee-profile"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <div className="flex min-h-screen">
+                <SidebarEmployee />
+                <div className="flex-1">
+                  <EmployeeProfile />
+                </div>
+              </div>
+           </ProtectedRoute>
+        }></Route>
         <Route
           path="*"
           element={

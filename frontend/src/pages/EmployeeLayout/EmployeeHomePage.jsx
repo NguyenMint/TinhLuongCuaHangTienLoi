@@ -3,10 +3,9 @@ import { UserIcon, AlertCircle } from "lucide-react";
 import { fetchDKCByNhanVien } from "../../api/apiDangKyCa";
 import { chamCongVao,chamCongRa } from "../../api/apiChamCong";
 export function EmployeeHomePage() {
-  // Dữ liệu mẫu
   const [shifts, setShifts] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
-  const now = new Date();
+  const [now, setNow] = useState(new Date());
   const ngay = now.toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
   const timeStr = now.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
@@ -27,12 +26,16 @@ export function EmployeeHomePage() {
   });
   useEffect(() => {
     getDKCByNhanVien();
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 60000); // 60000ms = 1 phút
+    return () => clearInterval(interval);
   }, []);
   const getDKCByNhanVien = async () => {
     const manv = user.MaTK;
     const response = await fetchDKCByNhanVien(manv, ngay);
     setShifts(response);
-  };
+  }; 
   const ChamCongVao = async (MaDKC) => {
     //const gioVao = gioHienTai;
     const gioVao = "06:05:00";
@@ -59,13 +62,12 @@ export function EmployeeHomePage() {
     );
   }
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      {/* Thông tin nhân viên */}
+    <div className="max-w-3xl mx-auto pt-16 px-4">
       <div className="flex items-center gap-6 bg-white rounded-xl shadow p-6 mb-6">
         <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
-          {user.avatar ? (
+          {user.Avatar ? (
             <img
-              src={user.avatar}
+              src={`${process.env.REACT_APP_BACKEND_URL}/${user.Avatar}`}
               alt="avatar"
               className="w-full h-full rounded-full object-cover"
             />
@@ -74,8 +76,7 @@ export function EmployeeHomePage() {
           )}
         </div>
         <div>
-          <div className="font-bold text-2xl">{user.name}</div>
-          <div className="text-gray-500 text-sm">{user.code}</div>
+          <div className="font-bold text-2xl">{user.HoTen}</div>
           <div className="flex gap-4 mt-2 text-sm text-gray-600">
             <span>Điện thoại: {user.SoDienThoai}</span>
             <span>Email: {user.Email}</span>
@@ -84,7 +85,7 @@ export function EmployeeHomePage() {
         </div>
       </div>
 
-      {/* Ngày giờ */}
+      
       <div className="flex flex-col items-center mb-6">
         <div className="text-gray-500 text-base">
           {dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}
@@ -100,7 +101,8 @@ export function EmployeeHomePage() {
         </div>
       </div>
 
-      {/* Bảng ca làm hoặc cảnh báo */}
+      
+      
       {shifts.length === 0 ? (
         <div className="flex items-center gap-2 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded mb-6">
           <AlertCircle className="w-5 h-5" />
