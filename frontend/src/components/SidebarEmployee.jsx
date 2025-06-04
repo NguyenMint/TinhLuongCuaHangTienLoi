@@ -1,4 +1,5 @@
-import { ClockIcon, CalendarIcon, UserIcon, LayersIcon, LogOutIcon } from "lucide-react";
+import { MenuIcon,XIcon, CalendarIcon, UserIcon, LayersIcon, LogOutIcon } from "lucide-react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const links = [
@@ -10,14 +11,13 @@ const links = [
 export  function SidebarEmployee() {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [open,setOpen] = useState(false);
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
-
-  return (
+  const sidebarContent = (
     <div className="bg-white shadow h-screen w-60 flex flex-col">
       <div className="p-6 bg-blue-500 text-center font-bold text-lg border-b">Nhân viên</div>
       <nav className="flex-1 p-2">
@@ -35,7 +35,7 @@ export  function SidebarEmployee() {
                 }`}
             >
               <LinkIcon className="w-6" />
-              <p className="hidden md:block">{link.name}</p>
+              <p className="block">{link.name}</p>
             </Link>
           );
         })}
@@ -45,8 +45,37 @@ export  function SidebarEmployee() {
         className="flex items-center text-gray-700 hover:text-red-500 w-full px-4 py-3 mt-auto"
       >
         <LogOutIcon className="w-6 mr-2" />
-        <span className="hidden md:block">Đăng xuất</span>
+        <span className="block">Đăng xuất</span>
       </button>
     </div>
+  );
+  return (
+    <>
+    {/* Hiện nút menu khi ở mobile và table  */}
+      {!open && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-blue-600 text-white flex items-center justify-between px-4 h-14 md:hidden shadow">
+        <button
+          className="p-2"
+          onClick={() => setOpen(true)}
+          aria-label="Mở menu"
+        >
+          <MenuIcon className="w-6 h-6" />
+        </button>
+        <div className="font-bold text-lg">Nhân viên</div>
+      </div>
+      )}
+      {/*  sidebar ở desktop */}
+      <div className="hidden lg:flex fixed h-screen">
+        {sidebarContent}
+      </div>
+      { /* Show sidebar khi nhấn menu */
+      open && (
+        <div className="fixed inset-0 z-40 bg-black bg-opacity-50" onClick={() => setOpen(false)}>
+          <div className="absolute top-0 left-0 h-full w-60 bg-white shadow-lg">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
