@@ -10,10 +10,11 @@ export function PayrollPage() {
   const [filteredPayrolls, setFilteredPayrolls] = useState(payrolls);
   const [selectedPayroll, setSelectedPayroll] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDetail, setShowDetail] = useState(false);
   const [statusFilters, setStatusFilters] = useState({
-    creating: true,
-    draft: true,
-    finalized: true,
+    creating: false,
+    draft: false,
+    finalized: false,
     cancelled: false,
   });
   const fetchAllBangLuong = async () => {
@@ -30,7 +31,6 @@ export function PayrollPage() {
     fetchAllBangLuong();
   }, []);
 
-
   // Handle search
   useEffect(() => {
     const filtered = payrolls.filter((payroll) =>
@@ -39,17 +39,17 @@ export function PayrollPage() {
     setFilteredPayrolls(filtered);
   }, [searchTerm]);
   // Handle status filter
-  // useEffect(() => {
-  //   const filtered = payrolls.filter((payroll) => {
-  //     if (payroll.status === "Đã chốt lương" && statusFilters.finalized)
-  //       return true;
-  //     if (payroll.status === "Tạm tính" && statusFilters.draft) return true;
-  //     if (payroll.status === "Đang tạo" && statusFilters.creating) return true;
-  //     if (payroll.status === "Đã hủy" && statusFilters.cancelled) return true;
-  //     return false;
-  //   });
-  //   setFilteredPayrolls(filtered);
-  // }, [statusFilters]);
+  useEffect(() => {
+    const filtered = payrolls.filter((payroll) => {
+      if (payroll.status === "Đã chốt lương" && statusFilters.finalized)
+        return true;
+      if (payroll.status === "Tạm tính" && statusFilters.draft) return true;
+      if (payroll.status === "Đang tạo" && statusFilters.creating) return true;
+      if (payroll.status === "Đã hủy" && statusFilters.cancelled) return true;
+      return false;
+    });
+    setFilteredPayrolls(filtered);
+  }, [statusFilters]);
   const handleRowClick = (payroll) => {
     setSelectedPayroll(payroll);
   };
@@ -80,12 +80,14 @@ export function PayrollPage() {
         <Header onSearch={handleSearch} onExport={handleExport} />
         <div className="flex-1 overflow-auto p-4">
           <PayrollTable
-            payrolls={payrolls}
             // payrolls={filteredPayrolls}
+            payrolls={payrolls}
             onRowClick={handleRowClick}
             selectedPayroll={selectedPayroll}
+            setSelectedPayroll={setSelectedPayroll}
+            setShowDetail={setShowDetail}
           />
-          {selectedPayroll && (
+          {showDetail && (
             <PayrollDetail
               payroll={selectedPayroll}
               onCancel={handleCancel}

@@ -33,7 +33,7 @@ export function FilterSidebar({ statusFilters, onStatusFilterChange }) {
       </div>
 
       {/* Status Filter */}
-      <div className="mb-6 border-b pb-4 rounded-lg bg-white p-5">
+      {/* <div className="mb-6 border-b pb-4 rounded-lg bg-white p-5">
         <h2 className="font-medium mb-2">Trạng thái</h2>
         <div className="space-y-2">
           <div className="flex items-center">
@@ -83,7 +83,7 @@ export function FilterSidebar({ statusFilters, onStatusFilterChange }) {
             <label htmlFor="cancelled">Đã hủy</label>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Record Count */}
       <div className="p-4 flex items-center justify-between border-b rounded-lg bg-white p-2">
         <span className="text-sm">Số bản ghi:</span>

@@ -70,7 +70,14 @@ exports.findAll = async (req, res) => {
         {
           model: TaiKhoan,
           as: "MaTK_tai_khoan",
-          attributes: ["HoTen", "MaTK"],
+          attributes: ["HoTen", "MaTK", "MaCN"],
+          include: [
+            {
+              model: db.ChiNhanh,
+              as: "MaCN_chi_nhanh",
+              attributes: ["TenChiNhanh"],
+            },
+          ],
         },
       ],
     });
