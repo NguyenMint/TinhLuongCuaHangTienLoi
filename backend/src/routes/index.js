@@ -10,6 +10,8 @@ const NguoiPhuThuocRoute = require("./nguoiphuthuoc");
 const HopDongLD = require("./hopdong");
 const dangKyCa = require("./dangkyca");
 const ChamCongroute = require('./chamcong');
+const bangLuongRoute = require('./bangLuong');
+const chiTietBangLuongRoute = require('./chiTietBangLuong');
 const express = require('express');
 const path = require("path");
 const initRoutes = (app) =>{
@@ -25,6 +27,8 @@ const initRoutes = (app) =>{
     app.use("/hopdong",HopDongLD);
     app.use("/dangkyca",dangKyCa);
     app.use("/chamcong", ChamCongroute);
+    app.use("/bangluong", bangLuongRoute);
+    app.use("/chitietbangluong", chiTietBangLuongRoute);
     app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 }
 

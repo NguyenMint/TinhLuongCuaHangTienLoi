@@ -7,6 +7,7 @@ export function PayrollTable({
 }) {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
+  console.log(payrolls);
 
   const handleSelectAll = () => {
     const newSelectAll = !selectAll;
@@ -34,36 +35,34 @@ export function PayrollTable({
               />
             </th>
             <th className="px-4 py-3 text-left">Tên</th>
-            <th className="px-4 py-3 text-left">Kỳ hạn trả</th>
-            <th className="px-4 py-3 text-left">Kỳ làm việc</th>
+            <th className="px-4 py-3 text-left">Kỳ lương</th>
             <th className="px-4 py-3 text-left">Tổng lương</th>
-            <th className="px-4 py-3 text-left">Còn cần trả</th>
-            <th className="px-4 py-3 text-left">Trạng thái</th>
             <th className="px-4 py-3 text-left">Người lập bảng</th>
             <th className="px-4 py-3 text-left">Ngày tạo</th>
+            <th className="px-4 py-3 text-left">Ngày thanh toán</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {payrolls && payrolls.length > 0 ? (
             payrolls.map((payroll) => (
               <tr
-                key={payroll.id}
+                key={payroll.MaBangLuong}
                 className={`border-b hover:bg-gray-50 cursor-pointer ${
-                  selectedPayroll?.id === payroll.id ? "bg-blue-50" : ""
+                  selectedPayroll?.MaBangLuong === payroll.MaBangLuong
+                    ? "bg-blue-50"
+                    : ""
                 }`}
                 onClick={() => onRowClick(payroll)}
               >
                 <td className="px-4 py-3">
                   <input type="checkbox" onClick={(e) => e.stopPropagation()} />
                 </td>
-                <td className="px-4 py-3">{payroll.name}</td>
-                <td className="px-4 py-3">{payroll.paymentCycle}</td>
-                <td className="px-4 py-3">{payroll.workPeriod}</td>
-                <td className="px-4 py-3">{payroll.totalSalary}</td>
-                <td className="px-4 py-3">{payroll.amountDue}</td>
-                <td className="px-4 py-3">{payroll.status}</td>
-                <td className="px-4 py-3">{payroll.creator}</td>
-                <td className="px-4 py-3">{payroll.creationDate}</td>
+                <td className="px-4 py-3">{payroll.MaTK_tai_khoan.HoTen}</td>
+                <td className="px-4 py-3">{payroll.KyLuong}</td>
+                <td className="px-4 py-3">{payroll.TongLuong}</td>
+                <td className="px-4 py-3">Admin</td>
+                <td className="px-4 py-3">{payroll.NgayTao}</td>
+                <td className="px-4 py-3">{payroll.NgayThanhToan}</td>
               </tr>
             ))
           ) : (
