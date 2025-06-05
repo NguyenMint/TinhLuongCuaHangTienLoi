@@ -1,26 +1,50 @@
 import React, { useState } from "react";
+import { formatCurrency } from "../../utils/formatCurrency";
 export function PayrollTable({
   payrolls,
   onRowClick,
   selectedPayroll,
-  employees,
+  setSelectedPayroll,
+  setShowDetail,
 }) {
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
-  console.log(payrolls);
 
   const handleSelectAll = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
     const newSelectedRows = {};
     if (newSelectAll) {
-      employees.forEach((employee) => {
-        newSelectedRows[employee.MaTK] = true;
+      payrolls.forEach((payroll) => {
+        newSelectedRows[payroll.MaBangLuong] = true;
       });
     }
     setSelectedRows(newSelectedRows);
   };
+  const handleSelectRow = (payrollID) => {
+    const newSelectedRows = {
+      ...selectedRows,
+    };
+    newSelectedRows[payrollID] = !newSelectedRows[payrollID];
+    setSelectedRows(newSelectedRows);
+    // Check if all rows are selected
+    const allSelected = payrolls.every(
+      (payroll) => newSelectedRows[payroll.MaBangLuong]
+    );
+    setSelectAll(allSelected);
+  };
 
+  const handleDetail = (payrollId) => {
+    const payroll = payrolls.find((pay) => pay.MaBangLuong === payrollId);
+
+    if (selectedPayroll && selectedPayroll.MaBangLuong === payrollId) {
+      setSelectedPayroll(null);
+      setShowDetail(false);
+    } else if (payroll) {
+      setSelectedPayroll(payroll);
+      setShowDetail(true);
+    }
+  };
   return (
     <div className="bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full">
@@ -52,14 +76,18 @@ export function PayrollTable({
                     ? "bg-blue-50"
                     : ""
                 }`}
-                onClick={() => onRowClick(payroll)}
+                onClick={() => handleDetail(payroll.MaBangLuong)}
               >
-                <td className="px-4 py-3">
-                  <input type="checkbox" onClick={(e) => e.stopPropagation()} />
+                <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={!!selectedRows[payroll.MaBangLuong]}
+                    onChange={() => handleSelectRow(payroll.MaBangLuong)}
+                  />
                 </td>
                 <td className="px-4 py-3">{payroll.MaTK_tai_khoan.HoTen}</td>
                 <td className="px-4 py-3">{payroll.KyLuong}</td>
-                <td className="px-4 py-3">{payroll.TongLuong}</td>
+                <td className="px-4 py-3 text-right">{formatCurrency(payroll.TongLuong)}</td>
                 <td className="px-4 py-3">Admin</td>
                 <td className="px-4 py-3">{payroll.NgayTao}</td>
                 <td className="px-4 py-3">{payroll.NgayThanhToan}</td>
