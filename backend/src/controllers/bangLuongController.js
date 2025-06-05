@@ -189,8 +189,25 @@ exports.calculateSalary = async (req, res) => {
   try {
     const { MaTK, KyLuong } = req.body;
 
-    // Get employee information
-    const employee = await TaiKhoan.findByPk(MaTK);
+    // Get employee information with ThangLuong
+    const employee = await TaiKhoan.findByPk(MaTK, {
+      include: [
+        {
+          model: db.VaiTro,
+          as: "MaVaiTro_vai_tro",
+          include: [
+            {
+              model: db.ThangLuong,
+              as: "thang_luongs",
+              where: {
+                BacLuong: db.sequelize.col("BacLuong"),
+              },
+            },
+          ],
+        },
+      ],
+    });
+
     if (!employee) {
       return res.status(404).json({
         success: false,
@@ -203,29 +220,69 @@ exports.calculateSalary = async (req, res) => {
       where: { MaTK },
     });
 
+    // Get attendance records for the month
+    const [startDate, endDate] = KyLuong.split("-");
+    const startOfMonth = new Date(startDate, endDate - 1, 1);
+    const endOfMonth = new Date(startDate, endDate, 0);
+
+    const chamCongRecords = await db.ChamCong.findAll({
+      include: [
+        {
+          model: db.DangKyCa,
+          as: "MaDKC_dang_ky_ca",
+          where: {
+            MaNS: MaTK,
+            NgayDangKy: {
+              [Op.between]: [startOfMonth, endOfMonth],
+            },
+          },
+          include: [
+            {
+              model: db.CaLam,
+              as: "MaCaLam_ca_lam",
+            },
+          ],
+        },
+      ],
+    });
+
+    // Calculate total working hours
+    let totalWorkingHours = 0;
+    chamCongRecords.forEach((record) => {
+      if (record.GioVao && record.GioRa) {
+        const [h1, m1, s1] = record.GioVao.split(":").map(Number);
+        const [h2, m2, s2] = record.GioRa.split(":").map(Number);
+
+        const gioVao = new Date(0, 0, 0, h1, m1, s1);
+        let gioRa = new Date(0, 0, 0, h2, m2, s2);
+
+        if (gioRa <= gioVao) {
+          gioRa.setDate(gioRa.getDate() + 1);
+        }
+
+        const hours = (gioRa - gioVao) / (1000 * 60 * 60);
+        totalWorkingHours += hours;
+      }
+    });
+    console.log(totalWorkingHours);
+
     // Get rewards and penalties for the period
     const [rewards, penalties] = await Promise.all([
-      KhenThuongKyLuat.findAll({
+      db.KhenThuongKyLuat.findAll({
         where: {
           MaTK,
           ThuongPhat: true,
           NgayApDung: {
-            [Op.between]: [
-              new Date(KyLuong + "-01"),
-              new Date(KyLuong + "-31"),
-            ],
+            [Op.between]: [startOfMonth, endOfMonth],
           },
         },
       }),
-      KhenThuongKyLuat.findAll({
+      db.KhenThuongKyLuat.findAll({
         where: {
           MaTK,
           ThuongPhat: false,
           NgayApDung: {
-            [Op.between]: [
-              new Date(KyLuong + "-01"),
-              new Date(KyLuong + "-31"),
-            ],
+            [Op.between]: [startOfMonth, endOfMonth],
           },
         },
       }),
@@ -242,14 +299,24 @@ exports.calculateSalary = async (req, res) => {
     );
 
     // Get allowances
-    const allowances = await PhuCap.findAll({
-      where: { MaTK },
+    const allowances = await db.PhuCap.findAll({
+      where: {
+        MaTK,
+        TrangThai: true,
+      },
     });
 
-    const totalAllowances = allowances.reduce(
-      (sum, allowance) => sum + Number(allowance.GiaTriPhuCap),
-      0
-    );
+    // Calculate total allowances (taxable and non-taxable)
+    let taxableAllowances = 0;
+    let nonTaxableAllowances = 0;
+
+    allowances.forEach((allowance) => {
+      if (allowance.DuocMienThue) {
+        nonTaxableAllowances += Number(allowance.GiaTriPhuCap);
+      } else {
+        taxableAllowances += Number(allowance.GiaTriPhuCap);
+      }
+    });
 
     // Calculate tax
     const personalDeduction = 11000000; // Base personal deduction
@@ -257,8 +324,12 @@ exports.calculateSalary = async (req, res) => {
     const totalDeduction =
       personalDeduction + dependentCount * dependentDeduction;
 
+    // Calculate taxable income
     const taxableIncome =
-      employee.LuongCoBanHienTai + totalRewards - totalDeduction;
+      employee.LuongCoBanHienTai +
+      totalRewards +
+      taxableAllowances -
+      totalDeduction;
     let taxRate = 0;
     let taxAmount = 0;
 
@@ -285,7 +356,8 @@ exports.calculateSalary = async (req, res) => {
     const netSalary =
       employee.LuongCoBanHienTai +
       totalRewards +
-      totalAllowances -
+      taxableAllowances +
+      nonTaxableAllowances -
       totalPenalties -
       taxAmount;
 
@@ -294,14 +366,15 @@ exports.calculateSalary = async (req, res) => {
       KyLuong,
       NgayTao: new Date(),
       NgayThanhToan: new Date(),
-      TongGioLamViec: 0, // This should be calculated from attendance records
-      TongPhuCap: totalAllowances,
+      TongGioLamViec: totalWorkingHours,
+      TongPhuCap: taxableAllowances + nonTaxableAllowances,
       TongThuong: totalRewards,
       TongPhat: totalPenalties,
       SoNguoiPhuThuoc: dependentCount,
       TongLuong: employee.LuongCoBanHienTai,
-      ThuNhapMienThue: totalAllowances,
-      ThuNhapChiuThue: employee.LuongCoBanHienTai + totalRewards,
+      ThuNhapMienThue: nonTaxableAllowances,
+      ThuNhapChiuThue:
+        employee.LuongCoBanHienTai + totalRewards + taxableAllowances,
       MucGiamTruGiaCanh: totalDeduction,
       ThueSuat: taxRate * 100,
       ThuePhaiDong: taxAmount,

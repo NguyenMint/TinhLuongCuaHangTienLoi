@@ -48,7 +48,7 @@ export const update_chamcong = async (
   MaChamCong
 ) => {
   try {
-    const response = await axios.patch(
+    const response = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong/update`,
       {
         GioVao,
