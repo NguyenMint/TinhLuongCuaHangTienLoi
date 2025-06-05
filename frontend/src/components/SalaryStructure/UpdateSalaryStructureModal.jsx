@@ -1,40 +1,26 @@
 import { useState } from "react";
-import { createThangLuong } from "../../api/apiThangLuong";
-export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
+import { updateThangLuong } from "../../api/apiThangLuong";
+export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong,salaryStructure }) {
   const [form, setForm] = useState({
-    LuongCoBan: 0,
-    LuongTheoGio: 0,
-    BacLuong: 1,
-    SoNgayPhep: 0,
-    LoaiNV: "FullTime",
-    MaVaiTro: 2,
-    TenCa: "",
+    LuongCoBan: salaryStructure.LuongCoBan ,
+    LuongTheoGio: salaryStructure.LuongTheoGio ,
+    BacLuong: salaryStructure.BacLuong ,
+    SoNgayPhep: salaryStructure.SoNgayPhep ,
+    LoaiNV: salaryStructure.LoaiNV ,
+    MaVaiTro: salaryStructure.MaVaiTro ,
+    MaThangLuong: salaryStructure.MaThangLuong,
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "MaVaiTro") {
-      if (value === "1") {
-        setForm((prev) => ({
-          ...prev,
-          MaVaiTro: 1,
-          LoaiNV: "FullTime",
-        }));
-      } else {
-        setForm((prev) => ({
-          ...prev,
-          MaVaiTro: 2,
-        }));
-      }
-      return;
-    }
-    if (name === "LoaiNV" && form.MaVaiTro === 1) return;
     setForm((prev) => ({
       ...prev,
-      [name]:value,
+      [name]:
+        value
     }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("form", form);
     if (form.LoaiNV === "FullTime") {
       if (
         !form.LuongCoBan ||
@@ -57,18 +43,18 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
       }
     }
     try {
-      const result = await createThangLuong(form);
+      const result = await updateThangLuong(form);
       if (!result.success) {
-        alert(result.message || "Thêm thang lương thất bại.");
+        alert(result.message || "Cập nhật thang lương thất bại.");
         return;
       }
-      alert("Thêm thang lương thành công!");
+      alert("Cập nhật thang lương thành công!");
       getAllThangLuong();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
       alert("Lỗi không xác định. Vui lòng thử lại.");
     }
-    setShowModalAdd(false);
+    setShowModalUpdate(false);
   };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
@@ -79,21 +65,6 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
           Thêm thang lương mới
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Loại nhân viên */}
-          <div>
-            <label className="block mb-1 font-medium">Loại Nhân Viên</label>
-            <select
-              name="LoaiNV"
-              id="LoaiNV"
-              value={form.LoaiNV}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              disabled={form.MaVaiTro === 1}
-            >
-              <option value="FullTime">FullTime</option>
-              <option value="PartTime">PartTime</option>
-            </select>
-          </div>
           <div>
             <label className="block mb-1 font-medium">Chức vụ</label>
             <select
@@ -160,7 +131,7 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
           <button
             type="button"
             className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded"
-            onClick={() => setShowModalAdd(false)}
+            onClick={() => setShowModalUpdate(false)}
           >
             Thoát
           </button>
@@ -168,7 +139,7 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
             type="submit"
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
           >
-            Thêm thang lương
+            Cập nhật
           </button>
         </div>
       </form>

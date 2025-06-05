@@ -8,7 +8,11 @@ class DangKyCaController {
         include: [
           { model: db.ChamCong, as: "cham_congs" },
           { model: db.CaLam, as: "MaCaLam_ca_lam" },
-          { model: db.TaiKhoan, as: "MaNS_tai_khoan", attributes: ["MaTK", "HoTen"] },
+          {
+            model: db.TaiKhoan,
+            as: "MaNS_tai_khoan",
+            attributes: ["MaTK", "HoTen"],
+          },
         ],
       });
       res.status(200).json(DangKyCas);
@@ -39,7 +43,20 @@ class DangKyCaController {
         TrangThai: { [Op.in]: ["Đã Đăng Ký", "Chuyển Ca"] },
       };
       if (NgayDangKy) {
-        where.NgayDangKy = NgayDangKy;
+        // Lấy ngày hôm trước
+        const prevDate = new Date(NgayDangKy);
+        prevDate.setDate(prevDate.getDate() - 1);
+        const prevDateStr = prevDate.toISOString().slice(0, 10);
+        where[Op.or] = [
+          { NgayDangKy: NgayDangKy },
+          {
+            NgayDangKy: prevDateStr,
+            // Điều kiện ca qua đêm: giờ kết thúc < giờ bắt đầu
+            "$MaCaLam_ca_lam.ThoiGianKetThuc$": {
+              [Op.lt]: db.sequelize.col("MaCaLam_ca_lam.ThoiGianBatDau"),
+            },
+          },
+        ];
       }
       const caLam = await DangKyCa.findAll({
         where,
