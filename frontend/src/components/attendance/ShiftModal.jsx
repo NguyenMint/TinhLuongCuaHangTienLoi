@@ -3,14 +3,21 @@ import CheckInTab from "./TabContent/CheckInTab";
 import HistoryTab from "./TabContent/HistoryTab";
 import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
-const ShiftModal = ({ shift, employees, onClose, onSave, onDelete }) => {
+const ShiftModal = ({
+  shift,
+  employees,
+  onClose,
+  onSave,
+  onDelete,
+  setDataUpdate,
+}) => {
   const [activeTab, setActiveTab] = useState("checkin");
   const [formData, setFormData] = useState({
     ...shift,
     attendanceType: shift.attendanceType || "working",
     substituteId: shift.substituteId || "",
   });
-  
+
   const tabs = [
     {
       id: "checkin",
@@ -150,7 +157,8 @@ const ShiftModal = ({ shift, employees, onClose, onSave, onDelete }) => {
             <div>
               <div className="text-sm text-gray-500">Ca làm việc</div>
               <div className="font-medium">
-                {formData.MaCaLam_ca_lam.TenCa} ({formData.MaCaLam_ca_lam.ThoiGianBatDau} -{" "}
+                {formData.MaCaLam_ca_lam.TenCa} (
+                {formData.MaCaLam_ca_lam.ThoiGianBatDau} -{" "}
                 {formData.MaCaLam_ca_lam.ThoiGianKetThuc})
               </div>
             </div>
@@ -185,6 +193,7 @@ const ShiftModal = ({ shift, employees, onClose, onSave, onDelete }) => {
         <div className="flex-1 overflow-y-auto p-4">
           {activeTab === "checkin" && (
             <CheckInTab
+              setDataUpdate={setDataUpdate}
               formData={formData}
               employees={employees}
               onChange={handleInputChange}

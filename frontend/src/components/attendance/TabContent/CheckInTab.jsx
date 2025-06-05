@@ -12,6 +12,7 @@ export const CheckInTab = ({
   formData,
   employees,
   onChange,
+  setDataUpdate,
 }) => {
   const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
   const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
@@ -93,12 +94,42 @@ export const CheckInTab = ({
   // if (!isOpen) return null
   const checkInStatus = isCheckedIn ? getCheckInStatus() : null;
   const checkOutStatus = isCheckedOut ? getCheckOutStatus() : null;
+
+  const calcLateMinutes = () =>
+    isCheckedIn && checkInStatus === "late"
+      ? getTimeDifference(startTime, checkInTime) // > 0
+      : 0;
+
+  const calcEarlyMinutes = () =>
+    isCheckedOut && checkOutStatus === "early"
+      ? getTimeDifference(checkOutTime, endTime) // > 0
+      : 0;
+
+  useEffect(() => {
+    setDataUpdate({
+      GioVao: checkInTime,
+      GioRa:  checkOutTime,
+      MaChamCong: formData.cham_congs[0]?.MaChamCong,
+      DiTre: isCheckedIn ? calcLateMinutes() : formData.cham_congs[0]?.DiTre,
+      VeSom: isCheckedOut ? calcEarlyMinutes() : formData.cham_congs[0]?.VeSom,
+    });
+  }, [
+    checkInTime,
+    checkOutTime,
+    isCheckedIn,
+    isCheckedOut,
+    checkInStatus,
+    checkOutStatus,
+    formData.cham_congs,
+  ]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-6">
         <label className="block text-sm font-medium text-gray-700">
           Chấm công
         </label>
+
         {tabs.map((status) => (
           <label key={status.id} className="flex items-center gap-2">
             <input

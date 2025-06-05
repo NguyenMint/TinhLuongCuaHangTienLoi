@@ -40,7 +40,7 @@ export function ShiftPage() {
   return (
     <div>
       <div className="p-6 bg-gray-100 min-h-screen">
-      .{data? (
+      {data? (
         <>
           <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Danh sách ca làm việc</h2>

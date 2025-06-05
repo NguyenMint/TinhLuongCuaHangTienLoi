@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import WeeklyShiftTable from "../components/attendance/WeeklyShiftTable";
+import AttendanceTable from "../components/attendance/AttendanceTable";
 import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchAllNhanVien } from "../api/api";
 import { fetchCaLam } from "../api/apiCaLam";
 import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
+import { update_chamcong } from "../api/apiChamCong";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
@@ -16,6 +17,13 @@ export function AttendancePage() {
   const [schedules, setSchedules] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [dataUpdate, setDataUpdate] = useState({
+    GioVao: "",
+    GioRa: "",
+    MaChamCong: "",
+    DiTre: 0,
+    RaSom: 0,
+  });
 
   const getAllCaLam = async () => {
     try {
@@ -64,25 +72,24 @@ export function AttendancePage() {
   };
 
   const handleSaveShift = async (updatedShift) => {
-    
-    console.log("Updated Shift:", updatedShift);
-    console.log(await fetchNV(updatedShift.MaNS, updatedShift.NgayDangKy));
-    const employeeData = await fetchNV(
-      updatedShift.MaNS,
-      updatedShift.NgayDangKy
-    );
-    const employee = employeeData.find(
-      (emp) => emp.MaCaLam === updatedShift.MaCaLam
-    );
-    console.log("Selected Employee:", employee);
-    
-    // setShifts(
-    //   shifts.map((shift) =>
-    //     shift.id === updatedShift.id ? updatedShift : shift
-    //   )
-    // );
+    console.log(dataUpdate);
+
+    try {
+      const response = await update_chamcong(
+        dataUpdate.GioVao,
+        dataUpdate.GioRa,
+        dataUpdate.DiTre,
+        dataUpdate.VeSom,
+        dataUpdate.MaChamCong
+      );
+      await getAllDangKyCa();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật ca làm:", error);
+    }
+
     setIsModalOpen(false);
   };
+
   const handleDeleteShift = (shiftId) => {
     setShifts(shifts.filter((shift) => shift.id !== shiftId));
     setIsModalOpen(false);
@@ -185,7 +192,7 @@ export function AttendancePage() {
               </div>
             </div>
           </div>
-          <WeeklyShiftTable
+          <AttendanceTable
             currentDate={currentDate}
             shifts={shifts}
             schedules={schedules}
@@ -196,10 +203,12 @@ export function AttendancePage() {
       {isModalOpen && selectedShift && (
         <ShiftModal
           shift={selectedShift}
+          // setDataUpdate={setDataUpdate}
           employee={selectedEmployee}
           onClose={handleCloseModal}
           onSave={handleSaveShift}
           onDelete={handleDeleteShift}
+          setDataUpdate={setDataUpdate}
         />
       )}
     </div>
