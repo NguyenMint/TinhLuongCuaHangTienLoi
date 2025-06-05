@@ -73,6 +73,10 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
                     <div></div>
                     // <div className="text-xs text-red-500">Chưa chấm ra</div>
                   )}
+
+                  {dayShift.cham_congs[0]?.trangthai === "Chờ duyệt" && (
+                    <div className="text-xs text-red-500">Chưa duyệt</div>
+                  )}
                 </div>
               );
             })
