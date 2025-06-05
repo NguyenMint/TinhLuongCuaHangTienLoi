@@ -17,7 +17,7 @@ const ShiftModal = ({
     attendanceType: shift.attendanceType || "working",
     substituteId: shift.substituteId || "",
   });
-
+  
   const tabs = [
     {
       id: "checkin",

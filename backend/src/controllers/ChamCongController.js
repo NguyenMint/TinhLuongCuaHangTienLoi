@@ -23,7 +23,7 @@ class ChamCongController {
       let VeSom = 0;
   
       // Tính đi trễ nếu có GioVao
-      if (GioVao) {
+      if (GioVao) { 
         const [gioVaoChuan, phutVaoChuan] = ThoiGianBatDau.split(":").map(Number);
         const [gioVaoThucTe, phutVaoThucTe] = GioVao.split(":").map(Number);
         const vaoChuan = gioVaoChuan * 60 + phutVaoChuan;
@@ -78,7 +78,6 @@ class ChamCongController {
   async update_chamcong(req, res) {
     try {
       const { GioVao, DiTre, GioRa, VeSom, MaChamCong } = req.body;
-
       const dangKyCa = await db.ChamCong.findOne({
         where: { MaChamCong },
       });

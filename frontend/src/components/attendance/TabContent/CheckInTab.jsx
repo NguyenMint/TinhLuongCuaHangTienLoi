@@ -108,10 +108,12 @@ export const CheckInTab = ({
   useEffect(() => {
     setDataUpdate({
       GioVao: checkInTime,
-      GioRa:  checkOutTime,
+      GioRa: checkOutTime,
       MaChamCong: formData.cham_congs[0]?.MaChamCong,
       DiTre: isCheckedIn ? calcLateMinutes() : formData.cham_congs[0]?.DiTre,
       VeSom: isCheckedOut ? calcEarlyMinutes() : formData.cham_congs[0]?.VeSom,
+      MaDKC: formData.MaDKC,
+      NgayDangKy: formData.NgayDangKy,
     });
   }, [
     checkInTime,
