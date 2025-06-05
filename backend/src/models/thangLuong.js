@@ -17,8 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     BacLuong: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      unique: "BacLuong"
+      allowNull: true
     },
     LoaiNV: {
       type: DataTypes.ENUM('PartTime','FullTime'),
@@ -47,14 +46,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaThangLuong" },
-        ]
-      },
-      {
-        name: "BacLuong",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "BacLuong" },
         ]
       },
       {
