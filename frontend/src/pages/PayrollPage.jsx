@@ -1,64 +1,99 @@
-import React, { useEffect, useState } from 'react';
-import { FilterSidebar } from '../components/Payroll/FilterSidebar';
-import { PayrollTable } from '../components/Payroll/PayrollTable';
-import { PayrollDetail } from '../components/Payroll/PayrollDetail';
-import { Header } from '../components/Payroll/Header';
-import { mockPayrolls } from '../utils/mockData';
+import React, { useEffect, useState } from "react";
+import { FilterSidebar } from "../components/Payroll/FilterSidebar";
+import { PayrollTable } from "../components/Payroll/PayrollTable";
+import { PayrollDetail } from "../components/Payroll/PayrollDetail";
+import { Header } from "../components/Payroll/Header";
+import { payrolls } from "../utils/mockData";
+import { getAllBangLuong } from "../api/apiBangLuong";
 export function PayrollPage() {
-  const [payrolls, setPayrolls] = useState(mockPayrolls);
-  const [filteredPayrolls, setFilteredPayrolls] = useState(mockPayrolls);
+  const [payrolls, setPayrolls] = useState([]);
+  const [filteredPayrolls, setFilteredPayrolls] = useState(payrolls);
   const [selectedPayroll, setSelectedPayroll] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilters, setStatusFilters] = useState({
     creating: true,
     draft: true,
     finalized: true,
-    cancelled: false
+    cancelled: false,
   });
+  const fetchAllBangLuong = async () => {
+    try {
+      const data = await getAllBangLuong();
+      setPayrolls(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Bảng lương:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch payroll data when component mounts
+    fetchAllBangLuong();
+  }, []);
+
+
   // Handle search
   useEffect(() => {
-    const filtered = mockPayrolls.filter(payroll => payroll.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filtered = payrolls.filter((payroll) =>
+      payroll.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     setFilteredPayrolls(filtered);
   }, [searchTerm]);
   // Handle status filter
-  useEffect(() => {
-    const filtered = mockPayrolls.filter(payroll => {
-      if (payroll.status === 'Đã chốt lương' && statusFilters.finalized) return true;
-      if (payroll.status === 'Tạm tính' && statusFilters.draft) return true;
-      if (payroll.status === 'Đang tạo' && statusFilters.creating) return true;
-      if (payroll.status === 'Đã hủy' && statusFilters.cancelled) return true;
-      return false;
-    });
-    setFilteredPayrolls(filtered);
-  }, [statusFilters]);
-  const handleRowClick = payroll => {
+  // useEffect(() => {
+  //   const filtered = payrolls.filter((payroll) => {
+  //     if (payroll.status === "Đã chốt lương" && statusFilters.finalized)
+  //       return true;
+  //     if (payroll.status === "Tạm tính" && statusFilters.draft) return true;
+  //     if (payroll.status === "Đang tạo" && statusFilters.creating) return true;
+  //     if (payroll.status === "Đã hủy" && statusFilters.cancelled) return true;
+  //     return false;
+  //   });
+  //   setFilteredPayrolls(filtered);
+  // }, [statusFilters]);
+  const handleRowClick = (payroll) => {
     setSelectedPayroll(payroll);
   };
   const handleExport = () => {
-    alert('Export functionality will be implemented here');
+    alert("Export functionality will be implemented here");
   };
   const handleCancel = () => {
-    if (window.confirm('Are you sure you want to cancel this payroll?')) {
-      alert('Payroll cancelled');
+    if (window.confirm("Are you sure you want to cancel this payroll?")) {
+      alert("Payroll cancelled");
     }
   };
-  const handleSearch = term => {
+  const handleSearch = (term) => {
     setSearchTerm(term);
   };
   const handleStatusFilterChange = (status, checked) => {
-    setStatusFilters(prev => ({
+    setStatusFilters((prev) => ({
       ...prev,
-      [status]: checked
+      [status]: checked,
     }));
   };
-  return <div className="flex h-screen bg-gray-50">
-      <FilterSidebar statusFilters={statusFilters} onStatusFilterChange={handleStatusFilterChange} />
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <FilterSidebar
+        statusFilters={statusFilters}
+        onStatusFilterChange={handleStatusFilterChange}
+      />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header onSearch={handleSearch} onExport={handleExport} />
         <div className="flex-1 overflow-auto p-4">
-          <PayrollTable payrolls={filteredPayrolls} onRowClick={handleRowClick} selectedPayroll={selectedPayroll} />
-          {selectedPayroll && <PayrollDetail payroll={selectedPayroll} onCancel={handleCancel} onExport={handleExport} />}
+          <PayrollTable
+            payrolls={payrolls}
+            // payrolls={filteredPayrolls}
+            onRowClick={handleRowClick}
+            selectedPayroll={selectedPayroll}
+          />
+          {selectedPayroll && (
+            <PayrollDetail
+              payroll={selectedPayroll}
+              onCancel={handleCancel}
+              onExport={handleExport}
+            />
+          )}
         </div>
       </div>
-    </div>;
+    </div>
+  );
 }

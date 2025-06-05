@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     SoNgayPhep: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     MaVaiTro: {
       type: DataTypes.INTEGER,
