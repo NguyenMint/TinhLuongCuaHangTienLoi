@@ -6,7 +6,7 @@ export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   const [now, setNow] = useState(new Date());
-  const ngay = now.toISOString().split("T")[0]; // Lấy ngày hiện tại theo định dạng YYYY-MM-DD
+  const ngay = now.toISOString().slice(0,10);
   const timeStr = now.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",

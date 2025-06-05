@@ -78,15 +78,9 @@ class ThangLuongController {
       if (!thangLuong) {
         return res.status(404).json({ message: "Thang lương không tồn tại" });
       }
-      const existBacLuong = await ThangLuong.findOne({
-        where: { BacLuong, MaVaiTro, [Op.ne]: req.params.id },
-      });
-      if (existBacLuong) {
-        return res.status(409).json({ message: "Bậc lương đã tồn tại" });
-      }
       if (LoaiNV === "FullTime") {
         const existBacLuong = await ThangLuong.findOne({
-          where: { BacLuong, MaVaiTro, [Op.ne]: req.params.id },
+          where: { BacLuong, MaVaiTro, MaThangLuong:{[Op.ne]: req.params.id} },
         });
         if (existBacLuong) {
           return res.status(409).json({ message: "Bậc lương đã tồn tại" });

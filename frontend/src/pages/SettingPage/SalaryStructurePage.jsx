@@ -2,10 +2,16 @@ import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { fetchAllThangLuong } from "../../api/apiThangLuong.js";
 import { AddSalaryStructureForm } from "../../components/SalaryStructure/AddNewSalaryStructureModal.jsx";
+import { UpdateSalaryStructureForm } from "../../components/SalaryStructure/UpdateSalaryStructureModal.jsx";
+import { ConfirmDeleteModal } from "../../components/ModalDelete.jsx";
+import { deleteThangLuong } from "../../api/apiThangLuong.js";  
 export function SalaryStructure() {
   const [data, setData] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);
-
+  const [showModalUpdate, setShowModalUpdate] = useState(false);
+  const [selectedSalaryStructure, setSelectedSalaryStructure] = useState(null);
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [maThangLuong, setMaThangLuong] = useState(null);
   const getAllThangLuong = async () => {
     try {
       const response = await fetchAllThangLuong();
@@ -14,12 +20,30 @@ export function SalaryStructure() {
       console.error("Lỗi lấy dữ liệu thang lương:", error);
     }
   };
-
+  const onDelete = async ()=>{
+      try {
+        const result = await deleteThangLuong(maThangLuong);
+        if (!result.success) {
+          alert(result.message || "Xóa thang lương thất bại.");
+          return;
+        }
+        alert("Xóa thang lương thành công!");
+        getAllThangLuong();
+      } catch (error) {
+        console.error("Lỗi không xác định:", error);
+        alert("Lỗi không xác định. Vui lòng thử lại.");
+      }
+      setShowModalDelete(false);
+    }
   useEffect(() => {
     getAllThangLuong();
+    console.log("token",localStorage.getItem("token"));
   }, []);
   const fullTime = data.filter((item) => item.LoaiNV === "FullTime");
   const partTime = data.filter((item) => item.LoaiNV === "PartTime");
+  function formatVND(number) {
+  return Number(number).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+}
   return (
     <div>
       <div className="p-6 bg-gray-100 min-h-screen">
@@ -49,10 +73,10 @@ export function SalaryStructure() {
             </thead>
             <tbody>
               {fullTime.map((salary, index) => (
-                <tr className="hover:bg-gray-50" key={salary.id || index}>
+                <tr className="hover:bg-gray-50">
                   <td className="px-4 py-2 border text-center">{index + 1}</td>
                   <td className="px-4 py-2 border text-center">
-                    {salary.LuongCoBan}
+                    {formatVND(salary.LuongCoBan)}
                   </td>
                   <td className="px-4 py-2 border text-center">
                     {salary.BacLuong}
@@ -64,8 +88,17 @@ export function SalaryStructure() {
                     {salary.MaVaiTro === 2 ? "Nhân viên" : "Quản lý"}
                   </td>
                   <td className="p-3 border flex items-center justify-center gap-4">
-                    <Pencil className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500" />
-                    <Trash2 className="w-5 h-5 cursor-pointer text-gray-600 hover:text-red-500" />
+                    <Pencil className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500"
+                    onClick={() => {
+                      setShowModalUpdate(true);
+                      setSelectedSalaryStructure(salary);
+                    }} />
+                    <Trash2 className="w-5 h-5 cursor-pointer text-gray-600 hover:text-red-500" 
+                      onClick={() => {
+                        setShowModalDelete(true);
+                        setMaThangLuong(salary.MaThangLuong);
+                      }}
+                    />
                   </td>
                 </tr>
               ))}
@@ -97,14 +130,24 @@ export function SalaryStructure() {
                 <tr className="hover:bg-gray-50" key={salary.id || index}>
                   <td className="px-4 py-2 border text-center">{index + 1}</td>
                   <td className="px-4 py-2 border text-center">
-                    {salary.LuongTheoGio}
+                    {formatVND(salary.LuongTheoGio)}
                   </td>
                   <td className="px-4 py-2 border text-center">
                     {salary.MaVaiTro === 2 ? "Nhân viên" : "Quản lý"}
                   </td>
                   <td className="p-3 border flex items-center justify-center gap-4">
-                    <Pencil className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500" />
-                    <Trash2 className="w-5 h-5 cursor-pointer text-gray-600 hover:text-red-500" />
+                    <Pencil className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500" 
+                      onClick={() => {
+                      setShowModalUpdate(true);
+                      setSelectedSalaryStructure(salary);
+                    }}
+                    />
+                    <Trash2 className="w-5 h-5 cursor-pointer text-gray-600 hover:text-red-500" 
+                      onClick={() => {
+                        setShowModalDelete(true);
+                        setMaThangLuong(salary.MaThangLuong);
+                      }}
+                    />
                   </td>
                 </tr>
               ))}
@@ -124,6 +167,20 @@ export function SalaryStructure() {
           setShowModalAdd={setShowModalAdd}
           getAllThangLuong={getAllThangLuong}
         ></AddSalaryStructureForm>
+      )}
+      {showModalUpdate && (
+        <UpdateSalaryStructureForm
+          setShowModalUpdate={setShowModalUpdate}
+          getAllThangLuong={getAllThangLuong}
+          salaryStructure={selectedSalaryStructure}
+        ></UpdateSalaryStructureForm>
+      )}
+      {showModalDelete && (
+        <ConfirmDeleteModal
+          setShowModalDelete={setShowModalDelete}
+          onDelete={onDelete}
+          Name = {"Thang Lương"}
+        />
       )}
     </div>
   );
