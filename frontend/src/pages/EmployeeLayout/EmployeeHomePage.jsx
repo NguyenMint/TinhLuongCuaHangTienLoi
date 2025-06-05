@@ -118,7 +118,6 @@ export function EmployeeHomePage() {
               <tr className="bg-gray-100">
                 <th className="p-2 border">Tên ca</th>
                 <th className="p-2 border">Thời gian</th>
-                <th className="p-2 border">Mô tả</th>
                 <th className="p-2 border">Trạng thái</th>
                 <th className="p-2 border">Chấm công</th>
               </tr>
@@ -131,7 +130,6 @@ export function EmployeeHomePage() {
                     {shift.MaCaLam_ca_lam?.ThoiGianBatDau} -{" "}
                     {shift.MaCaLam_ca_lam?.ThoiGianKetThuc}
                   </td>
-                  <td className="p-2 border">{shift.MaCaLam_ca_lam?.MoTa}</td>
                   <td className="p-2 border">
                     {shift.cham_congs.length === 0 ? (
                       <span className="text-yellow-600 font-semibold">

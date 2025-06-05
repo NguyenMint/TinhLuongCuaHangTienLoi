@@ -64,7 +64,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     KyLuong: {
-      type: DataTypes.CHAR(7),
+      type: DataTypes.CHAR(23),
       allowNull: false
     },
     MaTK: {

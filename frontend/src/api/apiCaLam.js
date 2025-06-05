@@ -5,7 +5,7 @@ export const fetchCaLam = async () => {
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy Ca làm:", error);
-    return { success: false, message: "Lỗi kết nối đến server" };
+    return { message: "Lỗi kết nối đến server" };
   }
 };
 export const createCaLam = async (caLamData) => {

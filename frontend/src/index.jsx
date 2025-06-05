@@ -13,6 +13,7 @@ import { EmployeeHomePage} from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
 import { EmployeeProfile } from "./pages/EmployeeLayout/EmployeeProfile";
+import {SalaryStructure} from "./pages/SettingPage/SalaryStructurePage";
 function App() {
   const getRole = () => {
     const user = localStorage.getItem("user");
@@ -73,6 +74,16 @@ function App() {
               </MainLayout>
             </ProtectedRoute>
           }
+        ></Route>
+        <Route 
+        path="/settings/salary-structure"
+        element ={
+          <ProtectedRoute allowedRoles={[3, 1]}>
+            <MainLayout>
+              <SalaryStructure />
+            </MainLayout>
+          </ProtectedRoute>
+        }
         ></Route>
         <Route
           path="/employee-home"

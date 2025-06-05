@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteCaLam, fetchCaLam } from "../../api/apiCaLam.js";
-import AddShiftForm from "../../components/Shift/AddNewShiftModal";
-import DelteShiftForm from "../../components/ModalDelete";
-import UpdateShiftForm from "../../components/Shift/UpdateShiflModal";
+import {AddShiftForm} from "../../components/Shift/AddNewShiftModal";
+import {ConfirmDeleteModal} from "../../components/ModalDelete";
+import {UpdateShiftForm} from "../../components/Shift/UpdateShiflModal";
 export function ShiftPage() {
   const [data, setData] = useState();
   const [showModalAdd,setShowModalAdd] = useState(false);
@@ -97,7 +97,7 @@ export function ShiftPage() {
       ): <div className="text-gray-600">Đang tải dữ liệu..</div>}
     </div>
       {showModalAdd && <AddShiftForm setShowModalAdd={setShowModalAdd} getDataShift={getDataShift}></AddShiftForm>}
-      {showModalDelete && <DelteShiftForm setShowModalDelete={setShowModalDelete} onDelete={onDelete} Name={"Ca làm"}></DelteShiftForm>}
+      {showModalDelete && <ConfirmDeleteModal setShowModalDelete={setShowModalDelete} onDelete={onDelete} Name={"Ca làm"}></ConfirmDeleteModal>}
       {showModalUpdate && selectedShift && <UpdateShiftForm setShowModalUpdate={setShowModalUpdate} getDataShift={getDataShift} shift={selectedShift}/>}
     </div>
   );
