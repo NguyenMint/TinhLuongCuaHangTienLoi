@@ -6,7 +6,7 @@ import { fetchCaLam } from "../api/apiCaLam";
 import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
-import { update_chamcong } from "../api/apiChamCong";
+import { chamCong, update_chamcong } from "../api/apiChamCong";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
@@ -23,6 +23,8 @@ export function AttendancePage() {
     MaChamCong: "",
     DiTre: 0,
     RaSom: 0,
+    MaDKC: "",
+    NgayDangKy: "",
   });
 
   const getAllCaLam = async () => {
@@ -72,20 +74,34 @@ export function AttendancePage() {
   };
 
   const handleSaveShift = async (updatedShift) => {
-    console.log(dataUpdate);
+    if (!!dataUpdate.MaChamCong) {
 
-    try {
-      const response = await update_chamcong(
-        dataUpdate.GioVao,
-        dataUpdate.GioRa,
-        dataUpdate.DiTre,
-        dataUpdate.VeSom,
-        dataUpdate.MaChamCong
-      );
-      await getAllDangKyCa();
-    } catch (error) {
-      console.error("Lỗi khi cập nhật ca làm:", error);
+      try {
+        await update_chamcong(
+          dataUpdate.GioVao,
+          dataUpdate.GioRa,
+          dataUpdate.DiTre,
+          dataUpdate.VeSom,
+          dataUpdate.MaChamCong
+        );
+      } catch (error) {
+        console.error("Lỗi khi tạo mới bản ghi chấm công:", error);
+      }
+    } else {
+      try {
+        await chamCong(
+          dataUpdate.NgayDangKy,
+          dataUpdate.GioRa,
+          dataUpdate.GioVao,
+          dataUpdate.MaDKC,
+          false
+        );
+      } catch (error) {
+        console.error("Lỗi khi tạo mới bản ghi chấm công:", error);
+      }
     }
+
+    await getAllDangKyCa();
 
     setIsModalOpen(false);
   };
