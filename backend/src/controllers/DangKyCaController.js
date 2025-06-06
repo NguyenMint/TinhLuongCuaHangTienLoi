@@ -103,12 +103,22 @@ class DangKyCaController {
 
   async delete(req, res) {
     try {
-      const DangKyCa = await DangKyCa.findByPk(req.params.id);
-      if (!DangKyCa) {
-        return res.status(404).json({ message: "Ca làm không tồn tại" });
+      const dangKyCa = await DangKyCa.findByPk(req.params.id,{
+        include:[
+          {
+            model:db.ChamCong,
+            as: "cham_congs"
+          }
+        ]
+      });
+      if (!dangKyCa) {
+        return res.status(404).json({ message: "Đăng ký ca làm không tồn tại" });
       }
-      await DangKyCa.destroy();
-      res.status(200).json({ message: "Xóa ca làm thành công" });
+      if(dangKyCa.cham_congs.length > 0) {
+        return res.status(400).json({ message: "Không thể xóa đăng ký ca làm khi đã có chấm công" });
+      }
+      await dangKyCa.destroy();
+      res.status(200).json({ message: "Xóa đăng ký ca làm thành công" });
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
