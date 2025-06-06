@@ -1,6 +1,6 @@
 import React from "react";
 
-export function EmployeeProfile() {
+export function EmployeeProfilePage() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   return (

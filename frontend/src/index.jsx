@@ -12,9 +12,11 @@ import ProtectedRoute from "./ProtectedRoute";
 import { EmployeeHomePage} from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
-import { EmployeeProfile } from "./pages/EmployeeLayout/EmployeeProfile";
+import { EmployeeProfilePage } from "./pages/EmployeeLayout/EmployeeProfilePage";
 import {SalaryStructure} from "./pages/SettingPage/SalaryStructurePage";
+import { EmployeeUtilitiesPage } from "./pages/EmployeeLayout/EmployeeUtilitiesPage";
 import { PayrollPage } from "./pages/PayrollPage";
+
 
 function App() {
   const getRole = () => {
@@ -117,7 +119,19 @@ function App() {
               <div className="flex min-h-screen">
                 <SidebarEmployee />
                 <div className="flex-1">
-                  <EmployeeProfile />
+                  <EmployeeProfilePage />
+                </div>
+              </div>
+           </ProtectedRoute>
+        }></Route>
+        <Route
+          path="/employee-utility"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <div className="flex min-h-screen">
+                <SidebarEmployee />
+                <div className="flex-1">
+                  <EmployeeUtilitiesPage />
                 </div>
               </div>
            </ProtectedRoute>

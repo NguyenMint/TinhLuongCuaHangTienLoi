@@ -88,15 +88,11 @@ export function EmployeeHomePage() {
       
       <div className="flex flex-col items-center mb-6">
         <div className="text-gray-500 text-base">
-          {dateStr.charAt(0).toUpperCase() + dateStr.slice(1)}
+          {dateStr}
         </div>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-6xl font-extrabold tracking-widest">
-            {timeStr.split(":")[0]}
-          </span>
-          <span className="text-6xl font-extrabold">:</span>
-          <span className="text-6xl font-extrabold tracking-widest">
-            {timeStr.split(":")[1]}
+            {timeStr}
           </span>
         </div>
       </div>
