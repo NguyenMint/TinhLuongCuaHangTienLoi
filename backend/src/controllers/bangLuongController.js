@@ -298,7 +298,7 @@ exports.calculateSalary = async (req, res) => {
       0
     );
 
-    // Get allowances
+    // Phụ Cấp
     const allowances = await db.PhuCap.findAll({
       where: {
         MaTK,
