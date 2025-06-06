@@ -40,7 +40,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     trangthai: {
-      type: DataTypes.ENUM('Chờ duyệt','Hoàn thoành','Từ chối'),
+      type: DataTypes.ENUM('Chờ duyệt','Hoàn thành','Từ chối'),
       allowNull: false
     },
     MaCTBL: {
