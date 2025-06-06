@@ -163,6 +163,7 @@ export const WorkSchedule = () => {
       {/* Add Shift Modal */}
       {isModalOpen && (
         <AddShiftModal
+          schedules={schedules}
           shifts={shifts}
           isOpen={isModalOpen}
           onClose={handleModalClose}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { XIcon, PlusIcon } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -10,10 +10,32 @@ export const AddShiftModal = ({
   date,
   shifts,
   onSuccess,
+  schedules,
 }) => {
+  // console.log(date);
+  // console.log(employee);
   const [selectedShifts, setSelectedShifts] = useState({});
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [applyToOthers, setApplyToOthers] = useState(false);
+  const [availableShifts, setavailableShifts] = useState([]);
+
+  useEffect(() => {
+    if (schedules && employee) {
+      const employeeSchedules = schedules.filter(
+        (schedule) =>
+          schedule.MaNS === employee.MaTK &&
+          format(date, "yyyy-MM-dd") ===
+            format(new Date(schedule.NgayDangKy), "yyyy-MM-dd")
+      );
+      const scheduledShiftIds = employeeSchedules.map((s) => s.MaCaLam);
+
+      const availShifts = shifts.filter(
+        (shift) => !scheduledShiftIds.includes(shift.MaCa)
+      );
+      setavailableShifts(availShifts);
+    }
+  }, [schedules, employee]);
+
   const handleSubmit = async () => {
     try {
       console.log({
@@ -52,7 +74,6 @@ export const AddShiftModal = ({
       await Promise.all(requests);
       onClose();
       if (onSuccess) onSuccess();
-      
     } catch (error) {
       console.error("Error submitting shift:", error);
     }
@@ -98,7 +119,7 @@ export const AddShiftModal = ({
 
             <div className="space-y-4">
               <Shift
-                shifts={shifts}
+                shifts={availableShifts}
                 setSelectedShifts={setSelectedShifts}
                 selectedShifts={selectedShifts}
               />
