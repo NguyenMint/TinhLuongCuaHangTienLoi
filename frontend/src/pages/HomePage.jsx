@@ -5,19 +5,21 @@ import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
 import { useEffect } from "react";
+import { getChiNhanh } from "../api/apiChiNhanh.js";
 
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
-  const [workplaceBranch, setWorkplaceBranch] = useState("");
+  const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [payrollBranch, setPayrollBranch] = useState("");
   const [department, setDepartment] = useState("");
   const [position, setPosition] = useState("");
-  // State for selected employee and active tab
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
   const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [chinhanhs, setChiNhanhs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const getAllNhanVien = async () => {
@@ -28,12 +30,28 @@ export function HomePage() {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
   };
+  const fetchChiNhanh = async () => {
+    try {
+      const data = await getChiNhanh();
+      setChiNhanhs(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
 
   useEffect(() => {
     getAllNhanVien();
+    fetchChiNhanh();
   }, []);
 
-  // Event handlers
+  useEffect(() => {
+    const filtered = selectedChiNhanh
+      ? employees.filter((emp) => emp.MaCN === Number(selectedChiNhanh.MaCN))
+      : employees;
+
+    setFilteredEmployees(filtered);
+  }, [employees, selectedChiNhanh]);
+
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
   };
@@ -45,7 +63,6 @@ export function HomePage() {
   };
   const handleSearch = async (query) => {
     try {
-      
       if (!query.trim()) {
         await getAllNhanVien();
         return;
@@ -60,10 +77,11 @@ export function HomePage() {
     <div className="flex">
       <div className="md:flex flex-1">
         <FilterSidebar
+          chinhanhs={chinhanhs}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          workplaceBranch={workplaceBranch}
-          setWorkplaceBranch={setWorkplaceBranch}
+          selectedChiNhanh={selectedChiNhanh}
+          setSelectedChiNhanh={setSelectedChiNhanh}
           payrollBranch={payrollBranch}
           setPayrollBranch={setPayrollBranch}
           department={department}
@@ -72,18 +90,17 @@ export function HomePage() {
           setPosition={setPosition}
         />
         <div className="flex-1 px-6 md:p-6">
-
           <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-            <Search 
-              placeholder="Tìm kiếm nhân viên..." 
-              onSearch={handleSearch} 
-              setQuery={setSearchQuery} 
+            <Search
+              placeholder="Tìm kiếm nhân viên..."
+              onSearch={handleSearch}
+              setQuery={setSearchQuery}
             />
             {/* <CreateInvoice /> */}
           </div>
           <div className="mt-6">
             <EmployeeTable
-              employees={employees}
+              employees={filteredEmployees}
               selectedEmployee={selectedEmployee}
               setSelectedEmployee={setSelectedEmployee}
               setShowDetail={setShowDetail}
