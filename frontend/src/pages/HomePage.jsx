@@ -50,10 +50,10 @@ export function HomePage() {
     // Lọc theo chi nhánh
     if (selectedChiNhanh) {
       filtered = filtered.filter(
-        (emp) => emp.MaCN === Number(selectedChiNhanh)
+        (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
-
+    
     // Lọc theo trạng thái
     if (statusFilter === "working") {
       filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
