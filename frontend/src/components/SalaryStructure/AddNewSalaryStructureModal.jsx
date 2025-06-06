@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createThangLuong } from "../../api/apiThangLuong";
+import { formatCurrency } from "../../utils/formatCurrency.js";
 export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
   const [form, setForm] = useState({
     LuongCoBan: 0,
@@ -28,9 +29,17 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
       return;
     }
     if (name === "LoaiNV" && form.MaVaiTro === 1) return;
+    if(name==="LuongCoBan" || name === "LuongTheoGio"){
+      const number = value.replace(/[^0-9]/g, "");
+      setForm((prev) => ({
+        ...prev,
+        [name]:number
+      }));
+      return;
+    }
     setForm((prev) => ({
       ...prev,
-      [name]:value,
+      [name]:value
     }));
   };
   const handleSubmit = async (e) => {
@@ -112,11 +121,12 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
               <div>
                 <label className="block mb-1 font-medium">Lương cơ bản</label>
                 <input
-                  type="number"
+                  type="text"
                   name="LuongCoBan"
-                  value={form.LuongCoBan}
+                  value={formatCurrency(form.LuongCoBan)}
                   onChange={handleChange}
                   className="w-full border rounded px-3 py-2"
+                  inputMode="numeric"
                 />
               </div>
               <div>
@@ -147,11 +157,12 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
             <div>
               <label className="block mb-1 font-medium">Lương theo giờ</label>
               <input
-                type="number"
+                type="text"
                 name="LuongTheoGio"
-                value={form.LuongTheoGio}
+                value={formatCurrency(form.LuongTheoGio)}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
+                inputMode="numeric"
               />
             </div>
           )}

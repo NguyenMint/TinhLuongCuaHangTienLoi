@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { updateThangLuong } from "../../api/apiThangLuong";
+import { formatCurrency } from "../../utils/formatCurrency.js";
 export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong,salaryStructure }) {
   const [form, setForm] = useState({
     LuongCoBan: salaryStructure.LuongCoBan ,
@@ -12,6 +13,14 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if(name === "LuongCoBan" || name === "LuongTheoGio"){
+      const number = value.replace(/[^0-9]/g, "");
+      setForm((prev) => ({
+        ...prev,
+        [name]: number
+      }));
+      return;
+    }
     setForm((prev) => ({
       ...prev,
       [name]:
@@ -83,11 +92,12 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
               <div>
                 <label className="block mb-1 font-medium">Lương cơ bản</label>
                 <input
-                  type="number"
+                  type="text"
                   name="LuongCoBan"
-                  value={form.LuongCoBan}
+                  value={formatCurrency(form.LuongCoBan)}
                   onChange={handleChange}
                   className="w-full border rounded px-3 py-2"
+                  inputMode="numeric"
                 />
               </div>
               <div>
@@ -118,11 +128,12 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
             <div>
               <label className="block mb-1 font-medium">Lương theo giờ</label>
               <input
-                type="number"
+                type="text"
                 name="LuongTheoGio"
-                value={form.LuongTheoGio}
+                value={formatCurrency(form.LuongTheoGio)}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
+                inputMode="numeric"
               />
             </div>
           )}

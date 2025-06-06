@@ -4,7 +4,8 @@ import { fetchAllThangLuong } from "../../api/apiThangLuong.js";
 import { AddSalaryStructureForm } from "../../components/SalaryStructure/AddNewSalaryStructureModal.jsx";
 import { UpdateSalaryStructureForm } from "../../components/SalaryStructure/UpdateSalaryStructureModal.jsx";
 import { ConfirmDeleteModal } from "../../components/ModalDelete.jsx";
-import { deleteThangLuong } from "../../api/apiThangLuong.js";  
+import { deleteThangLuong } from "../../api/apiThangLuong.js"; 
+import { formatCurrency } from "../../utils/formatCurrency.js";
 export function SalaryStructure() {
   const [data, setData] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -41,9 +42,6 @@ export function SalaryStructure() {
   }, []);
   const fullTime = data.filter((item) => item.LoaiNV === "FullTime");
   const partTime = data.filter((item) => item.LoaiNV === "PartTime");
-  function formatVND(number) {
-  return Number(number).toLocaleString("vi-VN", { style: "currency", currency: "VND" });
-}
   return (
     <div>
       <div className="p-6 bg-gray-100 min-h-screen">
@@ -76,7 +74,7 @@ export function SalaryStructure() {
                 <tr className="hover:bg-gray-50">
                   <td className="px-4 py-2 border text-center">{index + 1}</td>
                   <td className="px-4 py-2 border text-center">
-                    {formatVND(salary.LuongCoBan)}
+                    {formatCurrency(salary.LuongCoBan)}
                   </td>
                   <td className="px-4 py-2 border text-center">
                     {salary.BacLuong}
@@ -130,7 +128,7 @@ export function SalaryStructure() {
                 <tr className="hover:bg-gray-50" key={salary.id || index}>
                   <td className="px-4 py-2 border text-center">{index + 1}</td>
                   <td className="px-4 py-2 border text-center">
-                    {formatVND(salary.LuongTheoGio)}
+                    {formatCurrency(salary.LuongTheoGio)}
                   </td>
                   <td className="px-4 py-2 border text-center">
                     {salary.MaVaiTro === 2 ? "Nhân viên" : "Quản lý"}
