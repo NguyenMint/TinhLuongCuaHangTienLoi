@@ -94,7 +94,7 @@ class ChamCongController {
           DiTre,
           GioRa,
           VeSom,
-          trangthai: "Hoàn thoành",
+          trangthai: "Hoàn thành",
         },
         {
           where: { MaChamCong },
