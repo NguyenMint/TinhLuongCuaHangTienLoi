@@ -8,36 +8,39 @@ const { Op } = require("sequelize");
 // Create a new salary detail
 exports.create = async (req, res) => {
   try {
-    const {
-      MaBangLuong,
-      GioLamViecTrongNgay,
-      TienLuongNgay,
-      TienPhat,
-      TienPhuCap,
-      LoaiPhuCap,
-      tongtien
-    } = req.body;
+    // const {
+    //   MaBangLuong,
+    //   GioLamViecTrongNgay,
+    //   TienLuongNgay,
+    //   TienPhat,
+    //   TienPhuCap,
+    //   LoaiPhuCap,
+    //   tongtien,
+    // } = req.body;
 
-    const chiTietBangLuong = await ChiTietBangLuong.create({
-      MaBangLuong,
-      GioLamViecTrongNgay,
-      TienLuongNgay,
-      TienPhat,
-      TienPhuCap,
-      LoaiPhuCap,
-      tongtien
-    });
+    console.log(req.body); 
+
+
+    // const chiTietBangLuong = await ChiTietBangLuong.create({
+    //   MaBangLuong,
+    //   GioLamViecTrongNgay,
+    //   TienLuongNgay,
+    //   TienPhat,
+    //   TienPhuCap,
+    //   LoaiPhuCap,
+    //   tongtien
+    // });
 
     res.status(201).json({
       success: true,
       message: "Salary detail created successfully",
-      data: chiTietBangLuong
+      // data: chiTietBangLuong,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error creating salary detail",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -54,22 +57,19 @@ exports.findAll = async (req, res) => {
             {
               model: TaiKhoan,
               as: "MaTK_tai_khoan",
-              attributes: ["HoTen", "MaTK"]
-            }
-          ]
-        }
-      ]
+              attributes: ["HoTen", "MaTK"],
+            },
+          ],
+        },
+      ],
     });
 
-    res.status(200).json({
-      success: true,
-      data: chiTietBangLuong
-    });
+    res.status(200).json(chiTietBangLuong);
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error retrieving salary details",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -86,33 +86,33 @@ exports.findOne = async (req, res) => {
             {
               model: TaiKhoan,
               as: "MaTK_tai_khoan",
-              attributes: ["HoTen", "MaTK"]
-            }
-          ]
+              attributes: ["HoTen", "MaTK"],
+            },
+          ],
         },
         {
           model: ChamCong,
-          as: "cham_congs"
-        }
-      ]
+          as: "cham_congs",
+        },
+      ],
     });
 
     if (!chiTietBangLuong) {
       return res.status(404).json({
         success: false,
-        message: "Salary detail not found"
+        message: "Salary detail not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: chiTietBangLuong
+      data: chiTietBangLuong,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error retrieving salary detail",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -125,7 +125,7 @@ exports.update = async (req, res) => {
     if (!chiTietBangLuong) {
       return res.status(404).json({
         success: false,
-        message: "Salary detail not found"
+        message: "Salary detail not found",
       });
     }
 
@@ -134,13 +134,13 @@ exports.update = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Salary detail updated successfully",
-      data: chiTietBangLuong
+      data: chiTietBangLuong,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error updating salary detail",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -153,7 +153,7 @@ exports.delete = async (req, res) => {
     if (!chiTietBangLuong) {
       return res.status(404).json({
         success: false,
-        message: "Salary detail not found"
+        message: "Salary detail not found",
       });
     }
 
@@ -161,13 +161,13 @@ exports.delete = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Salary detail deleted successfully"
+      message: "Salary detail deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error deleting salary detail",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -182,15 +182,15 @@ exports.calculateDailySalary = async (req, res) => {
       include: [
         {
           model: TaiKhoan,
-          as: "MaTK_tai_khoan"
-        }
-      ]
+          as: "MaTK_tai_khoan",
+        },
+      ],
     });
 
     if (!bangLuong) {
       return res.status(404).json({
         success: false,
-        message: "Salary sheet not found"
+        message: "Salary sheet not found",
       });
     }
 
@@ -204,15 +204,15 @@ exports.calculateDailySalary = async (req, res) => {
             SELECT MaDKC 
             FROM dang_ky_ca 
             WHERE MaNS = ${bangLuong.MaTK}
-          )`)
-        }
-      }
+          )`),
+        },
+      },
     });
 
     if (!chamCong) {
       return res.status(404).json({
         success: false,
-        message: "No attendance record found for this day"
+        message: "No attendance record found for this day",
       });
     }
 
@@ -226,7 +226,8 @@ exports.calculateDailySalary = async (req, res) => {
     const tienLuongNgay = luongTheoGio * gioLamViec;
 
     // Calculate penalties for late arrival and early departure
-    const tienPhat = (chamCong.DiTre || 0) * 50000 + (chamCong.VeSom || 0) * 50000;
+    const tienPhat =
+      (chamCong.DiTre || 0) * 50000 + (chamCong.VeSom || 0) * 50000;
 
     // Calculate allowances
     const tienPhuCap = 0; // This should be calculated based on allowances for the day
@@ -242,18 +243,18 @@ exports.calculateDailySalary = async (req, res) => {
       TienPhat: tienPhat,
       TienPhuCap: tienPhuCap,
       LoaiPhuCap: loaiPhuCap,
-      tongtien
+      tongtien,
     };
 
     res.status(200).json({
       success: true,
-      data: chiTietBangLuong
+      data: chiTietBangLuong,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error calculating daily salary",
-      error: error.message
+      error: error.message,
     });
   }
-}; 
+};

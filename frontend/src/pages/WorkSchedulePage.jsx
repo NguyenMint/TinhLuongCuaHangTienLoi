@@ -10,7 +10,7 @@ import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks } from "date-fns";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
-import { fetchDangKyCa } from "../api/apiDangKyCa.js";
+import { deleteDangKyCa, fetchDangKyCa } from "../api/apiDangKyCa.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
 
 export const WorkSchedule = () => {
@@ -53,12 +53,6 @@ export const WorkSchedule = () => {
     }
   };
 
-  useEffect(() => {
-    getAllNhanVien();
-    getAllCaLam();
-    getAllDangKyCa();
-  }, []);
-
   const handlePreviousWeek = () => {
     setCurrentDate(subWeeks(currentDate, 1));
   };
@@ -89,6 +83,34 @@ export const WorkSchedule = () => {
       setEmployees(results);
     } catch (error) {
       console.error("Lỗi khi tìm kiếm:", error);
+    }
+  };
+  useEffect(() => {
+    getAllNhanVien();
+    getAllCaLam();
+    getAllDangKyCa();
+  }, []);
+
+  const handleDeleteShift = async (employee, date, shift) => {
+    if (
+      window.confirm(
+        `Bạn có chắc muốn xoá ca "${shift.TenCa}" của ${employee.HoTen}?`
+      )
+    ) {
+      if (!shift || !shift.MaDKC) {
+        alert("Không tìm thấy mã đăng ký ca hợp lệ để xoá.");
+        return;
+      }
+      try {
+        const result = await deleteDangKyCa(shift.MaDKC);
+        if (!result.success) {
+          alert(result.message || "Xóa thang lương thất bại.");
+          return;
+        }
+        await getAllDangKyCa();
+      } catch (error) {
+        console.error("Lỗi khi xoá ca:", error);
+      }
     }
   };
 
@@ -156,6 +178,7 @@ export const WorkSchedule = () => {
       {/* Schedule Table */}
       <ScheduleTable
         currentDate={currentDate}
+        onDeleteShift={handleDeleteShift}
         employees={employees}
         onAddShift={handleAddShift}
         schedules={schedules}

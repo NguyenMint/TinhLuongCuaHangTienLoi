@@ -6,6 +6,7 @@ export const ScheduleTable = ({
   currentDate,
   onAddShift,
   employees,
+  onDeleteShift,
   schedules,
 }) => {
   const startDate = startOfWeek(currentDate, {
@@ -30,7 +31,10 @@ export const ScheduleTable = ({
       acc[employeeKey][employee.NgayDangKy] = [];
     }
 
-    acc[employeeKey][employee.NgayDangKy].push(employee.MaCaLam_ca_lam.TenCa);
+    acc[employeeKey][employee.NgayDangKy].push({
+      TenCa: employee.MaCaLam_ca_lam.TenCa,
+      MaDKC: employee.MaDKC,
+    });
 
     return acc;
   }, {});
@@ -50,9 +54,10 @@ export const ScheduleTable = ({
             {shift.map((shift, index) => (
               <div
                 key={index}
+                onClick={() => onDeleteShift?.(employee, date, shift)}
                 className="p-2 text-xs font-bold rounded w-full bg-blue-50 text-blue-700 text-center"
               >
-                {shift}
+                {shift.TenCa}
               </div>
             ))}
             <button
