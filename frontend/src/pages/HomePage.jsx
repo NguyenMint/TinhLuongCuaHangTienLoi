@@ -7,6 +7,7 @@ import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import { useEffect } from "react";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx";
+import { Pagination } from "../components/Pagination.jsx";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -21,10 +22,19 @@ export function HomePage() {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  // 3 useState đóng mở thêm xóa sửa nhân viên
+  // 3 useState đóng mở thêm sửa nhân viên
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
-  const [showModalDelete, setShowModalDelete] = useState(false);
+  // Tính toán phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const nhanVienInPage = 5;
+  const indexLast = currentPage * nhanVienInPage;
+  const indexFirst = indexLast - nhanVienInPage;
+  const employeeCurrent = filteredEmployees.slice(indexFirst, indexLast);
+  const totalPage = Math.ceil(filteredEmployees.length / nhanVienInPage);
+  const handlePageChange = (pagenumber) => {
+    setCurrentPage(pagenumber);
+  };
   const getAllNhanVien = async () => {
     try {
       const data = await fetchAllNhanVien();
@@ -51,10 +61,11 @@ export function HomePage() {
     const filtered = selectedChiNhanh
       ? employees.filter((emp) => emp.MaCN === Number(selectedChiNhanh.MaCN))
       : employees;
-
     setFilteredEmployees(filtered);
   }, [employees, selectedChiNhanh]);
-
+  useEffect(() => {
+  setCurrentPage(1);
+}, [filteredEmployees]);
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
   };
@@ -123,12 +134,17 @@ export function HomePage() {
           </div>
           <div className="mt-6">
             <EmployeeTable
-              employees={filteredEmployees}
+              employees={employeeCurrent}
               selectedEmployee={selectedEmployee}
               setSelectedEmployee={setSelectedEmployee}
               setShowDetail={setShowDetail}
             />
           </div>
+          <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPage}
+          onPageChange={handlePageChange}
+          ></Pagination>
           {showDetail && (
             <div className="mt-4 bg-white rounded-lg shadow">
               <EmployeeDetail

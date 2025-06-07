@@ -2,13 +2,13 @@ import { use, useEffect, useState } from "react";
 import { getAllThangLuongFullTime } from "../../api/apiThangLuong";
 import {formatCurrency} from "../../utils/formatCurrency";
 import { getAllQuanLyByChiNhanh } from "../../api/apiTaiKhoan";
+import { createEmployee } from "../../api/apiTaiKhoan";
 export function AddEmployeeModal({
   setShowModalAdd,
   getAllEmployees,
   chiNhanhs,
 }) {
   const [form, setForm] = useState({
-    MaTK: "",
     HoTen: "",
     GioiTinh: "",
     Email: "",
@@ -40,15 +40,6 @@ export function AddEmployeeModal({
       }));
       return;
     }
-    if (name === "LoaiNV" && value === "PartTime") {
-      setForm((prev) => ({
-        ...prev,
-        LoaiNV: value,
-        BacLuong: 0,
-        LuongCoBanHienTai: 0,
-      }));
-      return;
-    }
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -56,23 +47,45 @@ export function AddEmployeeModal({
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (
-      !form.HoTen ||
-      !form.Email ||
-      !form.Password ||
-      !form.SoDienThoai ||
-      !form.NgaySinh ||
-      !form.DiaChi ||
-      !form.MaCN
-    ) {
-      alert("Vui lòng điền đầy đủ thông tin!");
-      return;
-    }
-    alert("Thêm nhân viên thành công!");
-    getAllEmployees && getAllEmployees();
-    setShowModalAdd(false);
-  };
+  e.preventDefault();
+
+  if (
+    !form.HoTen ||
+    !form.Email ||
+    !form.SoDienThoai ||
+    !form.NgaySinh ||
+    !form.DiaChi ||
+    !form.MaCN ||
+    !form.CCCD ||
+    !form.TenNganHang ||
+    !form.STK
+  ) {
+    alert("Vui lòng điền đầy đủ thông tin!");
+    return;
+  }
+
+  const avatarInput = document.querySelector('input[name="avatar"]');
+  const avatarFile = avatarInput && avatarInput.files[0];
+  const formData = new FormData();
+  Object.entries(form).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+  if (avatarFile) {
+    formData.append("avatar", avatarFile);
+  }
+  if (form.LoaiNV === "PartTime") {
+    formData.set("BacLuong", 0);
+    formData.set("LuongCoBanHienTai", 0);
+  }
+  const result = await createEmployee(formData);
+  if (!result.success) {
+    alert(result.message || "Thêm nhân viên thất bại.");
+    return;
+  }
+  alert("Thêm nhân viên thành công!");
+  getAllEmployees();
+  setShowModalAdd(false);
+};
   const fetchAllThangLuongFullTime = async () =>{
     try {
       const response = await getAllThangLuongFullTime();
@@ -91,6 +104,7 @@ export function AddEmployeeModal({
   }
   useEffect(()=>{
     fetchAllThangLuongFullTime();
+    console.log("token",localStorage.getItem("token"))
   },[]);
   useEffect(() => {
     fetchAllQuanLyByChiNhanh();
@@ -157,8 +171,8 @@ export function AddEmployeeModal({
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
             >
-              <option value="Nam">Nam</option>
-              <option value="Nữ">Nữ</option>
+              <option value={true}>Nam</option>
+              <option value={false}>Nữ</option>
             </select>
           </div>
           <div>
@@ -258,6 +272,7 @@ export function AddEmployeeModal({
               className="w-full border rounded px-3 py-2"
               required
             >
+            <option value="">Chọn thang lương</option>
               {(thangLuong.filter(tl => tl.MaVaiTro === Number(form.MaVaiTro))).map((thangluong) => (
                 <option
                   key={thangluong.BacLuong}
@@ -291,7 +306,9 @@ export function AddEmployeeModal({
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
             >
+            <option value="">Chọn quản lý</option>
               {quanLys.map((ql) => (
+                
                 <option value={ql.MaTK}>
                   {ql.HoTen}
                 </option>

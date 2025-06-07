@@ -42,7 +42,7 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async getAllQuanLyByChiNhanh (req,res){
+  async getAllQuanLyByChiNhanh(req, res) {
     const { MaCN } = req.params;
     try {
       const taikhoans = await TaiKhoan.findAll({
@@ -56,7 +56,7 @@ class TaiKhoanController {
   }
   async create(req, res) {
     try {
-      const { CCCD, STK, Email, Password } = req.body;
+      const { CCCD, STK, Email, SoNgayNghiPhep } = req.body;
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -89,13 +89,16 @@ class TaiKhoanController {
         return res.status(400).json({ message: "Vui lòng upload avatar" });
       }
       const avatarPath = path.join("uploads/avatars/", req.file.filename);
-      const hashedPassword = await bcrypt.hash(Password, 10);
+      const hashedPassword = await bcrypt.hash("1", 10);
       const newTaiKhoan = await TaiKhoan.create({
         ...req.body,
         Avatar: avatarPath,
         STK,
         Email,
         Password: hashedPassword,
+        TrangThai: "Đang làm",
+        SoNgayNghiPhep: SoNgayNghiPhep,
+        SoNgayChuaNghi: SoNgayNghiPhep,
       });
       return res.status(201).json(newTaiKhoan);
     } catch (error) {
@@ -110,6 +113,7 @@ class TaiKhoanController {
       if (!taikhoan) {
         return res.status(404).json({ message: "Không tồn tại tài khoản này" });
       }
+      const updateData = { ...req.body };
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -122,48 +126,47 @@ class TaiKhoanController {
           });
         }
       };
-      const { CCCD, STK, Email, Password } = req.body;
-      const existCCCD = await TaiKhoan.findOne({
-        where: { CCCD, MaTK: { [Op.ne]: MaTK } },
-      });
-      const existCCCDNPT = await NguoiPhuThuoc.findOne({ where: { CCCD } });
-      if (existCCCD || existCCCDNPT) {
-        deleteUploadedFile();
-        return res.status(409).json({ message: "Đã tồn tại CCCD này rồi" });
+      if (req.CCCD) {
+        const existCCCD = await TaiKhoan.findOne({
+          where: { CCCD: req.body.CCCD, MaTK: { [Op.ne]: MaTK } },
+        });
+        const existCCCDNPT = await NguoiPhuThuoc.findOne({
+          where: { CCCD: req.body.CCCD },
+        });
+        if (existCCCD || existCCCDNPT) {
+          deleteUploadedFile();
+          return res.status(409).json({ message: "Đã tồn tại CCCD này rồi" });
+        }
       }
-      const existSTK = await TaiKhoan.findOne({
-        where: { STK, MaTK: { [Op.ne]: MaTK } },
-      });
-      if (existSTK) {
-        deleteUploadedFile();
-        return res.status(409).json({ message: "Đã tồn tại STK này rồi" });
+      if (req.body.STK) {
+        const existSTK = await TaiKhoan.findOne({
+          where: { STK: req.body.STK, MaTK: { [Op.ne]: MaTK } },
+        });
+        if (existSTK) {
+          deleteUploadedFile();
+          return res.status(409).json({ message: "Đã tồn tại STK này rồi" });
+        }
       }
-      const existEmail = await TaiKhoan.findOne({
-        where: { Email, MaTK: { [Op.ne]: MaTK } },
-      });
-      if (existEmail) {
-        deleteUploadedFile();
-        return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
+      if (req.body.Email) {
+        const existEmail = await TaiKhoan.findOne({
+          where: { Email: req.body.Email, MaTK: { [Op.ne]: MaTK } },
+        });
+        if (existEmail) {
+          deleteUploadedFile();
+          return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
+        }
       }
       if (req.file) {
         const oldAvatarPath = path.join(__dirname, "../../", taikhoan.Avatar);
         fs.unlink(oldAvatarPath, (err) => {
           if (err) console.error("Không thể xóa avatar cũ:", err);
         });
+        updateData.Avatar = path.join("uploads/avatars", req.file.filename);
       }
-      const avatarPath = path.join("uploads/avatars", req.file.filename);
-      const hashedPassword = await bcrypt.hash(Password, 10);
-      await taikhoan.update({
-        ...req.body,
-        Avatar: avatarPath,
-        CCCD,
-        Email,
-        STK,
-        Password: hashedPassword,
-      });
+      await taikhoan.update(updateData);
       res.status(200).json(taikhoan);
     } catch (error) {
-      console.error("Lỗi khi tạo tài khoản:", error);
+      console.error("Lỗi khi update tài khoản:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
