@@ -3,10 +3,10 @@ import { FilterSidebar } from "../components/HomePage/FilterSidebar.jsx";
 import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import Search from "../components/search.jsx";
-import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
+import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import { useEffect } from "react";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
-
+import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -21,7 +21,10 @@ export function HomePage() {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
+  // 3 useState đóng mở thêm xóa sửa nhân viên
+  const [showModalAdd, setShowModalAdd] = useState(false);
+  const [showModalUpdate, setShowModalUpdate] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const getAllNhanVien = async () => {
     try {
       const data = await fetchAllNhanVien();
@@ -108,6 +111,26 @@ export function HomePage() {
               setQuery={setSearchQuery}
             />
             {/* <CreateInvoice /> */}
+            <div className="">
+              <button
+                onClick={() => setShowModalAdd(true)}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Thêm nhân viên
+              </button>
+              <button
+                onClick={handleImportFile}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
+              >
+                Nhập file
+              </button>
+              <button
+                onClick={handleExportFile}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2"
+              >
+                Xuất file
+              </button>
+            </div>
           </div>
           <div className="mt-6">
             <EmployeeTable
@@ -127,6 +150,13 @@ export function HomePage() {
             </div>
           )}
         </div>
+        {showModalAdd && (
+          <AddEmployeeModal
+            setShowModalAdd={setShowModalAdd}
+            getAllEmployees={getAllNhanVien}
+            chiNhanhs={chinhanhs}
+          />
+        )}
       </div>
     </div>
   );

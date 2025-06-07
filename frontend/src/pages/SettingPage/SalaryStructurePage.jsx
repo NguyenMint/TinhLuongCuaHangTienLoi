@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { fetchAllThangLuong } from "../../api/apiThangLuong.js";
+import { getAllThangLuong } from "../../api/apiThangLuong.js";
 import { AddSalaryStructureForm } from "../../components/SalaryStructure/AddNewSalaryStructureModal.jsx";
 import { UpdateSalaryStructureForm } from "../../components/SalaryStructure/UpdateSalaryStructureModal.jsx";
 import { ConfirmDeleteModal } from "../../components/ModalDelete.jsx";
@@ -13,9 +13,9 @@ export function SalaryStructure() {
   const [selectedSalaryStructure, setSelectedSalaryStructure] = useState(null);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [maThangLuong, setMaThangLuong] = useState(null);
-  const getAllThangLuong = async () => {
+  const fetchAllThangLuong = async () => {
     try {
-      const response = await fetchAllThangLuong();
+      const response = await getAllThangLuong();
       setData(response);
     } catch (error) {
       console.error("Lỗi lấy dữ liệu thang lương:", error);
@@ -37,8 +37,7 @@ export function SalaryStructure() {
       setShowModalDelete(false);
     }
   useEffect(() => {
-    getAllThangLuong();
-    console.log("token",localStorage.getItem("token"));
+    fetchAllThangLuong();
   }, []);
   const fullTime = data.filter((item) => item.LoaiNV === "FullTime");
   const partTime = data.filter((item) => item.LoaiNV === "PartTime");

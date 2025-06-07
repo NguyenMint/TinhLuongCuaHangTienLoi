@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/api.js";
+import { login } from "../api/apiTaiKhoan.js";
 
 export const LoginPage = () => {
   const [email, setEmail] = useState("");

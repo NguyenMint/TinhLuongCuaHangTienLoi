@@ -9,7 +9,7 @@ import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks } from "date-fns";
 import Search from "../components/search.jsx";
-import { fetchAllNhanVien, searchEmployee } from "../api/api.js";
+import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import { deleteDangKyCa, fetchDangKyCa } from "../api/apiDangKyCa.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
 

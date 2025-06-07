@@ -9,20 +9,15 @@ export const fetchAllNhanVien = async () => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const fetchChiNhanh = async () => {
+export const getAllQuanLyByChiNhanh = async (MaCN) => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/chinhanh`);
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllQuanLyByChiNhanh/${MaCN}`);
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy Chi nhánh:", error);
+    console.error("Lỗi lấy user:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-
-
-
-
-
 export const searchEmployee = async (keyword) => {
   try {
     
