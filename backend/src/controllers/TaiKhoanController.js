@@ -42,6 +42,18 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async getAllQuanLyByChiNhanh (req,res){
+    const { MaCN } = req.params;
+    try {
+      const taikhoans = await TaiKhoan.findAll({
+        where: { MaCN, MaVaiTro: 1 },
+      });
+      res.status(200).json(taikhoans);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
   async create(req, res) {
     try {
       const { CCCD, STK, Email, Password } = req.body;

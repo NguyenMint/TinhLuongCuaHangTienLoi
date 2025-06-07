@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AttendanceTable from "../components/attendance/AttendanceTable";
 import ShiftModal from "../components/attendance/ShiftModal";
-import { fetchAllNhanVien } from "../api/api";
+import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 import { fetchCaLam } from "../api/apiCaLam";
 import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";

@@ -4,7 +4,7 @@ export const getChiNhanh = async () => {
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/chinhanh`);
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy Ca làm:", error);
-    return { message: "Lỗi kết nối đến server" };
+    console.error("Lỗi lấy Chi nhánh:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
   }
 };

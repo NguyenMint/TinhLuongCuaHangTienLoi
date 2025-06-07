@@ -1,7 +1,16 @@
 import axios from 'axios';
-export const fetchAllThangLuong = async () =>{
+export const getAllThangLuong = async () =>{
     try {
         const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/thangluong`);
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+      return { success: false, message: "Lỗi kết nối đến server" };
+    }
+}
+export const getAllThangLuongFullTime = async () =>{
+    try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/thangluong/fulltime`);
         return response.data;
     } catch (error) {
         console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
