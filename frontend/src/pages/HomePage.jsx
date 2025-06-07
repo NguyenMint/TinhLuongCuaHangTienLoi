@@ -57,15 +57,30 @@ export function HomePage() {
     fetchChiNhanh();
   }, []);
 
-  useEffect(() => {
-    const filtered = selectedChiNhanh
-      ? employees.filter((emp) => emp.MaCN === Number(selectedChiNhanh.MaCN))
-      : employees;
-    setFilteredEmployees(filtered);
-  }, [employees, selectedChiNhanh]);
-  useEffect(() => {
+useEffect(() => {
+  let filtered = [...employees];
+
+  // Lọc theo chi nhánh
+  if (selectedChiNhanh) {
+    filtered = filtered.filter(
+      (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
+    );
+  }
+
+  // Lọc theo trạng thái
+  if (statusFilter === "working") {
+    filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
+  } else if (statusFilter === "resigned") {
+    filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
+  }
+
+  setFilteredEmployees(filtered);
+}, [employees, selectedChiNhanh, statusFilter]);
+
+useEffect(() => {
   setCurrentPage(1);
 }, [filteredEmployees]);
+  
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
   };

@@ -55,7 +55,7 @@ export const ScheduleTable = ({
               <div
                 key={index}
                 onClick={() => onDeleteShift?.(employee, date, shift)}
-                className="p-2 text-xs font-bold rounded w-full bg-blue-50 text-blue-700 text-center"
+                className="p-2 text-xs font-bold rounded w-full bg-blue-50 text-blue-700 text-center cursor-pointer"
               >
                 {shift.TenCa}
               </div>
