@@ -59,3 +59,24 @@ export const login = async (Email, Password) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 }
+export async function createEmployee(formData) {
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return {success:true,data:res.data};
+  } catch (error) {
+    if (error.response.status===409) {
+      return { sucesss: false, message: error.response.data.message };
+    }
+    console.error("Lỗi thêm nhân viên:", error);
+    return { sucesss:false, message: "Lỗi kết nối server" };
+  }
+}
