@@ -238,5 +238,22 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async resetMK(req,res){
+    try {
+      const {MaTK} = req.params;
+      const taiKhoan = await TaiKhoan.findByPk(MaTK);
+      if(!taiKhoan){
+        return res.status(404).json({messeage:"Không tồn tại tài khoản này"});
+      }
+      const newPass = await bcrypt.hash("1", 10);
+      await taiKhoan.update({
+        Password:newPass
+      });
+      res.status(200).json({message:"Reset password thành công"});
+    } catch (error) {
+      console.error("ERROR:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
 module.exports = new TaiKhoanController();
