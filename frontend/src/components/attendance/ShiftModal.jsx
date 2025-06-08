@@ -19,7 +19,8 @@ const ShiftModal = ({
   });
   // console.log(formData.cham_congs.length > 0);
   // console.log(formData);
-
+  console.log(formData);
+  
   const tabs = [
     {
       id: "checkin",

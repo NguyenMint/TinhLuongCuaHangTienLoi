@@ -19,7 +19,6 @@ export const ScheduleTable = ({
     },
     (_, i) => addDays(startDate, i)
   );
-  console.log(weekDays);
 
   const formatted = schedules.reduce((acc, employee) => {
     const employeeKey = employee.MaNS;

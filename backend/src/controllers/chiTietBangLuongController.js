@@ -172,27 +172,26 @@ exports.delete = async (req, res) => {
   }
 };
 
-// Calculate daily salary
 exports.calculateDailySalary = async (req, res) => {
   try {
-    const { MaBangLuong, NgayChamCong } = req.body;
+    // const { MaBangLuong, NgayChamCong } = req.body;
 
-    // Get salary sheet
-    const bangLuong = await BangLuong.findByPk(MaBangLuong, {
-      include: [
-        {
-          model: TaiKhoan,
-          as: "MaTK_tai_khoan",
-        },
-      ],
-    });
+    // // Get salary sheet
+    // const bangLuong = await BangLuong.findByPk(MaBangLuong, {
+    //   include: [
+    //     {
+    //       model: TaiKhoan,
+    //       as: "MaTK_tai_khoan",
+    //     },
+    //   ],
+    // });
 
-    if (!bangLuong) {
-      return res.status(404).json({
-        success: false,
-        message: "Salary sheet not found",
-      });
-    }
+    // if (!bangLuong) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Salary sheet not found",
+    //   });
+    // }
 
     // Get attendance records for the day
     const chamCong = await ChamCong.findOne({
