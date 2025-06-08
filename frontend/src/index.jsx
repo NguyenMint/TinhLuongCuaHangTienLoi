@@ -5,18 +5,20 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { MainLayout } from "./components/layout";
+import ProtectedRoute from "./ProtectedRoute";
 import { WorkSchedule } from "./pages/WorkSchedulePage";
+// setting page
 import { SettingsPage } from "./pages/SettingPage/SettingsPage";
 import { ShiftPage } from "./pages/SettingPage/ShiftPage";
-import ProtectedRoute from "./ProtectedRoute";
+import {SalaryStructure} from "./pages/SettingPage/SalaryStructurePage";
+import { AllowanceCoefficientPage } from "./pages/SettingPage/AllowanceCoefficientPage";
+// role nhan vien page
 import { EmployeeHomePage} from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
 import { EmployeeProfilePage } from "./pages/EmployeeLayout/EmployeeProfilePage";
-import {SalaryStructure} from "./pages/SettingPage/SalaryStructurePage";
 import { EmployeeUtilitiesPage } from "./pages/EmployeeLayout/EmployeeUtilitiesPage";
 import { PayrollPage } from "./pages/PayrollPage";
-
 
 function App() {
   const getRole = () => {
@@ -85,6 +87,16 @@ function App() {
           <ProtectedRoute allowedRoles={[3, 1]}>
             <MainLayout>
               <SalaryStructure />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+        ></Route>
+        <Route 
+        path="/settings/allowance-coefficient"
+        element ={
+          <ProtectedRoute allowedRoles={[3, 1]}>
+            <MainLayout>
+              <AllowanceCoefficientPage/>
             </MainLayout>
           </ProtectedRoute>
         }
