@@ -72,11 +72,9 @@ export function AttendancePage() {
     const response = await fetchDKCByNhanVien(ma, ngay);
     return response;
   };
-  
 
   const handleSaveShift = async (updatedShift) => {
     if (!!dataUpdate.MaChamCong) {
-
       try {
         await update_chamcong(
           dataUpdate.GioVao,
@@ -122,56 +120,9 @@ export function AttendancePage() {
         <div className="bg-white rounded-lg shadow-md">
           <div className="p-4 flex flex-wrap items-center justify-between border-b">
             <div className="flex items-center space-x-2 mb-2 sm:mb-0">
+              <div className="relative">{/* Thêm search vô đây */}</div>
               <div className="relative">
-                <div className="flex items-center border rounded-md px-3 py-2">
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm nhân viên"
-                    className="outline-none w-40 sm:w-64"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    ></path>
-                  </svg>
-                </div>
-              </div>
-              <div className="relative">
-                <select
-                  className="border rounded-md px-3 py-2 appearance-none pr-8 bg-white"
-                  value={viewMode}
-                  onChange={(e) => setViewMode(e.target.value)}
-                >
-                  <option>Theo tuần</option>
-                  <option>Xem theo ca</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg
-                    className="w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7-7 7-7"
-                    ></path>
-                  </svg>
-                </div>
+                {/* Lọc nhân viên: Theo chi nhánh hoặc là theo nhân viên */}
               </div>
             </div>
             <div className="flex items-center space-x-2">

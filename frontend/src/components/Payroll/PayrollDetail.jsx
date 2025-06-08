@@ -120,13 +120,11 @@ export function PayrollDetail({ payroll, onCancel, onExport }) {
           </div>
         )}
         {activeTab === "payslip" && (
-          <div className="p-4 text-center text-gray-500">
-            Payslip information will be displayed here
-          </div>
+          <div className="p-4 text-center text-gray-500">Phiếu lương</div>
         )}
         {activeTab === "history" && (
           <div className="p-4 text-center text-gray-500">
-            Payment history will be displayed here
+            Lịch sử thanh toán
           </div>
         )}
       </div>

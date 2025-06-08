@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { ChevronDownIcon, XIcon } from "lucide-react";
-export function FilterSidebar({ statusFilters, onStatusFilterChange }) {
+export function FilterSidebar({
+  chinhanhs,
+  statusFilters,
+  onStatusFilterChange,
+}) {
   const [branchFilter, setBranchFilter] = useState("Chi nhánh trung tâm");
   const [payrollCycle, setPayrollCycle] = useState("Chọn kỳ hạn trả lương");
   return (
@@ -14,20 +18,28 @@ export function FilterSidebar({ statusFilters, onStatusFilterChange }) {
         <div className="relative">
           <select className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             <option value="">Chọn chi nhánh...</option>
-            <option value="branch1">Chi nhánh trung tâm</option>
-            <option value="branch2">Chi nhánh 2</option>
+            {chinhanhs.map((chinhanh) => (
+              <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
+                {chinhanh.TenChiNhanh}
+              </option>
+            ))}
           </select>
         </div>
       </div>
 
       {/* Payment Cycle Filter */}
       <div className="md:mb-6 border-b p-4 rounded-lg bg-white p-2">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Kỳ hạn trả lương</h3>
+        <h3 className="text-sm font-medium text-gray-700 mb-2">
+          Kỳ hạn trả lương
+        </h3>
         <div className="relative">
           <select className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             <option value="">Chọn kỳ hạn trả lương</option>
-            <option value="branch1">Chi nhánh trung tâm</option>
-            <option value="branch2">Chi nhánh 2</option>
+            {chinhanhs.map((chinhanh) => (
+              <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
+                {chinhanh.TenChiNhanh}
+              </option>
+            ))}
           </select>
         </div>
       </div>
