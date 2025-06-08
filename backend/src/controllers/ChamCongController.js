@@ -25,12 +25,12 @@ class ChamCongController {
       let DiTre = 0;
       let VeSom = 0;
 
-      const gioBatDau = ThoiGianBatDau.split(":").map(Number);
-      const gioKetThuc = ThoiGianKetThuc.split(":").map(Number);
+      const [gioBatDau] = ThoiGianBatDau.split(":").map(Number);
+      const [gioKetThuc] = ThoiGianKetThuc.split(":").map(Number);
       const isCaQuaNgay = gioKetThuc < gioBatDau;
       const timeToMinutes = (timeStr) => {
         const [gioVao, phutVao] = timeStr.split(":").map(Number);
-        return gioVao + phutVao * 60;
+        return gioVao*60 + phutVao;
       };
       // Tính đi trễ nếu có GioVao
       if (GioVao) {
