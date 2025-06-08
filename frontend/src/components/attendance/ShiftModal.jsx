@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CheckInTab from "./TabContent/CheckInTab";
 import HistoryTab from "./TabContent/HistoryTab";
 import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
+import { vi } from "date-fns/locale";
 const ShiftModal = ({
   shift,
   employees,
@@ -10,6 +11,7 @@ const ShiftModal = ({
   onSave,
   onDelete,
   setDataUpdate,
+  dataUpdate
 }) => {
   const [activeTab, setActiveTab] = useState("checkin");
   const [formData, setFormData] = useState({
@@ -19,8 +21,14 @@ const ShiftModal = ({
   });
   // console.log(formData.cham_congs.length > 0);
   // console.log(formData);
-  console.log(formData);
-  
+  useEffect(() => {
+    setDataUpdate({
+      ...dataUpdate,
+      violations: formData.violations || [],
+      rewards: formData.rewards || [],
+    });
+  }, [formData.violations, formData.rewards, setDataUpdate]);
+
   const tabs = [
     {
       id: "checkin",
@@ -49,7 +57,10 @@ const ShiftModal = ({
     onSave(formData);
   };
   const getStatusBadge = () => {
-    if (formData.cham_congs[0]?.DiTre > 0 && formData.cham_congs[0]?.VeSom > 0) {
+    if (
+      formData.cham_congs[0]?.DiTre > 0 &&
+      formData.cham_congs[0]?.VeSom > 0
+    ) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
           Đi muộn / Về sớm
@@ -213,7 +224,7 @@ const ShiftModal = ({
           )}
           {activeTab === "violations" && (
             <ViolationsTab
-              violations={shift.violations || []}
+              violations={formData.violations || []}
               onUpdate={(violations) =>
                 handleInputChange("violations", violations)
               }
@@ -221,7 +232,7 @@ const ShiftModal = ({
           )}
           {activeTab === "rewards" && (
             <RewardsTab
-              rewards={shift.rewards || []}
+              rewards={formData.rewards || []}
               onUpdate={(rewards) => handleInputChange("rewards", rewards)}
             />
           )}

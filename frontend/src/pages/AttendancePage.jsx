@@ -25,7 +25,10 @@ export function AttendancePage() {
     RaSom: 0,
     MaDKC: "",
     NgayDangKy: "",
+    violations: [],
+    rewards: [],
   });
+console.log(dataUpdate);
 
   const getAllCaLam = async () => {
     try {
@@ -176,6 +179,7 @@ export function AttendancePage() {
           onClose={handleCloseModal}
           onSave={handleSaveShift}
           onDelete={handleDeleteShift}
+          dataUpdate={dataUpdate}
           setDataUpdate={setDataUpdate}
         />
       )}

@@ -40,8 +40,6 @@ export const chamCongRa = async (NgayChamCong, GioRa, MaDKC, NgayLe) => {
   }
 };
 export const chamCong = async (NgayChamCong, GioVao, GioRa, MaDKC, NgayLe) => {
-  console.log(NgayChamCong);
-  
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
