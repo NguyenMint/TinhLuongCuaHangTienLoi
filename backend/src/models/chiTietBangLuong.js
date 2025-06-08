@@ -33,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     MaBangLuong: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'bang_luong',
         key: 'MaBangLuong'

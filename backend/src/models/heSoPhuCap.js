@@ -9,10 +9,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     Ngay: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     HeSoLuong: {
       type: DataTypes.FLOAT,
+      allowNull: false
+    },
+    LoaiNgay: {
+      type: DataTypes.ENUM('Cuối tuần','Ngày lễ'),
       allowNull: false
     },
     MaTK: {
