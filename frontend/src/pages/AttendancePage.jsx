@@ -90,8 +90,8 @@ export function AttendancePage() {
       try {
         await chamCong(
           dataUpdate.NgayDangKy,
-          dataUpdate.GioRa,
           dataUpdate.GioVao,
+          dataUpdate.GioRa,
           dataUpdate.MaDKC,
           false
         );

@@ -16,6 +16,8 @@ export const CheckInTab = ({
 }) => {
   const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
   const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
+  // console.log(startTime, endTime);
+  // console.log(formData.cham_congs[0]?.GioVao);
 
   const getTimeHHmm = (time) => {
     if (!time) return "";
@@ -85,6 +87,7 @@ export const CheckInTab = ({
   }, [checkInTime, isCheckedIn]);
 
   useEffect(() => {
+
     if (isCheckedOut && checkOutStatus === "early") {
       const earlyMinutes = getTimeDifference(checkOutTime, endTime);
       setCheckOutEarlyHours(Math.floor(earlyMinutes / 60));

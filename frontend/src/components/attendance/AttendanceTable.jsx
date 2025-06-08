@@ -97,9 +97,11 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
                 key={index}
                 className="w-32 text-center px-6 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                {format(day, "EEEE d", {
+                {format(day, "EEEE", {
                   locale: vi,
                 })}
+                <br />
+                {format(day, "dd/MM")}
               </th>
             ))}
           </tr>
