@@ -19,6 +19,7 @@ export const ScheduleTable = ({
     },
     (_, i) => addDays(startDate, i)
   );
+  console.log(weekDays);
 
   const formatted = schedules.reduce((acc, employee) => {
     const employeeKey = employee.MaNS;
@@ -93,9 +94,11 @@ export const ScheduleTable = ({
                 key={index}
                 className="text-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                {format(day, "EEEE d", {
+                {format(day, "EEEE", {
                   locale: vi,
                 })}
+                <br />
+                {format(day, "dd/MM")}
               </th>
             ))}
           </tr>

@@ -5,12 +5,16 @@ import { PayrollDetail } from "../components/Payroll/PayrollDetail";
 import { Header } from "../components/Payroll/Header";
 import { payrolls } from "../utils/mockData";
 import { getAllBangLuong } from "../api/apiBangLuong";
+import { getChiNhanh } from "../api/apiChiNhanh";
 export function PayrollPage() {
   const [payrolls, setPayrolls] = useState([]);
   const [filteredPayrolls, setFilteredPayrolls] = useState(payrolls);
   const [selectedPayroll, setSelectedPayroll] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
+  const [chinhanhs, setChiNhanhs] = useState([]);
+  const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
+
   const [statusFilters, setStatusFilters] = useState({
     creating: false,
     draft: false,
@@ -25,10 +29,18 @@ export function PayrollPage() {
       console.error("Lỗi khi lấy Bảng lương:", error);
     }
   };
-
+  const fetchChiNhanh = async () => {
+    try {
+      const data = await getChiNhanh();
+      setChiNhanhs(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
   useEffect(() => {
     // Fetch payroll data when component mounts
     fetchAllBangLuong();
+    fetchChiNhanh();
   }, []);
 
   // Handle search
@@ -73,6 +85,8 @@ export function PayrollPage() {
   return (
     <div className="flex h-screen bg-gray-50">
       <FilterSidebar
+        chinhanhs={chinhanhs}
+        selectedChiNhanh={selectedChiNhanh}
         statusFilters={statusFilters}
         onStatusFilterChange={handleStatusFilterChange}
       />

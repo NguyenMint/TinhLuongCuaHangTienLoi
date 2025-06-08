@@ -11,7 +11,6 @@ import { Pagination } from "../components/Pagination.jsx";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
-  const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [payrollBranch, setPayrollBranch] = useState("");
   const [department, setDepartment] = useState("");
   const [position, setPosition] = useState("");
@@ -21,6 +20,7 @@ export function HomePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [chinhanhs, setChiNhanhs] = useState([]);
+  const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   // 3 useState đóng mở thêm sửa nhân viên
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -60,27 +60,22 @@ export function HomePage() {
 useEffect(() => {
   let filtered = [...employees];
 
-  // Lọc theo chi nhánh
-  if (selectedChiNhanh) {
-    filtered = filtered.filter(
-      (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
-    );
-  }
+    // Lọc theo chi nhánh
+    if (selectedChiNhanh) {
+      filtered = filtered.filter(
+        (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
+      );
+    }
+    
+    // Lọc theo trạng thái
+    if (statusFilter === "working") {
+      filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
+    } else if (statusFilter === "resigned") {
+      filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
+    }
+    setFilteredEmployees(filtered);
+  }, [employees, selectedChiNhanh, statusFilter]);
 
-  // Lọc theo trạng thái
-  if (statusFilter === "working") {
-    filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
-  } else if (statusFilter === "resigned") {
-    filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
-  }
-
-  setFilteredEmployees(filtered);
-}, [employees, selectedChiNhanh, statusFilter]);
-
-useEffect(() => {
-  setCurrentPage(1);
-}, [filteredEmployees]);
-  
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
   };
@@ -107,9 +102,9 @@ useEffect(() => {
       <div className="md:flex flex-1">
         <FilterSidebar
           chinhanhs={chinhanhs}
+          selectedChiNhanh={selectedChiNhanh}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          selectedChiNhanh={selectedChiNhanh}
           setSelectedChiNhanh={setSelectedChiNhanh}
           payrollBranch={payrollBranch}
           setPayrollBranch={setPayrollBranch}
@@ -125,7 +120,7 @@ useEffect(() => {
               onSearch={handleSearch}
               setQuery={setSearchQuery}
             />
-            {/* <CreateInvoice /> */}
+            {/* <Create Nhan Vien /> */}
             <div className="">
               <button
                 onClick={() => setShowModalAdd(true)}

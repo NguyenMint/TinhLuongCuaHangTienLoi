@@ -18,7 +18,7 @@ const ShiftModal = ({
     substituteId: shift.substituteId || "",
   });
   // console.log(formData.cham_congs.length > 0);
-  console.log(formData.cham_congs[0]);
+  // console.log(formData);
 
   const tabs = [
     {
@@ -48,19 +48,19 @@ const ShiftModal = ({
     onSave(formData);
   };
   const getStatusBadge = () => {
-    if (formData.cham_congs[0].DiTre > 0 && formData.cham_congs[0].VeSom > 0) {
+    if (formData.cham_congs[0]?.DiTre > 0 && formData.cham_congs[0]?.VeSom > 0) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
           Đi muộn / Về sớm
         </span>
       );
-    } else if (formData.cham_congs[0].DiTre > 0) {
+    } else if (formData.cham_congs[0]?.DiTre > 0) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
           Đi muộn
         </span>
       );
-    } else if (formData.cham_congs[0].VeSom > 0) {
+    } else if (formData.cham_congs[0]?.VeSom > 0) {
       return (
         <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
           Về sớm

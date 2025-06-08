@@ -32,7 +32,7 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
             <span>Thông tin</span>
           </div>
         </button>
-        <button
+        {/* <button
           className={`px-4 py-2 text-sm font-medium ${
             activeTab === "schedule"
               ? "text-blue-600 border-b-2 border-blue-600"
@@ -44,7 +44,7 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
             <CalendarIcon className="h-4 w-4 mr-2" />
             <span>Lịch làm việc</span>
           </div>
-        </button>
+        </button> */}
         <button
           className={`px-4 py-2 text-sm font-medium ${
             activeTab === "salary"
@@ -58,7 +58,7 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
             <span>Thiết lập lương</span>
           </div>
         </button>
-        <button
+        {/* <button
           className={`px-4 py-2 text-sm font-medium ${
             activeTab === "debt"
               ? "text-blue-600 border-b-2 border-blue-600"
@@ -70,7 +70,7 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
             <CoinsIcon className="h-4 w-4 mr-2" />
             <span>Nợ và tạm ứng</span>
           </div>
-        </button>
+        </button> */}
       </div>
       {/* Tab content */}
       <div className="p-4">
