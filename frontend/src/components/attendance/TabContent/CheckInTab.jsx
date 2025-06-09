@@ -10,7 +10,6 @@ export const CheckInTab = ({
   date,
   shift,
   formData,
-  employees,
   onChange,
   setDataUpdate,
 }) => {
@@ -87,13 +86,13 @@ export const CheckInTab = ({
   }, [checkInTime, isCheckedIn]);
 
   useEffect(() => {
-
     if (isCheckedOut && checkOutStatus === "early") {
       const earlyMinutes = getTimeDifference(checkOutTime, endTime);
       setCheckOutEarlyHours(Math.floor(earlyMinutes / 60));
       setCheckOutEarlyMinutes(earlyMinutes % 60);
     }
   }, [checkOutTime, isCheckedOut]);
+
   // if (!isOpen) return null
   const checkInStatus = isCheckedIn ? getCheckInStatus() : null;
   const checkOutStatus = isCheckedOut ? getCheckOutStatus() : null;

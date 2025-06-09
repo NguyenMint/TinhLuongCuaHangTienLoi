@@ -7,9 +7,11 @@ import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import { chamCong, update_chamcong } from "../api/apiChamCong";
+import { createKTKL, getAllKTKL } from "../api/apiKTKL";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
+  const [ktkl, setKTKL] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState("Xem theo ca");
@@ -19,6 +21,7 @@ export function AttendancePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [dataUpdate, setDataUpdate] = useState({
     GioVao: "",
+    MaTK: "",
     GioRa: "",
     MaChamCong: "",
     DiTre: 0,
@@ -28,7 +31,9 @@ export function AttendancePage() {
     violations: [],
     rewards: [],
   });
-console.log(dataUpdate);
+
+
+  console.log(dataUpdate);
 
   const getAllCaLam = async () => {
     try {
@@ -47,7 +52,6 @@ console.log(dataUpdate);
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
   };
-
   useEffect(() => {
     getAllCaLam();
     getAllDangKyCa();
@@ -76,9 +80,31 @@ console.log(dataUpdate);
     return response;
   };
 
-  const handleSaveShift = async (updatedShift) => {
-    if (!!dataUpdate.MaChamCong) {
-      try {
+  const handleSaveShift = async () => {
+    const records = [
+      ...(dataUpdate.violations || []).map((v) => ({
+        NgayApDung: dataUpdate.NgayDangKy,
+        ThuongPhat: 0, // 0 = kỷ luật
+        LyDo: v.LyDo,
+        MucThuongPhat: v.MucThuongPhat,
+        DuocMienThue: v.DuocMienThue ? 1 : 0,
+        MaTK: dataUpdate.MaTK,
+      })),
+      ...(dataUpdate.rewards || []).map((r) => ({
+        NgayApDung: dataUpdate.NgayDangKy,
+        ThuongPhat: 1, // 1 = khen thưởng
+        LyDo: r.LyDo,
+        MucThuongPhat: r.MucThuongPhat,
+        DuocMienThue: r.DuocMienThue ? 1 : 0,
+        MaTK: dataUpdate.MaTK,
+      })),
+    ];
+
+    console.log("Dữ liệu cần gửi KTKL:", records);
+
+    try {
+      // 1. Cập nhật hoặc tạo mới bản ghi chấm công
+      if (dataUpdate.MaChamCong) {
         await update_chamcong(
           dataUpdate.GioVao,
           dataUpdate.GioRa,
@@ -86,11 +112,7 @@ console.log(dataUpdate);
           dataUpdate.VeSom,
           dataUpdate.MaChamCong
         );
-      } catch (error) {
-        console.error("Lỗi khi tạo mới bản ghi chấm công:", error);
-      }
-    } else {
-      try {
+      } else {
         await chamCong(
           dataUpdate.NgayDangKy,
           dataUpdate.GioVao,
@@ -98,13 +120,28 @@ console.log(dataUpdate);
           dataUpdate.MaDKC,
           false
         );
-      } catch (error) {
-        console.error("Lỗi khi tạo mới bản ghi chấm công:", error);
       }
+
+      // 2. Gửi từng bản ghi KTKL
+      const results = await Promise.all(
+        records.map((record) => createKTKL(record))
+      );
+
+      const allSuccess = results.every((res) => res.success);
+      if (allSuccess) {
+        alert("Lưu toàn bộ khen thưởng/kỷ luật thành công!");
+      } else {
+        const failed = results.filter((res) => !res.success);
+        console.warn("Một số bản ghi bị lỗi:", failed);
+        alert(`Có ${failed.length} bản ghi bị lỗi.`);
+      }
+    } catch (err) {
+      console.error("Lỗi khi lưu dữ liệu chấm công hoặc KTKL:", err);
+      alert("Lỗi kết nối đến server hoặc xử lý dữ liệu!");
     }
 
+    // 3. Refresh danh sách ca đăng ký và đóng modal
     await getAllDangKyCa();
-
     setIsModalOpen(false);
   };
 
@@ -174,8 +211,6 @@ console.log(dataUpdate);
       {isModalOpen && selectedShift && (
         <ShiftModal
           shift={selectedShift}
-          // setDataUpdate={setDataUpdate}
-          employee={selectedEmployee}
           onClose={handleCloseModal}
           onSave={handleSaveShift}
           onDelete={handleDeleteShift}

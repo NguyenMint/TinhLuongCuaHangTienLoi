@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const violationTypes = [
   "Ngủ gật trong giờ",
@@ -10,19 +10,19 @@ const violationTypes = [
   "Vi phạm nội quy",
 ];
 
-const ViolationsTab = ({ violations = [], onUpdate }) => {
+const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
   const [currentViolations, setCurrentViolations] = useState(violations);
+  const [showViolantions, setShowViolantions] = useState(violations);
   const [newViolation, setNewViolation] = useState({
-    type: "",
-    count: 1,
-    amount: 0,
+    LyDo: "",
+    MucThuongPhat: 0,
+    DuocMienThue: true,
   });
   const [isAdding, setIsAdding] = useState(false);
   const handleAddViolation = () => {
-    if (!newViolation.type || newViolation.count < 1 || newViolation.amount < 0)
-      return;
+    if (!newViolation.LyDo || newViolation.MucThuongPhat < 0) return;
 
-    const total = newViolation.count * newViolation.amount;
+    const total = newViolation.DuocMienThue * newViolation.MucThuongPhat;
     const newItem = {
       ...newViolation,
       total,
@@ -33,7 +33,7 @@ const ViolationsTab = ({ violations = [], onUpdate }) => {
     setCurrentViolations(updatedViolations);
     onUpdate(updatedViolations);
 
-    setNewViolation({ type: "", count: 1, amount: 0 });
+    setNewViolation({ LyDo: "", DuocMienThue: true, MucThuongPhat: 0 });
     setIsAdding(false);
   };
 
@@ -44,9 +44,17 @@ const ViolationsTab = ({ violations = [], onUpdate }) => {
   };
 
   const handleCancel = () => {
-    setNewViolation({ type: "", count: 1, amount: 0 });
+    setNewViolation({ LyDo: "", DuocMienThue: 1, MucThuongPhat: 0 });
     setIsAdding(false);
   };
+  useEffect(() => {
+    setShowViolantions([
+      ...formData.MaNS_tai_khoan.khen_thuong_ky_luats.filter(
+        (item) => item.ThuongPhat === false
+      ),
+      ...currentViolations,
+    ]);
+  }, [currentViolations]);
 
   return (
     <div>
@@ -55,20 +63,21 @@ const ViolationsTab = ({ violations = [], onUpdate }) => {
           <thead>
             <tr>
               <th className="p-3  w-1/4">Loại vi phạm</th>
-              <th className="p-3">Số lần</th>
               <th className="p-3">Mức áp dụng</th>
-              <th className="p-3">Thành tiền</th>
+              <th className="p-3">Được miễn thuế </th>
               <th className="p-3 w-12 text-center">Xóa</th>
             </tr>
           </thead>
           <tbody>
-            {currentViolations.length > 0 ? (
-              currentViolations.map((v) => (
-                <tr key={v.id} className="border-t border-blue-100">
-                  <td className="p-3">{v.type}</td>
-                  <td className="p-3">{v.count}</td>
-                  <td className="p-3">{v.amount.toLocaleString()}</td>
-                  <td className="p-3">{v.total.toLocaleString()}</td>
+            {showViolantions.length > 0 ? (
+              showViolantions.map((v, index) => (
+                <tr
+                  key={`${v.id || index}-${v.LyDo}`}
+                  className="border-t border-blue-100"
+                >
+                  <td className="p-3">{v.LyDo}</td>
+                  <td className="p-3">{v.MucThuongPhat}</td>
+                  <td className="p-3">{v.DuocMienThue ? "Có" : "Không"}</td>
                   <td className="p-3 text-center">
                     <button
                       onClick={() => handleDelete(v.id)}
@@ -92,9 +101,9 @@ const ViolationsTab = ({ violations = [], onUpdate }) => {
                 <td className="p-3">
                   <select
                     className="w-full border rounded-md p-2"
-                    value={newViolation.type}
+                    value={newViolation.LyDo}
                     onChange={(e) =>
-                      setNewViolation({ ...newViolation, type: e.target.value })
+                      setNewViolation({ ...newViolation, LyDo: e.target.value })
                     }
                   >
                     <option value="">Chọn vi phạm</option>
@@ -109,32 +118,28 @@ const ViolationsTab = ({ violations = [], onUpdate }) => {
                   <input
                     type="number"
                     className="w-full border rounded-md p-2"
-                    min="1"
-                    value={newViolation.count}
+                    min="0"
+                    value={newViolation.MucThuongPhat}
                     onChange={(e) =>
                       setNewViolation({
                         ...newViolation,
-                        count: parseInt(e.target.value || 1),
+                        MucThuongPhat: parseInt(e.target.value || 0),
                       })
                     }
                   />
                 </td>
                 <td className="p-3">
                   <input
-                    type="number"
+                    type="checkbox"
                     className="w-full border rounded-md p-2"
-                    min="0"
-                    value={newViolation.amount}
+                    checked={!!newViolation.DuocMienThue}
                     onChange={(e) =>
                       setNewViolation({
                         ...newViolation,
-                        amount: parseInt(e.target.value || 0),
+                        DuocMienThue: e.target.checked,
                       })
                     }
                   />
-                </td>
-                <td className="p-3 text-gray-700">
-                  {(newViolation.count * newViolation.amount).toLocaleString()}
                 </td>
                 <td className="p-3 text-center opacity-0">-</td>
               </tr>
