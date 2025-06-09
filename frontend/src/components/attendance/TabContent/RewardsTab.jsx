@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const rewardTypes = [
   "Đi làm đúng giờ",
@@ -9,20 +9,21 @@ const rewardTypes = [
   "Sáng kiến cải tiến",
 ];
 
-const RewardsTab = ({ rewards = [], onUpdate }) => {
+const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
   const [newReward, setNewReward] = useState({
-    type: "",
-    count: 1,
-    amount: 0,
+    LyDo: "",
+    MucThuongPhat: 0,
+    DuocMienThue: true,
   });
   const [currentRewards, setCurrentRewards] = useState(rewards);
+  const [showRewards, setShowRewards] = useState(rewards);
 
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAddReward = () => {
-    if (!newReward.type || newReward.count < 1 || newReward.amount < 0) return;
+    if (!newReward.LyDo || newReward.MucThuongPhat < 0) return;
 
-    const total = newReward.count * newReward.amount;
+    const total = newReward.DuocMienThue * newReward.MucThuongPhat;
     const newItem = {
       ...newReward,
       total,
@@ -33,7 +34,7 @@ const RewardsTab = ({ rewards = [], onUpdate }) => {
     setCurrentRewards(updatedRewards);
     onUpdate(updatedRewards);
 
-    setNewReward({ type: "", count: 1, value: "", amount: 0 });
+    setNewReward({ LyDo: "", DuocMienThue: true, value: "", MucThuongPhat: 0 });
     setIsAdding(false);
   };
 
@@ -44,9 +45,17 @@ const RewardsTab = ({ rewards = [], onUpdate }) => {
   };
 
   const handleCancel = () => {
-    setNewReward({ type: "", count: 1, amount: 0 });
+    setNewReward({ LyDo: "", DuocMienThue: 1, MucThuongPhat: 0 });
     setIsAdding(false);
   };
+  useEffect(() => {
+    setShowRewards([
+      ...formData.MaNS_tai_khoan.khen_thuong_ky_luats.filter(
+        (item) => item.ThuongPhat === true
+      ),
+      ...currentRewards,
+    ]);
+  }, [currentRewards]);
 
   return (
     <div>
@@ -55,20 +64,23 @@ const RewardsTab = ({ rewards = [], onUpdate }) => {
           <thead>
             <tr className="text-left text-sm">
               <th className="p-3 w-1/4">Loại khen thưởng</th>
-              <th className="p-3">Số lần</th>
               <th className="p-3">Mức áp dụng</th>
-              <th className="p-3">Thành tiền</th>
+              <th className="p-3">Được miễn thuế</th>
               <th className="p-3 w-12 text-center">Xóa</th>
             </tr>
           </thead>
           <tbody>
-            {rewards?.length > 0 ? (
-              rewards.map((reward) => (
-                <tr key={reward.id} className="border-t border-blue-100">
-                  <td className="p-3">{reward.type}</td>
-                  <td className="p-3">{reward.count}</td>
-                  <td className="p-3">{reward.amount.toLocaleString()}</td>
-                  <td className="p-3">{reward.total.toLocaleString()}</td>
+            {showRewards?.length > 0 ? (
+              showRewards.map((reward, index) => (
+                <tr
+                  key={`${reward.id || index}-${reward.LyDo}`}
+                  className="border-t border-blue-100"
+                >
+                  <td className="p-3">{reward.LyDo}</td>
+                  <td className="p-3">{reward.MucThuongPhat}</td>
+                  <td className="p-3">
+                    {reward.DuocMienThue ? "Có" : "Không"}
+                  </td>
                   <td className="p-3">
                     <button
                       className="text-red-500 hover:text-red-700"
@@ -87,15 +99,14 @@ const RewardsTab = ({ rewards = [], onUpdate }) => {
               </tr>
             )}
 
-            {/* Input row */}
             {isAdding && (
               <tr className="border-t border-blue-100">
                 <td className="p-3">
                   <select
                     className="w-full border rounded-md p-2"
-                    value={newReward.type}
+                    value={newReward.LyDo}
                     onChange={(e) =>
-                      setNewReward({ ...newReward, type: e.target.value })
+                      setNewReward({ ...newReward, LyDo: e.target.value })
                     }
                   >
                     <option value="">Chọn khen thưởng</option>
@@ -110,28 +121,28 @@ const RewardsTab = ({ rewards = [], onUpdate }) => {
                   <input
                     type="number"
                     className="w-full border rounded-md p-2"
-                    min="1"
-                    value={newReward.count}
+                    min="0"
+                    value={newReward.MucThuongPhat}
                     onChange={(e) =>
                       setNewReward({
                         ...newReward,
-                        count: parseInt(e.target.value || 1),
+                        MucThuongPhat: parseInt(e.target.value || 0),
                       })
                     }
                   />
                 </td>
                 <td className="p-3">
                   <input
-                    type="text"
+                    type="checkbox"
                     className="w-full border rounded-md p-2"
-                    value={newReward.amount}
+                    checked={!!newReward.DuocMienThue}
                     onChange={(e) =>
-                      setNewReward({ ...newReward, amount: e.target.value })
+                      setNewReward({
+                        ...newReward,
+                        DuocMienThue: e.target.checked,
+                      })
                     }
                   />
-                </td>
-                <td className="p-3 text-gray-700">
-                  {(newReward.count * newReward.amount).toLocaleString()}
                 </td>
                 <td className="p-3"></td>
               </tr>

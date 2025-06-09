@@ -1,6 +1,6 @@
 const db = require("../models");
 const DangKyCa = db.DangKyCa;
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 class DangKyCaController {
   async getAll(req, res) {
     try {
@@ -12,6 +12,21 @@ class DangKyCaController {
             model: db.TaiKhoan,
             as: "MaNS_tai_khoan",
             attributes: ["MaTK", "HoTen"],
+            include: [
+              {
+                model: db.KhenThuongKyLuat,
+                as: "khen_thuong_ky_luats",
+                where: db.sequelize.where(
+                  db.sequelize.col(
+                    "MaNS_tai_khoan.khen_thuong_ky_luats.NgayApDung"
+                  ),
+                  "=",
+                  db.sequelize.col("DangKyCa.NgayDangKy")
+                ),
+
+                required: false,
+              },
+            ],
           },
         ],
       });
@@ -103,19 +118,23 @@ class DangKyCaController {
 
   async delete(req, res) {
     try {
-      const dangKyCa = await DangKyCa.findByPk(req.params.id,{
-        include:[
+      const dangKyCa = await DangKyCa.findByPk(req.params.id, {
+        include: [
           {
-            model:db.ChamCong,
-            as: "cham_congs"
-          }
-        ]
+            model: db.ChamCong,
+            as: "cham_congs",
+          },
+        ],
       });
       if (!dangKyCa) {
-        return res.status(404).json({ message: "Đăng ký ca làm không tồn tại" });
+        return res
+          .status(404)
+          .json({ message: "Đăng ký ca làm không tồn tại" });
       }
-      if(dangKyCa.cham_congs.length > 0) {
-        return res.status(400).json({ message: "Không thể xóa đăng ký ca làm khi đã có chấm công" });
+      if (dangKyCa.cham_congs.length > 0) {
+        return res.status(400).json({
+          message: "Không thể xóa đăng ký ca làm khi đã có chấm công",
+        });
       }
       await dangKyCa.destroy();
       res.status(200).json({ message: "Xóa đăng ký ca làm thành công" });

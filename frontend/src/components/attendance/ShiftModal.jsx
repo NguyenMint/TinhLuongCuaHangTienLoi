@@ -11,7 +11,7 @@ const ShiftModal = ({
   onSave,
   onDelete,
   setDataUpdate,
-  dataUpdate
+  dataUpdate,
 }) => {
   const [activeTab, setActiveTab] = useState("checkin");
   const [formData, setFormData] = useState({
@@ -20,10 +20,11 @@ const ShiftModal = ({
     substituteId: shift.substituteId || "",
   });
   // console.log(formData.cham_congs.length > 0);
-  // console.log(formData);
+
   useEffect(() => {
     setDataUpdate({
       ...dataUpdate,
+      MaTK: formData.MaNS_tai_khoan.MaTK,
       violations: formData.violations || [],
       rewards: formData.rewards || [],
     });
@@ -215,7 +216,6 @@ const ShiftModal = ({
             <CheckInTab
               setDataUpdate={setDataUpdate}
               formData={formData}
-              employees={employees}
               onChange={handleInputChange}
             />
           )}
@@ -224,6 +224,7 @@ const ShiftModal = ({
           )}
           {activeTab === "violations" && (
             <ViolationsTab
+              formData={formData}
               violations={formData.violations || []}
               onUpdate={(violations) =>
                 handleInputChange("violations", violations)
@@ -232,6 +233,7 @@ const ShiftModal = ({
           )}
           {activeTab === "rewards" && (
             <RewardsTab
+              formData={formData}
               rewards={formData.rewards || []}
               onUpdate={(rewards) => handleInputChange("rewards", rewards)}
             />
