@@ -4,14 +4,19 @@ import { PayrollTable } from "../components/Payroll/PayrollTable";
 import { PayrollDetail } from "../components/Payroll/PayrollDetail";
 import { Header } from "../components/Payroll/Header";
 import { payrolls } from "../utils/mockData";
-import { createBangLuong, getAllBangLuong } from "../api/apiBangLuong";
+import {
+  createBangLuong,
+  getAllBangLuong,
+  getKyLuong,
+} from "../api/apiBangLuong";
 import { getChiNhanh } from "../api/apiChiNhanh";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
 import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 export function PayrollPage() {
   const [payrolls, setPayrolls] = useState([]);
-  const [filteredPayrolls, setFilteredPayrolls] = useState(payrolls);
+  const [filteredPayrolls, setfilteredPayrolls] = useState([]);
+
   const [selectedPayroll, setSelectedPayroll] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
@@ -20,6 +25,8 @@ export function PayrollPage() {
   const [showCreatePayroll, setShowCreatePayroll] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [kyLuongs, setKyLuongs] = useState([]);
+  const [selectedKyLuong, setSelectedKyLuong] = useState();
 
   const [statusFilters, setStatusFilters] = useState({
     creating: false,
@@ -32,6 +39,14 @@ export function PayrollPage() {
     try {
       const data = await fetchAllNhanVien();
       setEmployees(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
+  const fetKyLuong = async () => {
+    try {
+      const data = await getKyLuong();
+      setKyLuongs(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
@@ -53,31 +68,55 @@ export function PayrollPage() {
     }
   };
   useEffect(() => {
-    // Fetch payroll data when component mounts
     fetchAllBangLuong();
     fetchChiNhanh();
     getAllNhanVien();
+    fetKyLuong();
   }, []);
 
   // Handle search
-  useEffect(() => {
-    const filtered = payrolls.filter((payroll) =>
-      payroll.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredPayrolls(filtered);
-  }, [searchTerm]);
+  // useEffect(() => {
+  //   const filtered = payrolls.filter((payroll) =>
+  //     payroll.name.toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  //   setFilteredPayrolls(filtered);
+  // }, [searchTerm]);
   // Handle status filter
+  // useEffect(() => {
+  //   const filtered = payrolls.filter((payroll) => {
+  //     if (payroll.status === "Đã chốt lương" && statusFilters.finalized)
+  //       return true;
+  //     if (payroll.status === "Tạm tính" && statusFilters.draft) return true;
+  //     if (payroll.status === "Đang tạo" && statusFilters.creating) return true;
+  //     if (payroll.status === "Đã hủy" && statusFilters.cancelled) return true;
+  //     return false;
+  //   });
+  //   setFilteredPayrolls(filtered);
+  // }, [statusFilters]);
+
   useEffect(() => {
-    const filtered = payrolls.filter((payroll) => {
-      if (payroll.status === "Đã chốt lương" && statusFilters.finalized)
-        return true;
-      if (payroll.status === "Tạm tính" && statusFilters.draft) return true;
-      if (payroll.status === "Đang tạo" && statusFilters.creating) return true;
-      if (payroll.status === "Đã hủy" && statusFilters.cancelled) return true;
-      return false;
-    });
-    setFilteredPayrolls(filtered);
-  }, [statusFilters]);
+    let filtered = [...payrolls];
+    // console.log(selectedChiNhanh);
+
+    if (selectedChiNhanh) {
+      filtered = filtered.filter(
+        (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
+      );
+    }
+
+    // Lọc theo chi nhánh
+    if (selectedKyLuong) {
+      filtered = filtered.filter((emp) => emp.KyLuong === selectedKyLuong);
+    }
+    // // Lọc theo trạng thái
+    // if (statusFilter === "working") {
+    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
+    // } else if (statusFilter === "resigned") {
+    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
+    // }
+    setfilteredPayrolls(filtered);
+  }, [employees, selectedChiNhanh, selectedKyLuong]);
+
   const handleRowClick = (payroll) => {
     setSelectedPayroll(payroll);
   };
@@ -131,10 +170,13 @@ export function PayrollPage() {
   return (
     <div className="flex h-screen bg-gray-50">
       <FilterSidebar
+        kyLuongs={kyLuongs}
         chinhanhs={chinhanhs}
         selectedChiNhanh={selectedChiNhanh}
         statusFilters={statusFilters}
         onStatusFilterChange={handleStatusFilterChange}
+        setSelectedKyLuong={setSelectedKyLuong}
+        setSelectedChiNhanh={setSelectedChiNhanh}
       />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header
@@ -145,7 +187,7 @@ export function PayrollPage() {
         <div className="flex-1 overflow-auto p-4">
           <PayrollTable
             // payrolls={filteredPayrolls}
-            payrolls={payrolls}
+            payrolls={filteredPayrolls}
             onRowClick={handleRowClick}
             selectedPayroll={selectedPayroll}
             setSelectedPayroll={setSelectedPayroll}

@@ -1,21 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bangLuongController = require('../controllers/bangLuongController');
-// Create a new salary sheet
-router.post('/', bangLuongController.create);
+const bangLuongController = require("../controllers/bangLuongController");
 
-// Get all salary sheets
-router.get('/', bangLuongController.findAll);
+router.post("/", bangLuongController.create);
 
-// Get salary sheet by ID
-router.get('/:id', bangLuongController.findOne);
+router.get("/getKyLuong", bangLuongController.getKyLuong);
 
-// Update salary sheet
-router.put('/:id', bangLuongController.update);
+router.get("/", bangLuongController.getAll);
 
-// Delete salary sheet
-router.delete('/:id', bangLuongController.delete);
+router.get("/:id", bangLuongController.findOne);
 
+router.put("/:id", bangLuongController.update);
 
+router.delete("/:id", bangLuongController.delete);
 
-module.exports = router; 
+module.exports = router;
