@@ -5,6 +5,8 @@ const ChamCong = db.ChamCong;
 const TaiKhoan = db.TaiKhoan;
 const ThangLuong = db.ThangLuong;
 const KhenThuongKyLuat = db.KhenThuongKyLuat;
+const DangKyCa = db.DangKyCa;
+const CaLam = db.CaLam;
 const { Op, where } = require("sequelize");
 const { getSoNgayTrongThang, tinhTongGioLamCaLam } = require("../util/util");
 // Create a new salary detail
@@ -47,7 +49,7 @@ exports.create = async (req, res) => {
     });
     const soNgayPhep = thangluong ? thangluong.SoNgayPhep : 0;
     const luongOneHour =
-      (taiKhoan.LuongCoBanHienTai / (getSoNgayTrongThang(Ngay) - soNgayPhep)) /8;
+      taiKhoan.LuongCoBanHienTai / (getSoNgayTrongThang(Ngay) - soNgayPhep) / 8;
     let TienLuongNgay = GioLamViecTrongNgay * luongOneHour;
     const khenThuongs = await KhenThuongKyLuat.findAll({
       where: { MaTK, NgayApDung: Ngay, ThuongPhat: true },
@@ -63,7 +65,8 @@ exports.create = async (req, res) => {
     kyLuats.forEach((khen) => {
       TienPhat += khen.MucThuongPhat;
     });
-    const tongtien = parseFloat(TienLuongNgay) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
+    const tongtien =
+      parseFloat(TienLuongNgay) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
     const chamCongDaCoChiTietBL = await ChamCong.findOne({
       where: {
         NgayChamCong: Ngay,
@@ -80,7 +83,9 @@ exports.create = async (req, res) => {
       ],
     });
     if (chamCongDaCoChiTietBL) {
-      const chiTietBangLuong = await ChiTietBangLuong.findByPk(chamCongDaCoChiTietBL.MaCTBL);
+      const chiTietBangLuong = await ChiTietBangLuong.findByPk(
+        chamCongDaCoChiTietBL.MaCTBL
+      );
       await chiTietBangLuong.update({
         GioLamViecTrongNgay,
         TienLuongNgay,
@@ -89,8 +94,8 @@ exports.create = async (req, res) => {
         tongtien,
       });
       for (const chamCong of chamCongList) {
-      await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
-    }
+        await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
+      }
       return res.status(200).json(chiTietBangLuong);
     }
     const chiTietBangLuong = await ChiTietBangLuong.create({
@@ -106,7 +111,7 @@ exports.create = async (req, res) => {
     for (const chamCong of chamCongList) {
       await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
     }
-     res.status(201).json(chiTietBangLuong);
+    res.status(201).json(chiTietBangLuong);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -115,7 +120,47 @@ exports.create = async (req, res) => {
     });
   }
 };
-
+exports.getByNhanVienAndNgay = async (req,res) => {
+  try {
+    const { Ngay, MaTK } = req.query;
+    const chiTietBangLuong = await ChiTietBangLuong.findOne({
+      where: {
+        Ngay,
+      },
+      include: [
+        {
+          model: ChamCong,
+          as: "cham_congs",
+          include: [
+            {
+              model: DangKyCa,
+              as: "MaDKC_dang_ky_ca",
+              where: {
+                MaNS: MaTK,
+              },
+              include:[
+                {
+                  model: CaLam,
+                  as:"MaCaLam_ca_lam"
+                }
+              ]
+            },
+          ],
+        },
+      ],
+    });
+    const khenThuongKyLuats = await KhenThuongKyLuat.findAll({
+      where: {
+        MaTK,
+        NgayApDung: Ngay,
+      },
+    });
+    res.status(200).json({ chiTietBangLuong, khenThuongKyLuats });
+  } catch (error) {
+    console.log("ERROR: " + error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 // Get all salary details
 exports.findAll = async (req, res) => {
   try {
@@ -144,7 +189,6 @@ exports.findAll = async (req, res) => {
     });
   }
 };
-
 // Get salary detail by ID
 exports.findOne = async (req, res) => {
   try {
@@ -300,7 +344,6 @@ exports.calculateDailySalary = async (req, res) => {
       ketThuc.setDate(ketThuc.getDate() + 1);
     }
 
-
     let tongGioLam = (ketThuc - batDau) / 3600000; //Chuyển từ giây qua số giờ làm việc
 
     // Col2. Tiền phạt từ đi trễ và về sớm
@@ -333,9 +376,6 @@ exports.calculateDailySalary = async (req, res) => {
     const tienLuongNgay = parseFloat((luongTheoGio * tongGioLam).toFixed(2));
 
     console.log(dangKyCa.cham_congs);
-
-
-    
 
     // Get attendance records for the day
     // const chamCong = await ChamCong.findOne({
