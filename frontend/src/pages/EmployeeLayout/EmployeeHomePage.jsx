@@ -62,7 +62,7 @@ export function EmployeeHomePage() {
     );
   }
   return (
-    <div className="max-w-3xl mx-auto pt-16 px-4 mb-16">
+    <div className="pt-16 px-4 mb-16">
       <div className="flex items-center gap-6 bg-white rounded-xl shadow p-6 mb-6">
         <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
           {user.Avatar ? (

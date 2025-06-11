@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const chiTietBangLuongController = require('../controllers/chiTietBangLuongController');
 
+router.get('/getByNhanVienAndNgay',chiTietBangLuongController.getByNhanVienAndNgay);
 // Create a new salary detail
 router.post('/', chiTietBangLuongController.create);
 
