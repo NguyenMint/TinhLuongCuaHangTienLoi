@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createThangLuong } from "../../api/apiThangLuong";
-import { formatCurrency } from "../../utils/formatCurrency.js";
+import { formatCurrency } from "../../utils/format";
 export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
   const [form, setForm] = useState({
     LuongCoBan: 0,

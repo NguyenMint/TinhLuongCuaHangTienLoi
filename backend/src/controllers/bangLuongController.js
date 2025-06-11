@@ -11,35 +11,33 @@ const { formatDate } = require("../util/util");
 
 // Create a new salary sheet
 exports.create = async (req, res) => {
-  try {
-    const { MaTK, Thang, Nam } = req.body;
-
-    const startOfMonth = new Date(Nam, Thang - 1, 1);
-    const endOfMonth = new Date(Nam, Thang, 0);
-    const KyLuong = formatDate(startOfMonth) + " - " + formatDate(endOfMonth);
-    const phuCaps = await PhuCap.findAll({
-      where: {
-        MaTK,
-        TrangThai: true,
-      },
-    });
-    let TongPhuCap = 0;
-    phuCaps.forEach((phucap) => {
-      TongPhuCap += phucap.GiaTriPhuCap;
-    });
-    const chiTietBangLuongs = await ChiTietBangLuong.findAll({
-      where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
-      include: [
-        {
-          model: ChamCong,
-          as: "cham_congs",
-          include: [
-            {
-              model: DangKyCa,
-              as: "MaDKC_dang_ky_ca",
-              where: {
-                MaNS: MaTK,
-              },
+  const { MaTK, Thang, Nam } = req.body;
+  const startOfMonth = new Date(Nam, Thang - 1, 1);
+  const endOfMonth = new Date(Nam, Thang, 0);
+  const KyLuong = formatDate(startOfMonth) + " - " + formatDate(endOfMonth);
+  const phuCaps = await PhuCap.findAll({
+    where: {
+      MaTK,
+      TrangThai: true,
+    },
+  });
+  let TongPhuCap = 0;
+  phuCaps.forEach((phucap) => {
+    TongPhuCap += phucap.GiaTriPhuCap;
+  });
+  const chiTietBangLuongs = await ChiTietBangLuong.findAll({
+    where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
+    include: [
+      {
+        model: ChamCong,
+        as: "cham_congs",
+        required:true,
+        include: [
+          {
+            model: DangKyCa,
+            as: "MaDKC_dang_ky_ca",
+            where: {
+              MaNS: MaTK,
             },
           ],
         },

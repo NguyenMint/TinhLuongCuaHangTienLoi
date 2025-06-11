@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FileIcon, TrashIcon } from "lucide-react";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { formatCurrency } from "../../utils/format";
 export function PayrollDetail({ payroll, onCancel, onExport }) {
   const [activeTab, setActiveTab] = useState("information");
 
