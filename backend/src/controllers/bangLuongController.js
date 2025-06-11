@@ -11,6 +11,7 @@ const { formatDate } = require("../util/util");
 
 // Create a new salary sheet
 exports.create = async (req, res) => {
+  try{
   const { MaTK, Thang, Nam } = req.body;
   const startOfMonth = new Date(Nam, Thang - 1, 1);
   const endOfMonth = new Date(Nam, Thang, 0);
@@ -25,24 +26,26 @@ exports.create = async (req, res) => {
   phuCaps.forEach((phucap) => {
     TongPhuCap += phucap.GiaTriPhuCap;
   });
-  const chiTietBangLuongs = await ChiTietBangLuong.findAll({
-    where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
-    include: [
-      {
-        model: ChamCong,
-        as: "cham_congs",
-        required:true,
-        include: [
-          {
-            model: DangKyCa,
-            as: "MaDKC_dang_ky_ca",
-            where: {
-              MaNS: MaTK,
-            },
-          ],
+const chiTietBangLuongs = await ChiTietBangLuong.findAll({
+  where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
+  include: [
+    {
+      model: ChamCong,
+      as: "cham_congs",
+      required: true,
+      include: [
+        {
+          model: DangKyCa,
+          as: "MaDKC_dang_ky_ca",
+          where: {
+            MaNS: MaTK,
+          },
         },
       ],
-    });
+    },
+  ],
+});
+
     let TongThuong = 0,
       TongPhat = 0,
       TongGioLamViec = 0,
@@ -111,7 +114,7 @@ exports.create = async (req, res) => {
     res.status(200).json({ success: true, bangLuong });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal server error" });
-  }
+}
 };
 
 // Get all salary sheets
