@@ -90,7 +90,7 @@ export function PayrollTable({
                 <td className="px-4 py-3 text-right">{formatCurrency(payroll.TongLuong)}</td>
                 <td className="px-4 py-3">Admin</td>
                 <td className="px-4 py-3">{payroll.NgayTao}</td>
-                <td className="px-4 py-3">{payroll.NgayThanhToan}</td>
+                <td className="px-4 py-3">{payroll.NgayThanhToan?? "Chưa thanh toán"}</td>
               </tr>
             ))
           ) : (
