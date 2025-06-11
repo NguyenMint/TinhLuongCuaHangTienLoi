@@ -120,7 +120,7 @@ exports.create = async (req, res) => {
     });
   }
 };
-exports.getByNhanVienAndNgay = async (req,res) => {
+exports.getByNhanVienAndNgay = async (req, res) => {
   try {
     const { Ngay, MaTK } = req.query;
     const chiTietBangLuong = await ChiTietBangLuong.findOne({
@@ -138,12 +138,12 @@ exports.getByNhanVienAndNgay = async (req,res) => {
               where: {
                 MaNS: MaTK,
               },
-              include:[
+              include: [
                 {
                   model: CaLam,
-                  as:"MaCaLam_ca_lam"
-                }
-              ]
+                  as: "MaCaLam_ca_lam",
+                },
+              ],
             },
           ],
         },
