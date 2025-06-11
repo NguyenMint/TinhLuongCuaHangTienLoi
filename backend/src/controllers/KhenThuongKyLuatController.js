@@ -43,7 +43,6 @@ class KhenThuongKyLuatController {
       const khenthuongkyluat = await KhenThuongKyLuat.create(req.body);
       res.status(201).json({ success: true, khenthuongkyluat });
     } catch (error) {
-      console.log("ERROR: " + error);
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });

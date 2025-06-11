@@ -4,8 +4,11 @@ import { PayrollTable } from "../components/Payroll/PayrollTable";
 import { PayrollDetail } from "../components/Payroll/PayrollDetail";
 import { Header } from "../components/Payroll/Header";
 import { payrolls } from "../utils/mockData";
-import { getAllBangLuong } from "../api/apiBangLuong";
+import { createBangLuong, getAllBangLuong } from "../api/apiBangLuong";
 import { getChiNhanh } from "../api/apiChiNhanh";
+import { EmployeeDetail } from "../components/HomePage/EmployeeDetail";
+import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
+import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 export function PayrollPage() {
   const [payrolls, setPayrolls] = useState([]);
   const [filteredPayrolls, setFilteredPayrolls] = useState(payrolls);
@@ -14,6 +17,9 @@ export function PayrollPage() {
   const [showDetail, setShowDetail] = useState(false);
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
+  const [showCreatePayroll, setShowCreatePayroll] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
 
   const [statusFilters, setStatusFilters] = useState({
     creating: false,
@@ -21,6 +27,15 @@ export function PayrollPage() {
     finalized: false,
     cancelled: false,
   });
+
+  const getAllNhanVien = async () => {
+    try {
+      const data = await fetchAllNhanVien();
+      setEmployees(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
   const fetchAllBangLuong = async () => {
     try {
       const data = await getAllBangLuong();
@@ -41,6 +56,7 @@ export function PayrollPage() {
     // Fetch payroll data when component mounts
     fetchAllBangLuong();
     fetchChiNhanh();
+    getAllNhanVien();
   }, []);
 
   // Handle search
@@ -82,6 +98,36 @@ export function PayrollPage() {
       [status]: checked,
     }));
   };
+  const handleCreatePayrollModal = async (form) => {
+    try {
+      const records = Array.isArray(form?.MaTK)
+        ? form.MaTK.map((matk) => ({
+            MaTK: matk,
+            Thang: form.Thang,
+            Nam: form.Nam,
+          }))
+        : [];
+      console.log(records);
+
+      if (records.length === 0) {
+        alert("Chưa chọn nhân viên hoặc dữ liệu không hợp lệ.");
+        return;
+      }
+
+      const results = await Promise.all(
+        records.map((record) => createBangLuong(record))
+      );
+      const successCount = results.filter((res) => res.success).length;
+      const failCount = results.length - successCount;
+
+      alert(`Thành công: ${successCount} nhân viên\nThất bại: ${failCount}`);
+      fetchAllBangLuong();
+      setShowCreatePayroll(false);
+    } catch (error) {
+      alert("Có lỗi xảy ra khi tạo bảng lương!");
+      console.error(error);
+    }
+  };
   return (
     <div className="flex h-screen bg-gray-50">
       <FilterSidebar
@@ -91,7 +137,11 @@ export function PayrollPage() {
         onStatusFilterChange={handleStatusFilterChange}
       />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header onSearch={handleSearch} onExport={handleExport} />
+        <Header
+          onSearch={handleSearch}
+          onExport={handleExport}
+          setShowCreatePayroll={setShowCreatePayroll}
+        />
         <div className="flex-1 overflow-auto p-4">
           <PayrollTable
             // payrolls={filteredPayrolls}
@@ -101,6 +151,20 @@ export function PayrollPage() {
             setSelectedPayroll={setSelectedPayroll}
             setShowDetail={setShowDetail}
           />
+          {showCreatePayroll && (
+            <div className="mt-4 bg-white rounded-lg shadow">
+              <CreatePayrollModal
+                setShowCreatePayroll={setShowCreatePayroll}
+                employees={employees}
+                setSelectedEmployees={setSelectedEmployees}
+                onSave={handleCreatePayrollModal}
+                selectedEmployees1={selectedEmployees}
+                // employee={selectedEmployee}
+                // activeTab={activeTab}
+                // setActiveTab={setActiveTab}
+              />
+            </div>
+          )}
           {showDetail && (
             <PayrollDetail
               payroll={selectedPayroll}
