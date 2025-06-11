@@ -26,3 +26,15 @@ export const createBangLuong = async (formData) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+
+export const getKyLuong = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/bangluong/getKyLuong`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Bảng lương:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};

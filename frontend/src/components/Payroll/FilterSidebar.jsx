@@ -4,6 +4,9 @@ export function FilterSidebar({
   chinhanhs,
   statusFilters,
   onStatusFilterChange,
+  kyLuongs,
+  setSelectedKyLuong,
+  setSelectedChiNhanh,
 }) {
   const [branchFilter, setBranchFilter] = useState("Chi nhánh trung tâm");
   const [payrollCycle, setPayrollCycle] = useState("Chọn kỳ hạn trả lương");
@@ -16,9 +19,17 @@ export function FilterSidebar({
       <div className="md:mb-6 border-b p-4 rounded-lg bg-white p-2">
         <h3 className="text-sm font-medium text-gray-700 mb-2">Chi nhánh</h3>
         <div className="relative">
-          <select className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <select
+            className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onChange={(e) => {
+              const selected = chinhanhs?.find(
+                (chinhanh) => chinhanh.TenChiNhanh === e.target.value
+              );
+              setSelectedChiNhanh(selected ?? "");
+            }}
+          >
             <option value="">Chọn chi nhánh...</option>
-            {chinhanhs.map((chinhanh) => (
+            {(chinhanhs || []).map((chinhanh) => (
               <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
                 {chinhanh.TenChiNhanh}
               </option>
@@ -33,11 +44,16 @@ export function FilterSidebar({
           Kỳ hạn trả lương
         </h3>
         <div className="relative">
-          <select className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <select
+            className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            onChange={(e) => {
+              setSelectedKyLuong(e.target.value ?? "");
+            }}
+          >
             <option value="">Chọn kỳ hạn trả lương</option>
-            {chinhanhs.map((chinhanh) => (
-              <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
-                {chinhanh.TenChiNhanh}
+            {(kyLuongs || []).map((kyLuong, index) => (
+              <option key={index} value={kyLuong.KyLuong}>
+                {kyLuong.KyLuong}
               </option>
             ))}
           </select>
@@ -97,13 +113,13 @@ export function FilterSidebar({
         </div>
       </div> */}
       {/* Record Count */}
-      <div className="p-4 flex items-center justify-between border-b rounded-lg bg-white p-2">
+      {/* <div className="p-4 flex items-center justify-between border-b rounded-lg bg-white p-2">
         <span className="text-sm">Số bản ghi:</span>
         <div className="flex items-center border border-gray-200 rounded">
           <span className="px-2">15</span>
           <ChevronDownIcon size={16} className="text-gray-400" />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
