@@ -13,6 +13,7 @@ import { getChiNhanh } from "../api/apiChiNhanh";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
 import { fetchAllNhanVien } from "../api/apiTaiKhoan";
+import { Pagination } from "../components/Pagination";
 export function PayrollPage() {
   const [payrolls, setPayrolls] = useState([]);
   const [filteredPayrolls, setfilteredPayrolls] = useState([]);
@@ -27,6 +28,16 @@ export function PayrollPage() {
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [kyLuongs, setKyLuongs] = useState([]);
   const [selectedKyLuong, setSelectedKyLuong] = useState();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const payrollInPage = 5;
+  const indexLast = currentPage * payrollInPage;
+  const indexFirst = indexLast - payrollInPage;
+  const payrollCurrent = filteredPayrolls.slice(indexFirst, indexLast);
+  const totalPage = Math.ceil(filteredPayrolls.length / payrollInPage);
+  const handlePageChange = (pagenumber) => {
+    setCurrentPage(pagenumber);
+  };
 
   const [statusFilters, setStatusFilters] = useState({
     creating: false,
@@ -187,12 +198,17 @@ export function PayrollPage() {
         <div className="flex-1 overflow-auto p-4">
           <PayrollTable
             // payrolls={filteredPayrolls}
-            payrolls={filteredPayrolls}
+            payrolls={payrollCurrent}
             onRowClick={handleRowClick}
             selectedPayroll={selectedPayroll}
             setSelectedPayroll={setSelectedPayroll}
             setShowDetail={setShowDetail}
           />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPage}
+            onPageChange={handlePageChange}
+          ></Pagination>
           {showCreatePayroll && (
             <div className="mt-4 bg-white rounded-lg shadow">
               <CreatePayrollModal
