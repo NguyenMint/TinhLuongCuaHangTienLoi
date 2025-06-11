@@ -8,6 +8,7 @@ route.get('/search',TaiKhoanController.searchEmployee);
 route.get('/getAllNhanVienVaQuanLy',TaiKhoanController.getAllNhanVienVaQuanLy);
 route.get('/getAllQuanLyByChiNhanh/:MaCN',TaiKhoanController.getAllQuanLyByChiNhanh);
 route.put('/resetPass/:MaTK',TaiKhoanController.resetMK);
+route.post('/luongTheoGio',TaiKhoanController.getLuongGio);
 route.get('/',TaiKhoanController.getAll);
 route.get('/:MaTK',TaiKhoanController.getById);
 route.post('/',authMiddleware,authorizeRoles(1,3) ,uploadAvatar.single('avatar'),TaiKhoanController.create);

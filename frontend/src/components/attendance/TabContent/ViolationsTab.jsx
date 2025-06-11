@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { deleteKTKL } from "../../../api/apiKTKL";
 
 const violationTypes = [
   "Ngủ gật trong giờ",
@@ -11,21 +12,23 @@ const violationTypes = [
 ];
 
 const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
-  const [currentViolations, setCurrentViolations] = useState(violations);
-  const [showViolantions, setShowViolantions] = useState(violations);
+  const [currentViolations, setCurrentViolations] = useState(violations || []);
+  const [showViolations, setShowViolations] = useState(violations);
+  const [deletedDatabaseIds, setDeletedDatabaseIds] = useState(new Set()); //Xóa CSDL
   const [newViolation, setNewViolation] = useState({
     LyDo: "",
     MucThuongPhat: 0,
     DuocMienThue: true,
   });
   const [isAdding, setIsAdding] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(null); // Chọn item xóa
+
   const handleAddViolation = () => {
     if (!newViolation.LyDo || newViolation.MucThuongPhat < 0) return;
 
-    const total = newViolation.DuocMienThue * newViolation.MucThuongPhat;
     const newItem = {
       ...newViolation,
-      total,
+      MaKTKL: `temp_${Date.now()}`, // Temporary ID for new items
     };
 
     const updatedViolations = [...currentViolations, newItem];
@@ -37,24 +40,46 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
     setIsAdding(false);
   };
 
-  const handleDelete = (id) => {
-    const updated = currentViolations.filter((v) => v.id !== id);
-    setCurrentViolations(updated);
-    onUpdate(updated);
+  const handleDelete = async (MaKTKL, isFromDatabase = false) => {
+    // Show confirmation dialog
+    const confirmed = window.confirm("Bạn có chắc chắn muốn xóa vi phạm này?");
+    if (!confirmed) return;
+
+    setIsDeleting(MaKTKL);
+
+    try {
+      if (isFromDatabase && MaKTKL && !MaKTKL.toString().startsWith("temp_")) {
+        await deleteKTKL(MaKTKL);
+        setDeletedDatabaseIds((prev) => new Set([...prev, MaKTKL]));
+      }
+
+      const updatedViolations = currentViolations.filter(
+        (v) => v.MaKTKL !== MaKTKL
+      );
+
+      setCurrentViolations(updatedViolations);
+      onUpdate(updatedViolations);
+    } catch (error) {
+      console.error("Error deleting violation:", error);
+      alert("Lỗi khi xóa vi phạm: " + (error.message || "Lỗi không xác định"));
+    } finally {
+      setIsDeleting(null);
+    }
   };
 
   const handleCancel = () => {
-    setNewViolation({ LyDo: "", DuocMienThue: 1, MucThuongPhat: 0 });
+    setNewViolation({ LyDo: "", DuocMienThue: true, MucThuongPhat: 0 });
     setIsAdding(false);
   };
+
   useEffect(() => {
-    setShowViolantions([
-      ...formData.MaNS_tai_khoan.khen_thuong_ky_luats.filter(
-        (item) => item.ThuongPhat === false
-      ),
-      ...currentViolations,
-    ]);
-  }, [currentViolations]);
+    // Separate database violations from current violations
+    const databaseViolations = formData.MaNS_tai_khoan.khen_thuong_ky_luats
+      .filter((item) => item.ThuongPhat === false)
+      .filter((item) => !deletedDatabaseIds.has(item.MaKTKL));
+
+    setShowViolations([...databaseViolations, ...currentViolations]);
+  }, [currentViolations, formData, deletedDatabaseIds]); // Add deletedDatabaseIds to dependencies
 
   return (
     <div>
@@ -62,35 +87,56 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
         <table className="min-w-full text-sm text-left">
           <thead>
             <tr>
-              <th className="p-3  w-1/4">Loại vi phạm</th>
+              <th className="p-3 w-1/4">Loại vi phạm</th>
               <th className="p-3">Mức áp dụng</th>
-              <th className="p-3">Được miễn thuế </th>
+              <th className="p-3">Được miễn thuế</th>
               <th className="p-3 w-12 text-center">Xóa</th>
             </tr>
           </thead>
           <tbody>
-            {showViolantions.length > 0 ? (
-              showViolantions.map((v, index) => (
-                <tr
-                  key={`${v.id || index}-${v.LyDo}`}
-                  className="border-t border-blue-100"
-                >
-                  <td className="p-3">{v.LyDo}</td>
-                  <td className="p-3">{v.MucThuongPhat}</td>
-                  <td className="p-3">{v.DuocMienThue ? "Có" : "Không"}</td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() => handleDelete(v.id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 />
-                    </button>
-                  </td>
-                </tr>
-              ))
+            {showViolations.length > 0 ? (
+              showViolations.map((v, index) => {
+                const isFromDatabase =
+                  !v.MaKTKL?.toString().startsWith("temp_") &&
+                  formData.MaNS_tai_khoan.khen_thuong_ky_luats.some(
+                    (item) => item.MaKTKL === v.MaKTKL
+                  );
+                const isBeingDeleted = isDeleting === v.MaKTKL;
+
+                return (
+                  <tr
+                    key={`${v.MaKTKL || index}-${v.LyDo}`}
+                    className={`border-t border-blue-100 ${
+                      isBeingDeleted ? "opacity-50" : ""
+                    }`}
+                  >
+                    <td className="p-3">{v.LyDo}</td>
+                    <td className="p-3">{v.MucThuongPhat}</td>
+                    <td className="p-3">{v.DuocMienThue ? "Có" : "Không"}</td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => handleDelete(v.MaKTKL, isFromDatabase)}
+                        disabled={isBeingDeleted}
+                        className={`text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed`}
+                        title={
+                          isFromDatabase
+                            ? "Xóa khỏi cơ sở dữ liệu"
+                            : "Xóa khỏi danh sách"
+                        }
+                      >
+                        {isBeingDeleted ? (
+                          <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <Trash2 />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr className="border-t border-blue-100">
-                <td colSpan={5} className="p-3 text-center text-gray-500">
+                <td colSpan={4} className="p-3 text-center text-gray-500">
                   Không có dữ liệu vi phạm
                 </td>
               </tr>

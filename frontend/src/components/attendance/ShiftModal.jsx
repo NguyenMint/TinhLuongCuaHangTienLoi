@@ -4,6 +4,8 @@ import HistoryTab from "./TabContent/HistoryTab";
 import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
 import { CircleUserRound, IdCard } from "lucide-react";
+import { calculatePhat } from "../../utils/TreSom";
+
 const ShiftModal = ({
   shift,
   employees,
@@ -12,6 +14,8 @@ const ShiftModal = ({
   onDelete,
   setDataUpdate,
   dataUpdate,
+  luongTheoGio,
+  isLoadingForLuong,
 }) => {
   const [activeTab, setActiveTab] = useState("checkin");
   const [formData, setFormData] = useState({
@@ -19,9 +23,10 @@ const ShiftModal = ({
     attendanceType: shift.attendanceType || "working",
     substituteId: shift.substituteId || "",
   });
-  // console.log(formData.cham_congs.length > 0);
+ 
+  
+  // Set initial dataUpdate when formData changes
   useEffect(() => {
-
     const calcLateMinutes = () => {
       if (!formData.cham_congs[0]?.GioVao) return 0;
       const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
@@ -32,7 +37,7 @@ const ShiftModal = ({
       const startDate = new Date(2000, 0, 1, startHours, startMinutes);
       const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
       const diff = (checkDate - startDate) / (1000 * 60);
-       return diff > 0 ? diff : 0;
+      return diff > 0 ? diff : 0;
     };
 
     const calcEarlyMinutes = () => {
@@ -47,9 +52,14 @@ const ShiftModal = ({
       const diff = (endDate - checkDate) / (1000 * 60);
       return diff > 0 ? diff : 0;
     };
+
     setDataUpdate({
-      GioVao: formData.cham_congs[0]?.GioVao || formData.MaCaLam_ca_lam.ThoiGianBatDau,
-      GioRa: formData.cham_congs[0]?.GioRa || formData.MaCaLam_ca_lam.ThoiGianKetThuc,
+      GioVao:
+        formData.cham_congs[0]?.GioVao ||
+        formData.MaCaLam_ca_lam.ThoiGianBatDau,
+      GioRa:
+        formData.cham_congs[0]?.GioRa ||
+        formData.MaCaLam_ca_lam.ThoiGianKetThuc,
       MaChamCong: formData.cham_congs[0]?.MaChamCong,
       DiTre: formData.cham_congs[0]?.DiTre || calcLateMinutes(),
       VeSom: formData.cham_congs[0]?.VeSom || calcEarlyMinutes(),
@@ -60,7 +70,70 @@ const ShiftModal = ({
       rewards: formData.rewards || [],
     });
   }, [formData, setDataUpdate]);
-  
+
+  // Calculate violations when luongTheoGio is loaded
+  useEffect(() => {
+    // Only calculate violations if luongTheoGio is loaded (not 0) and not currently loading
+    const existsData = formData.MaNS_tai_khoan.khen_thuong_ky_luats.filter(
+      (item) => item.LyDo === "Đi muộn" || item.LyDo === "Về sớm"
+    );
+    if (existsData.length > 0) return;
+    if (!luongTheoGio || luongTheoGio === 0 || isLoadingForLuong) return;
+
+    const chamCong = formData.cham_congs?.[0];
+    if (!chamCong) return;
+
+    const isLate = chamCong.DiTre > 0;
+    const isEarly = chamCong.VeSom > 0;
+
+    let newViolations = [...(formData.violations || [])];
+    let hasChanged = false;
+
+    const addViolation = (type, reason, minutes) => {
+      const idPrefix = type === "late" ? "auto_late_" : "auto_early_";
+      const existing = newViolations.find((v) => v.LyDo === reason && v.isAuto);
+      if (!existing) {
+        newViolations.push({
+          MaKTKL: `${idPrefix}${Date.now()}`,
+          LyDo: reason,
+          MucThuongPhat:
+            type === "late"
+              ? calculatePhat(minutes, luongTheoGio)
+              : calculatePhat(minutes, luongTheoGio),
+          DuocMienThue: true,
+          isAuto: true,
+        });
+        hasChanged = true;
+      }
+    };
+
+    const removeViolation = (reason) => {
+      const updated = newViolations.filter(
+        (v) => !(v.LyDo === reason && v.isAuto)
+      );
+      if (updated.length !== newViolations.length) {
+        newViolations = updated;
+        hasChanged = true;
+      }
+    };
+
+    if (isLate) {
+      addViolation("late", "Đi muộn", chamCong.DiTre);
+    } else {
+      removeViolation("Đi muộn");
+    }
+
+    if (isEarly) {
+      addViolation("early", "Về sớm", chamCong.VeSom);
+    } else {
+      removeViolation("Về sớm");
+    }
+
+    if (hasChanged) {
+      handleInputChange("violations", newViolations);
+    }
+  }, [luongTheoGio, isLoadingForLuong, formData.cham_congs]); // Added isLoadingForLuong to dependencies
+
   const tabs = [
     {
       id: "checkin",
@@ -79,15 +152,18 @@ const ShiftModal = ({
       label: "Thưởng",
     },
   ];
+
   const handleInputChange = (field, value) => {
     setFormData({
       ...formData,
       [field]: value,
     });
   };
+
   const handleSave = () => {
     onSave(formData);
   };
+
   const getStatusBadge = () => {
     if (
       formData.cham_congs[0]?.DiTre > 0 &&
@@ -137,13 +213,20 @@ const ShiftModal = ({
     }
   };
 
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold">Chấm công</h2>
+            {/* Add loading indicator for luongTheoGio */}
+            {(isLoadingForLuong || luongTheoGio === 0) && (
+              <span className="text-sm text-gray-500">
+                {isLoadingForLuong
+                  ? "(Đang tải lương...)"
+                  : "(Chưa có dữ liệu lương)"}
+              </span>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -254,10 +337,11 @@ const ShiftModal = ({
             Đổi ca
           </button>
           <button
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
             onClick={handleSave}
+            disabled={isLoadingForLuong || luongTheoGio === 0} // Disable button while loading or no wage data
           >
-            Duyệt
+            {isLoadingForLuong ? "Đang tải..." : "Duyệt"}
           </button>
           <button
             className="px-4 py-2 border rounded-md hover:bg-gray-50"
@@ -276,4 +360,5 @@ const ShiftModal = ({
     </div>
   );
 };
+
 export default ShiftModal;

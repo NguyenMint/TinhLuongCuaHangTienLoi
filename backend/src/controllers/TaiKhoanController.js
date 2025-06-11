@@ -8,6 +8,8 @@ const TaiKhoan = db.TaiKhoan;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { log } = require("console");
+const { getSoNgayTrongThang } = require("../util/util");
 
 class TaiKhoanController {
   async getAll(req, res) {
@@ -238,20 +240,61 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async resetMK(req,res){
+  async resetMK(req, res) {
     try {
-      const {MaTK} = req.params;
+      const { MaTK } = req.params;
       const taiKhoan = await TaiKhoan.findByPk(MaTK);
-      if(!taiKhoan){
-        return res.status(404).json({messeage:"Không tồn tại tài khoản này"});
+      if (!taiKhoan) {
+        return res
+          .status(404)
+          .json({ messeage: "Không tồn tại tài khoản này" });
       }
       const newPass = await bcrypt.hash("1", 10);
       await taiKhoan.update({
-        Password:newPass
+        Password: newPass,
       });
-      res.status(200).json({message:"Reset password thành công"});
+      res.status(200).json({ message: "Reset password thành công" });
     } catch (error) {
       console.error("ERROR:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async getLuongGio(req, res) {
+    try {
+      const { MaTK, NgayDangKy } = req.body;
+      const taiKhoan = await TaiKhoan.findByPk(MaTK);
+
+      const thangluong = await db.ThangLuong.findOne({
+        where: {
+          BacLuong: taiKhoan.BacLuong,
+          LuongCoBan: taiKhoan.LuongCoBanHienTai,
+          LoaiNV: "FullTime",
+        },
+      });
+
+      const soNgay = getSoNgayTrongThang(NgayDangKy); // Lấy số ngày trong tháng
+
+      let luongTheoGio = 0;
+      const soNgayPhep = thangluong ? thangluong.SoNgayPhep : 0;
+
+      if (taiKhoan.LoaiNV == "FullTime") {
+        luongTheoGio = (
+          taiKhoan.LuongCoBanHienTai /
+          (soNgay - soNgayPhep) /
+          8
+        ).toFixed(2);
+      } else {
+        luongTheoGio = taiKhoan.LuongCoBanHienTai;
+      }
+
+      if (!taiKhoan) {
+        return res
+          .status(404)
+          .json({ message: "Không tồn tại người dùng này" });
+      }
+      res.status(200).json( luongTheoGio );
+    } catch (error) {
+      console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
