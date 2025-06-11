@@ -57,8 +57,8 @@ export function HomePage() {
     fetchChiNhanh();
   }, []);
 
-useEffect(() => {
-  let filtered = [...employees];
+  useEffect(() => {
+    let filtered = [...employees];
 
     // Lọc theo chi nhánh
     if (selectedChiNhanh) {
@@ -66,7 +66,7 @@ useEffect(() => {
         (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
-    
+
     // Lọc theo trạng thái
     if (statusFilter === "working") {
       filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
@@ -150,11 +150,14 @@ useEffect(() => {
               setShowDetail={setShowDetail}
             />
           </div>
-          <Pagination 
-          currentPage={currentPage}
-          totalPages={totalPage}
-          onPageChange={handlePageChange}
-          ></Pagination>
+          {Array.isArray(employeeCurrent) && employeeCurrent.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPage}
+              onPageChange={handlePageChange}
+            />
+          )}
+
           {showDetail && (
             <div className="mt-4 bg-white rounded-lg shadow">
               <EmployeeDetail

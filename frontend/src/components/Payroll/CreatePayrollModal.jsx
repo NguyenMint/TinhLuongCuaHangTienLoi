@@ -267,8 +267,8 @@ export function CreatePayrollModal({
                 >
                   <option value="">-- Chọn năm --</option>
                   {Array.from(
-                    { length: 10 },
-                    (_, i) => new Date().getFullYear() - 5 + i
+                    { length: 2 },
+                    (_, i) => new Date().getFullYear() - 1 + i
                   ).map((y) => (
                     <option key={y} value={y}>
                       Năm {y}

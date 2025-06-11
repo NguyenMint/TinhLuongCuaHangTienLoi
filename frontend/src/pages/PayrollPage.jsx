@@ -126,7 +126,7 @@ export function PayrollPage() {
     //   filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
     // }
     setfilteredPayrolls(filtered);
-  }, [employees, selectedChiNhanh, selectedKyLuong]);
+  }, [employees, selectedChiNhanh, selectedKyLuong, payrolls]);
 
   const handleRowClick = (payroll) => {
     setSelectedPayroll(payroll);
@@ -157,7 +157,6 @@ export function PayrollPage() {
             Nam: form.Nam,
           }))
         : [];
-      console.log(records);
 
       if (records.length === 0) {
         alert("Chưa chọn nhân viên hoặc dữ liệu không hợp lệ.");
@@ -204,11 +203,15 @@ export function PayrollPage() {
             setSelectedPayroll={setSelectedPayroll}
             setShowDetail={setShowDetail}
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPage}
-            onPageChange={handlePageChange}
-          ></Pagination>
+          {Array.isArray(payrollCurrent) &&
+            payrollCurrent.length > payrollInPage && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPage}
+                onPageChange={handlePageChange}
+              />
+            )}
+
           {showCreatePayroll && (
             <div className="mt-4 bg-white rounded-lg shadow">
               <CreatePayrollModal
