@@ -16,9 +16,6 @@ router.put('/:id', bangLuongController.update);
 // Delete salary sheet
 router.delete('/:id', bangLuongController.delete);
 
-// Calculate salary
-router.post('/calculate', bangLuongController.calculateSalary);
 
-router.post('/calculateV2', bangLuongController.calculateSalaryV2);
 
 module.exports = router; 
