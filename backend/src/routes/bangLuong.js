@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const bangLuongController = require('../controllers/bangLuongController');
-
 // Create a new salary sheet
 router.post('/', bangLuongController.create);
 
@@ -19,5 +18,6 @@ router.delete('/:id', bangLuongController.delete);
 
 // Calculate salary
 router.post('/calculate', bangLuongController.calculateSalary);
+
 
 module.exports = router; 
