@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     tongtien: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(15,2),
       allowNull: false
     },
     Ngay: {
