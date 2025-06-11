@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { XIcon } from "lucide-react";
-import { format, parse, differenceInMinutes } from "date-fns";
-import { vi } from "date-fns/locale";
+import { format, differenceInMinutes } from "date-fns";
 
 export const CheckInTab = ({
   isOpen,
@@ -15,26 +13,30 @@ export const CheckInTab = ({
 }) => {
   const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
   const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
-  // console.log(startTime, endTime);
-  // console.log(formData.cham_congs[0]?.GioVao);
 
   const getTimeHHmm = (time) => {
     if (!time) return "";
     return format(new Date(`2000-01-01T${time}`), "HH:mm");
   };
 
-  const [activeTab, setActiveTab] = useState("timekeeping");
+  // const [activeTab, setActiveTab] = useState("timekeeping");
   const [workStatus, setWorkStatus] = useState("working");
-  const [notes, setNotes] = useState("");
-  // Check-in state
-  const [isCheckedIn, setIsCheckedIn] = useState(false);
+  // const [notes, setNotes] = useState("");
+
+  // Check-in state - Initialize with existing data
+  const [isCheckedIn, setIsCheckedIn] = useState(
+    !!formData.cham_congs[0]?.GioVao
+  );
   const [checkInTime, setCheckInTime] = useState(
     getTimeHHmm(formData.cham_congs[0]?.GioVao) || startTime
   );
   const [checkInLateHours, setCheckInLateHours] = useState("0");
   const [checkInLateMinutes, setCheckInLateMinutes] = useState("0");
-  // Check-out state
-  const [isCheckedOut, setIsCheckedOut] = useState(false);
+
+  // Check-out state - Initialize with existing data
+  const [isCheckedOut, setIsCheckedOut] = useState(
+    !!formData.cham_congs[0]?.GioRa
+  );
   const [checkOutTime, setCheckOutTime] = useState(
     getTimeHHmm(formData.cham_congs[0]?.GioRa) || endTime
   );
@@ -48,20 +50,21 @@ export const CheckInTab = ({
     const date2 = new Date(2000, 0, 1, hours2, minutes2);
     return differenceInMinutes(date2, date1);
   };
+
   const getCheckInStatus = () => {
-    // const diff = getTimeDifference(shift.startTime, checkInTime);
     const diff = getTimeDifference(startTime, checkInTime);
     if (diff > 0) return "late";
     if (diff < 0) return "overtime";
     return "ontime";
   };
+
   const getCheckOutStatus = () => {
-    // const diff = getTimeDifference(shift.endTime, checkOutTime);
     const diff = getTimeDifference(endTime, checkOutTime);
     if (diff < 0) return "early";
     if (diff > 0) return "overtime";
     return "ontime";
   };
+
   const tabs = [
     {
       id: "working",
@@ -77,13 +80,16 @@ export const CheckInTab = ({
     },
   ];
 
+  const checkInStatus = isCheckedIn ? getCheckInStatus() : null;
+  const checkOutStatus = isCheckedOut ? getCheckOutStatus() : null;
+
   useEffect(() => {
     if (isCheckedIn && checkInStatus === "late") {
       const lateMinutes = getTimeDifference(startTime, checkInTime);
       setCheckInLateHours(Math.floor(lateMinutes / 60));
       setCheckInLateMinutes(lateMinutes % 60);
     }
-  }, [checkInTime, isCheckedIn]);
+  }, [checkInTime, isCheckedIn, checkInStatus, startTime]);
 
   useEffect(() => {
     if (isCheckedOut && checkOutStatus === "early") {
@@ -91,32 +97,31 @@ export const CheckInTab = ({
       setCheckOutEarlyHours(Math.floor(earlyMinutes / 60));
       setCheckOutEarlyMinutes(earlyMinutes % 60);
     }
-  }, [checkOutTime, isCheckedOut]);
-
-  // if (!isOpen) return null
-  const checkInStatus = isCheckedIn ? getCheckInStatus() : null;
-  const checkOutStatus = isCheckedOut ? getCheckOutStatus() : null;
+  }, [checkOutTime, isCheckedOut, checkOutStatus, endTime]);
 
   const calcLateMinutes = () =>
     isCheckedIn && checkInStatus === "late"
-      ? getTimeDifference(startTime, checkInTime) // > 0
+      ? getTimeDifference(startTime, checkInTime)
       : 0;
 
   const calcEarlyMinutes = () =>
     isCheckedOut && checkOutStatus === "early"
-      ? getTimeDifference(checkOutTime, endTime) // > 0
+      ? getTimeDifference(checkOutTime, endTime)
       : 0;
 
+  // Update dataUpdate when check-in/out values change
   useEffect(() => {
-    setDataUpdate({
+    setDataUpdate((prevData) => ({
+      ...prevData,
       GioVao: checkInTime,
       GioRa: checkOutTime,
-      MaChamCong: formData.cham_congs[0]?.MaChamCong,
-      DiTre: isCheckedIn ? calcLateMinutes() : formData.cham_congs[0]?.DiTre,
-      VeSom: isCheckedOut ? calcEarlyMinutes() : formData.cham_congs[0]?.VeSom,
-      MaDKC: formData.MaDKC,
-      NgayDangKy: formData.NgayDangKy,
-    });
+      DiTre: isCheckedIn
+        ? calcLateMinutes()
+        : formData.cham_congs[0]?.DiTre || 0,
+      VeSom: isCheckedOut
+        ? calcEarlyMinutes()
+        : formData.cham_congs[0]?.VeSom || 0,
+    }));
   }, [
     checkInTime,
     checkOutTime,
@@ -124,7 +129,8 @@ export const CheckInTab = ({
     isCheckedOut,
     checkInStatus,
     checkOutStatus,
-    formData.cham_congs,
+    setDataUpdate,
+    formData.cham_congs
   ]);
 
   return (
@@ -148,8 +154,8 @@ export const CheckInTab = ({
           </label>
         ))}
       </div>
-      {/* Check-in Block */}
 
+      {/* Check-in Block */}
       <div className="flex items-center gap-4 mb-6">
         <label className="flex items-center gap-2">
           <input
@@ -159,9 +165,9 @@ export const CheckInTab = ({
               const checked = e.target.checked;
               setIsCheckedIn(checked);
               if (checked) {
-                setCheckInTime(checkInTime); // auto‑fill start time
+                setCheckInTime(checkInTime);
               } else {
-                setCheckInTime(""); // blank input
+                setCheckInTime("");
                 setCheckInLateHours("0");
                 setCheckInLateMinutes("0");
               }
@@ -286,4 +292,5 @@ export const CheckInTab = ({
     </div>
   );
 };
+
 export default CheckInTab;

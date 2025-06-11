@@ -3,7 +3,7 @@ import CheckInTab from "./TabContent/CheckInTab";
 import HistoryTab from "./TabContent/HistoryTab";
 import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
-import { vi } from "date-fns/locale";
+import { CircleUserRound, IdCard } from "lucide-react";
 const ShiftModal = ({
   shift,
   employees,
@@ -20,16 +20,47 @@ const ShiftModal = ({
     substituteId: shift.substituteId || "",
   });
   // console.log(formData.cham_congs.length > 0);
-
   useEffect(() => {
+
+    const calcLateMinutes = () => {
+      if (!formData.cham_congs[0]?.GioVao) return 0;
+      const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
+      const checkInTime = formData.cham_congs[0]?.GioVao;
+      if (!startTime || !checkInTime) return 0;
+      const [startHours, startMinutes] = startTime.split(":").map(Number);
+      const [checkHours, checkMinutes] = checkInTime.split(":").map(Number);
+      const startDate = new Date(2000, 0, 1, startHours, startMinutes);
+      const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
+      const diff = (checkDate - startDate) / (1000 * 60);
+       return diff > 0 ? diff : 0;
+    };
+
+    const calcEarlyMinutes = () => {
+      if (!formData.cham_congs[0]?.GioRa) return 0;
+      const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
+      const checkOutTime = formData.cham_congs[0]?.GioRa;
+      if (!endTime || !checkOutTime) return 0;
+      const [endHours, endMinutes] = endTime.split(":").map(Number);
+      const [checkHours, checkMinutes] = checkOutTime.split(":").map(Number);
+      const endDate = new Date(2000, 0, 1, endHours, endMinutes);
+      const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
+      const diff = (endDate - checkDate) / (1000 * 60);
+      return diff > 0 ? diff : 0;
+    };
     setDataUpdate({
-      ...dataUpdate,
+      GioVao: formData.cham_congs[0]?.GioVao || formData.MaCaLam_ca_lam.ThoiGianBatDau,
+      GioRa: formData.cham_congs[0]?.GioRa || formData.MaCaLam_ca_lam.ThoiGianKetThuc,
+      MaChamCong: formData.cham_congs[0]?.MaChamCong,
+      DiTre: formData.cham_congs[0]?.DiTre || calcLateMinutes(),
+      VeSom: formData.cham_congs[0]?.VeSom || calcEarlyMinutes(),
+      MaDKC: formData.MaDKC,
+      NgayDangKy: formData.NgayDangKy,
       MaTK: formData.MaNS_tai_khoan.MaTK,
       violations: formData.violations || [],
       rewards: formData.rewards || [],
     });
-  }, [formData.violations, formData.rewards, setDataUpdate]);
-
+  }, [formData, setDataUpdate]);
+  
   const tabs = [
     {
       id: "checkin",
@@ -105,6 +136,8 @@ const ShiftModal = ({
       );
     }
   };
+
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -135,37 +168,11 @@ const ShiftModal = ({
         <div className="p-4 border-b">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                ></path>
-              </svg>
+              <CircleUserRound />
               <span>{formData.MaNS_tai_khoan.HoTen}</span>
             </div>
             <div className="flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
-                ></path>
-              </svg>
+              <IdCard />
               <span>{formData.MaNS}</span>
             </div>
             {getStatusBadge()}
