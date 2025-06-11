@@ -57,7 +57,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     NgayThanhToan: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     LuongThucNhan: {
       type: DataTypes.DECIMAL(15,2),
