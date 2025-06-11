@@ -31,6 +31,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    Ngay: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
+    },
     MaBangLuong: {
       type: DataTypes.INTEGER,
       allowNull: true,
