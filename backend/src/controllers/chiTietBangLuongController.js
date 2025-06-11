@@ -63,7 +63,7 @@ exports.create = async (req, res) => {
     kyLuats.forEach((khen) => {
       TienPhat += khen.MucThuongPhat;
     });
-    const tongtien = TienLuongNgay + TienPhuCap - TienPhat;
+    const tongtien = parseFloat(TienLuongNgay) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
     const chamCongDaCoChiTietBL = await ChamCong.findOne({
       where: {
         NgayChamCong: Ngay,
