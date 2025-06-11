@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
 import AttendanceTable from "../components/attendance/AttendanceTable";
 import ShiftModal from "../components/attendance/ShiftModal";
-import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 import { fetchCaLam } from "../api/apiCaLam";
-import { fetchDangKyCa, fetchDKCByNhanVien } from "../api/apiDangKyCa";
+import { fetchDangKyCa } from "../api/apiDangKyCa";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import { chamCong, update_chamcong } from "../api/apiChamCong";
-import { createKTKL, getAllKTKL } from "../api/apiKTKL";
+import { createKTKL } from "../api/apiKTKL";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
-  const [ktkl, setKTKL] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [viewMode, setViewMode] = useState("Xem theo ca");
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [viewMode, setViewMode] = useState("Xem theo ca");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [schedules, setSchedules] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  // const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [dataUpdate, setDataUpdate] = useState({
     GioVao: "",
     MaTK: "",
@@ -31,7 +29,6 @@ export function AttendancePage() {
     violations: [],
     rewards: [],
   });
-
 
   console.log(dataUpdate);
 
@@ -75,37 +72,35 @@ export function AttendancePage() {
     setIsModalOpen(false);
   };
 
-  const fetchNV = async (ma, ngay) => {
-    const response = await fetchDKCByNhanVien(ma, ngay);
-    return response;
-  };
+  // const fetchNV = async (ma, ngay) => {
+  //   const response = await fetchDKCByNhanVien(ma, ngay);
+  //   return response;
+  // };
 
   const handleSaveShift = async () => {
-    const records = [
-      ...(dataUpdate.violations || []).map((v) => ({
-        NgayApDung: dataUpdate.NgayDangKy,
-        ThuongPhat: 0, // 0 = kỷ luật
-        LyDo: v.LyDo,
-        MucThuongPhat: v.MucThuongPhat,
-        DuocMienThue: v.DuocMienThue ? 1 : 0,
-        MaTK: dataUpdate.MaTK,
-      })),
-      ...(dataUpdate.rewards || []).map((r) => ({
-        NgayApDung: dataUpdate.NgayDangKy,
-        ThuongPhat: 1, // 1 = khen thưởng
-        LyDo: r.LyDo,
-        MucThuongPhat: r.MucThuongPhat,
-        DuocMienThue: r.DuocMienThue ? 1 : 0,
-        MaTK: dataUpdate.MaTK,
-      })),
-    ];
-
-    console.log("Dữ liệu cần gửi KTKL:", records);
-
     try {
-      // 1. Cập nhật hoặc tạo mới bản ghi chấm công
+      const records = [
+        ...(dataUpdate.violations || []).map((violation) => ({
+          NgayApDung: dataUpdate.NgayDangKy,
+          ThuongPhat: 0, // Vi phạm
+          LyDo: violation.LyDo,
+          MucThuongPhat: violation.MucThuongPhat,
+          DuocMienThue: violation.DuocMienThue ? 1 : 0,
+          MaTK: dataUpdate.MaTK,
+        })),
+        ...(dataUpdate.rewards || []).map((reward) => ({
+          NgayApDung: dataUpdate.NgayDangKy,
+          ThuongPhat: 1, // Khen thưởng
+          LyDo: reward.LyDo,
+          MucThuongPhat: reward.MucThuongPhat,
+          DuocMienThue: reward.DuocMienThue ? 1 : 0,
+          MaTK: dataUpdate.MaTK,
+        })),
+      ];
+
       if (dataUpdate.MaChamCong) {
         await update_chamcong(
+          // nếu đã có chấm công thì cập nhật lại giờ do quản lý chỉnh
           dataUpdate.GioVao,
           dataUpdate.GioRa,
           dataUpdate.DiTre,
@@ -114,6 +109,7 @@ export function AttendancePage() {
         );
       } else {
         await chamCong(
+          // nếu duyệt mà chưa có bản chấm công thì tự động tạo một bảng chấm công mới
           dataUpdate.NgayDangKy,
           dataUpdate.GioVao,
           dataUpdate.GioRa,
@@ -122,27 +118,33 @@ export function AttendancePage() {
         );
       }
 
-      // 2. Gửi từng bản ghi KTKL
-      const results = await Promise.all(
-        records.map((record) => createKTKL(record))
-      );
+      if (records.length > 0) {
+        const results = await Promise.all(
+          records.map((record) => createKTKL(record))
+        );
 
-      const allSuccess = results.every((res) => res.success);
-      if (allSuccess) {
-        alert("Lưu toàn bộ khen thưởng/kỷ luật thành công!");
+        const failedRecords = results.filter((res) => !res.success);
+
+        if (failedRecords.length === 0) {
+          alert("Đã duyệt chấm công thành công!");
+        } else {
+          console.warn("Một số bản ghi bị lỗi:", failedRecords);
+          alert(
+            `Chấm công đã được lưu, nhưng có ${failedRecords.length} bản ghi khen thưởng/vi phạm bị lỗi.`
+          );
+        }
       } else {
-        const failed = results.filter((res) => !res.success);
-        console.warn("Một số bản ghi bị lỗi:", failed);
-        alert(`Có ${failed.length} bản ghi bị lỗi.`);
+        alert("Đã duyệt chấm công thành công!");
       }
-    } catch (err) {
-      console.error("Lỗi khi lưu dữ liệu chấm công hoặc KTKL:", err);
-      alert("Lỗi kết nối đến server hoặc xử lý dữ liệu!");
-    }
 
-    // 3. Refresh danh sách ca đăng ký và đóng modal
-    await getAllDangKyCa();
-    setIsModalOpen(false);
+      await getAllDangKyCa();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Lỗi khi lưu dữ liệu:", error);
+
+      const errorMessage = error.message || "Lỗi không xác định";
+      alert(`Lỗi khi lưu dữ liệu: ${errorMessage}`);
+    }
   };
 
   const handleDeleteShift = (shiftId) => {

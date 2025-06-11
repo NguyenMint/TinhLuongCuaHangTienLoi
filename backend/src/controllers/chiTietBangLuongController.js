@@ -271,31 +271,71 @@ exports.calculateDailySalary = async (req, res) => {
         { model: db.ChamCong, as: "cham_congs" },
         {
           model: db.TaiKhoan,
-          attributes: ["luongCoBanHienTai", "MaTK"],
+          attributes: ["luongCoBanHienTai", "MaTK", "LoaiNV"],
           as: "MaNS_tai_khoan",
         },
       ],
     });
-    // console.log(dangKyCa);
+
+    // console.log(dangKyCa.MaNS_tai_khoan);
 
     const { ThoiGianBatDau, ThoiGianKetThuc } = dangKyCa.MaCaLam_ca_lam;
 
-    // Tính tiền làm việc theo ca
-    const batDau = new Date(`1970-01-01T${ThoiGianBatDau}`);
-    let ketThuc = new Date(`1970-01-01T${ThoiGianKetThuc}`);
+    // Col1. Tính tiền làm việc theo ca
+    let luongTheoGio = 0;
+    const soNgay = getSoNgayTrongThang(dangKyCa.NgayDangKy); // Lấy số ngày trong tháng
+
+    if (dangKyCa.MaNS_tai_khoan.LoaiNV == "FullTime") {
+      luongTheoGio = (
+        dangKyCa.MaNS_tai_khoan.dataValues.luongCoBanHienTai / soNgay
+      ).toFixed(2);
+    } else {
+      luongTheoGio = dangKyCa.MaNS_tai_khoan.dataValues.luongCoBanHienTai;
+    }
+
+    const batDau = new Date(`2025-01-01T${ThoiGianBatDau}`);
+    let ketThuc = new Date(`2025-01-01T${ThoiGianKetThuc}`);
 
     if (ketThuc <= batDau) {
       ketThuc.setDate(ketThuc.getDate() + 1);
     }
 
-    const tongGioLam = (ketThuc - batDau) / 3600000; //Chuyển từ giây qua số giờ làm việc
-    const soNgay = getSoNgayTrongThang(dangKyCa.NgayDangKy); // Lấy số ngày trong tháng
-    const tienLuongNgay = parseFloat(
-      (
-        (dangKyCa.MaNS_tai_khoan.dataValues.luongCoBanHienTai / soNgay) *
-        tongGioLam
-      ).toFixed(2)
-    );
+
+    let tongGioLam = (ketThuc - batDau) / 3600000; //Chuyển từ giây qua số giờ làm việc
+
+    // Col2. Tiền phạt từ đi trễ và về sớm
+    let TienPhat = 0;
+    const DiTre = dangKyCa.cham_congs[0].dataValues?.DiTre ?? 0;
+    const VeSom = dangKyCa.cham_congs[0].dataValues?.VeSom ?? 0;
+
+    console.log(DiTre, VeSom);
+
+    if (DiTre < 5) {
+      console.log("Không trễ");
+    } else if (DiTre < 15) {
+      tongGioLam -= 1;
+    } else if (DiTre < 60) {
+      tongGioLam -= 2;
+    } else {
+      tongGioLam = 0;
+    }
+
+    if (VeSom < 5) {
+      console.log("Không về sớm");
+    } else if (VeSom < 15) {
+      tongGioLam -= 1;
+    } else if (VeSom < 60) {
+      tongGioLam -= 2;
+    } else {
+      tongGioLam = 0;
+    }
+
+    const tienLuongNgay = parseFloat((luongTheoGio * tongGioLam).toFixed(2));
+
+    console.log(dangKyCa.cham_congs);
+
+
+    
 
     // Get attendance records for the day
     // const chamCong = await ChamCong.findOne({
