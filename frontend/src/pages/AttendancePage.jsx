@@ -3,15 +3,18 @@ import AttendanceTable from "../components/attendance/AttendanceTable";
 import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchCaLam } from "../api/apiCaLam";
 import { fetchDangKyCa } from "../api/apiDangKyCa";
-import { addWeeks, format, subWeeks } from "date-fns";
+import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import { chamCong, update_chamcong } from "../api/apiChamCong";
 import { createKTKL } from "../api/apiKTKL";
+import { layLuongTheoGio } from "../api/apiTaiKhoan";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [luongTheoGio, setLuongTheoGio] = useState(0);
+  const [isLoadingForLuong, setisLoadingForLuong] = useState(false);
   // const [viewMode, setViewMode] = useState("Xem theo ca");
   // const [searchQuery, setSearchQuery] = useState("");
   const [schedules, setSchedules] = useState([]);
@@ -30,7 +33,7 @@ export function AttendancePage() {
     rewards: [],
   });
 
-  console.log(dataUpdate);
+  // console.log(dataUpdate);
 
   const getAllCaLam = async () => {
     try {
@@ -38,6 +41,22 @@ export function AttendancePage() {
       setShifts(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
+
+  const fetchLuong = async (maTK, ngayDangKy) => {
+    if (!maTK || !ngayDangKy) return;
+    
+    try {
+      setisLoadingForLuong(true);
+      setLuongTheoGio(0); // Reset to 0 while loading
+      const data = await layLuongTheoGio(maTK, ngayDangKy);
+      setLuongTheoGio(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy lương:", error);
+      setLuongTheoGio(0);
+    } finally {
+      setisLoadingForLuong(false);
     }
   };
 
@@ -49,10 +68,18 @@ export function AttendancePage() {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
   };
+
   useEffect(() => {
     getAllCaLam();
     getAllDangKyCa();
   }, []);
+
+  // Remove the old useEffect that fetched wage based on dataUpdate changes
+  // useEffect(() => {
+  //   if (dataUpdate.MaTK && dataUpdate.NgayDangKy) {
+  //     fetchLuong();
+  //   }
+  // }, [dataUpdate.MaTK, dataUpdate.NgayDangKy]);
 
   const handlePreviousWeek = () => {
     setCurrentDate(subWeeks(currentDate, 1));
@@ -67,18 +94,29 @@ export function AttendancePage() {
   const handleShiftClick = (shift) => {
     setSelectedShift(shift);
     setIsModalOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+    
+    // Fetch wage data for the selected shift immediately when modal opens
+    const maTK = shift.MaNS_tai_khoan?.MaTK;
+    const ngayDangKy = shift.NgayDangKy;
+    
+    if (maTK && ngayDangKy) {
+      fetchLuong(maTK, ngayDangKy);
+    }
   };
 
-  // const fetchNV = async (ma, ngay) => {
-  //   const response = await fetchDKCByNhanVien(ma, ngay);
-  //   return response;
-  // };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setLuongTheoGio(0); // Reset wage when closing modal
+    setisLoadingForLuong(false);
+  };
 
   const handleSaveShift = async () => {
     try {
+      // if(!dataUpdate.DiTre || !dataUpdate.GioRa) {
+      //   alert("Vui lòng nhập giờ vào và giờ ra.");
+      //   return;
+      // }
+
       const records = [
         ...(dataUpdate.violations || []).map((violation) => ({
           NgayApDung: dataUpdate.NgayDangKy,
@@ -139,6 +177,7 @@ export function AttendancePage() {
 
       await getAllDangKyCa();
       setIsModalOpen(false);
+      setLuongTheoGio(0); // Reset wage after saving
     } catch (error) {
       console.error("Lỗi khi lưu dữ liệu:", error);
 
@@ -150,11 +189,13 @@ export function AttendancePage() {
   const handleDeleteShift = (shiftId) => {
     setShifts(shifts.filter((shift) => shift.id !== shiftId));
     setIsModalOpen(false);
+    setLuongTheoGio(0); // Reset wage after deleting
   };
 
   const weekNumber = Math.ceil(currentDate.getDate() / 7);
   const monthYear = format(currentDate, "MM.yyyy");
   const weekLabel = `Tuần ${weekNumber} - Th.${monthYear}`;
+  
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-4 py-6">
@@ -212,6 +253,8 @@ export function AttendancePage() {
       </div>
       {isModalOpen && selectedShift && (
         <ShiftModal
+          luongTheoGio={luongTheoGio}
+          isLoadingForLuong={isLoadingForLuong}
           shift={selectedShift}
           onClose={handleCloseModal}
           onSave={handleSaveShift}

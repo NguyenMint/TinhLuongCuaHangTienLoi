@@ -1,5 +1,6 @@
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { deleteKTKL } from "../../../api/apiKTKL";
 
 const rewardTypes = [
   "Đi làm đúng giờ",
@@ -17,16 +18,17 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
   });
   const [currentRewards, setCurrentRewards] = useState(rewards);
   const [showRewards, setShowRewards] = useState(rewards);
+  const [deletedDatabaseIds, setDeletedDatabaseIds] = useState(new Set()); //Xóa CSDL
 
   const [isAdding, setIsAdding] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(null); // Chọn item xóa
 
   const handleAddReward = () => {
     if (!newReward.LyDo || newReward.MucThuongPhat < 0) return;
 
-    const total = newReward.DuocMienThue * newReward.MucThuongPhat;
     const newItem = {
       ...newReward,
-      total,
+      MaKTKL: `temp_${Date.now()}`, // Temporary ID for new items
     };
 
     const updatedRewards = [...currentRewards, newItem];
@@ -38,10 +40,28 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
     setIsAdding(false);
   };
 
-  const handleDeleteReward = (id) => {
-    const updated = rewards.filter((r) => r.id !== id);
-    setCurrentRewards(updated);
-    onUpdate(updated);
+  const handleDelete = async (MaKTKL, isFromDatabase = false) => {
+    const confirmed = window.confirm("Bạn có chắc chắn muốn xóa vi phạm này?");
+    if (!confirmed) return;
+
+    setIsDeleting(MaKTKL);
+
+    try {
+      if (isFromDatabase && MaKTKL && !MaKTKL.toString().startsWith("temp_")) {
+        await deleteKTKL(MaKTKL);
+        setDeletedDatabaseIds((prev) => new Set([...prev, MaKTKL]));
+      }
+
+      const updatedRewards = currentRewards.filter((v) => v.MaKTKL !== MaKTKL);
+
+      setCurrentRewards(updatedRewards);
+      onUpdate(updatedRewards);
+    } catch (error) {
+      console.error("Error deleting reward:", error);
+      alert("Lỗi khi xóa vi phạm: " + (error.message || "Lỗi không xác định"));
+    } finally {
+      setIsDeleting(null);
+    }
   };
 
   const handleCancel = () => {
@@ -49,13 +69,12 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
     setIsAdding(false);
   };
   useEffect(() => {
-    setShowRewards([
-      ...formData.MaNS_tai_khoan.khen_thuong_ky_luats.filter(
-        (item) => item.ThuongPhat === true
-      ),
-      ...currentRewards,
-    ]);
-  }, [currentRewards]);
+    const databaseViolations = formData.MaNS_tai_khoan.khen_thuong_ky_luats
+      .filter((item) => item.ThuongPhat === true)
+      .filter((item) => !deletedDatabaseIds.has(item.MaKTKL));
+
+    setShowRewards([...databaseViolations, ...currentRewards]);
+  }, [currentRewards, formData, deletedDatabaseIds]);
 
   return (
     <div>
@@ -71,29 +90,52 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
           </thead>
           <tbody>
             {showRewards?.length > 0 ? (
-              showRewards.map((reward, index) => (
-                <tr
-                  key={`${reward.id || index}-${reward.LyDo}`}
-                  className="border-t border-blue-100"
-                >
-                  <td className="p-3">{reward.LyDo}</td>
-                  <td className="p-3">{reward.MucThuongPhat}</td>
-                  <td className="p-3">
-                    {reward.DuocMienThue ? "Có" : "Không"}
-                  </td>
-                  <td className="p-3">
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => handleDeleteReward(reward.id)}
-                    >
-                      <Trash2 />
-                    </button>
-                  </td>
-                </tr>
-              ))
+              showRewards.map((reward, index) => {
+                const isFromDatabase =
+                  !reward.MaKTKL?.toString().startsWith("temp_") &&
+                  formData.MaNS_tai_khoan.khen_thuong_ky_luats.some(
+                    (item) => item.MaKTKL === reward.MaKTKL
+                  );
+                const isBeingDeleted = isDeleting === reward.MaKTKL;
+
+                return (
+                  <tr
+                    key={`${reward.id || index}-${reward.LyDo}`}
+                    className={`border-t border-blue-100 ${
+                      isBeingDeleted ? "opacity-50" : ""
+                    }`}
+                  >
+                    <td className="p-3">{reward.LyDo}</td>
+                    <td className="p-3">{reward.MucThuongPhat}</td>
+                    <td className="p-3">
+                      {reward.DuocMienThue ? "Có" : "Không"}
+                    </td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() =>
+                          handleDelete(reward.MaKTKL, isFromDatabase)
+                        }
+                        disabled={isBeingDeleted}
+                        className={`text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed`}
+                        title={
+                          isFromDatabase
+                            ? "Xóa khỏi cơ sở dữ liệu"
+                            : "Xóa khỏi danh sách"
+                        }
+                      >
+                        {isBeingDeleted ? (
+                          <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <Trash2 />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr className="border-t border-blue-100">
-                <td colSpan={5} className="p-3 text-center text-gray-500">
+                <td colSpan={4} className="p-3 text-center text-gray-500">
                   Không có dữ liệu khen thưởng
                 </td>
               </tr>
