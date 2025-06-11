@@ -5,7 +5,7 @@ import { AddSalaryStructureForm } from "../../components/SalaryStructure/AddNewS
 import { UpdateSalaryStructureForm } from "../../components/SalaryStructure/UpdateSalaryStructureModal.jsx";
 import { ConfirmDeleteModal } from "../../components/ModalDelete.jsx";
 import { deleteThangLuong } from "../../api/apiThangLuong.js"; 
-import { formatCurrency } from "../../utils/formatCurrency.js";
+import { formatCurrency } from "../../utils/format";
 export function SalaryStructure() {
   const [data, setData] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);

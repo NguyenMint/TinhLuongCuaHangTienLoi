@@ -18,7 +18,7 @@ export  function SidebarEmployee() {
     navigate("/login");
   };
   const sidebarContent = (
-    <div className="bg-white shadow h-screen w-60 flex flex-col">
+    <div className="bg-white shadow h-screen lg:w-60 flex flex-col">
       <div className="p-6 bg-blue-500 text-center font-bold text-lg border-b">Nhân viên</div>
       <nav className="flex-1 p-2">
         {links.map((link) => {
@@ -65,7 +65,7 @@ export  function SidebarEmployee() {
       </div>
       )}
       {/*  sidebar ở desktop */}
-      <div className="hidden lg:flex fixed h-screen">
+      <div className="hidden md:flex fixed h-screen">
         {sidebarContent}
       </div>
       { /* Show sidebar khi nhấn menu */

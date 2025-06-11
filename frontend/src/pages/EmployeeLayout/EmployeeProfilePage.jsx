@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
-import { getDetailCaLam } from "../../api/apiCaLam";
+import {formatCurrency,formatDate,formatTime} from "../../utils/format";
 export function EmployeeProfilePage() {
-  // Mock user data (thay thế localStorage trong môi trường thực tế)
   const user = JSON.parse(localStorage.getItem("user"));
-
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
   const [salaryData, setSalaryData] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const fetchSalaryData = async (date) => {
     setLoading(true);
     try {
-      // Thay thế URL này bằng API endpoint thực tế của bạn
       const response = await getByNhanVienAndNgay(user.MaTK, date);
       setSalaryData(response);
       console.log(response);
@@ -25,46 +21,20 @@ export function EmployeeProfilePage() {
     }
     setLoading(false);
   };
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
-
-  const formatTime = (timeString) => {
-    return timeString ? timeString.substring(0, 5) : "--:--";
-  };
-
-
   useEffect(() => {
     fetchSalaryData(selectedDate);
   }, []);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4">
-      {/* Employee Profile Section */}
+    <div className="bg-gray-50 min-h-screen p-4 mt-5">
       <div className="bg-white rounded-xl shadow-sm py-8 px-6 mb-6">
         <div className="flex items-center gap-6 mb-8">
-          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center overflow-hidden">
+          <div className="w-28 h-28 rounded-full from-blue-100 to-blue-200 overflow-hidden">
             <img
               src={`${process.env.REACT_APP_BACKEND_URL}/${user.Avatar}`}
               alt="avatar"
               className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.nextSibling.style.display = "flex";
-              }}
             />
           </div>
           <div>
@@ -114,7 +84,6 @@ export function EmployeeProfilePage() {
         </div>
       </div>
 
-      {/* Salary Information Section */}
       <div className="bg-white rounded-xl shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">

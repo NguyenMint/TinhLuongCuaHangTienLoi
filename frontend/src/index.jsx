@@ -117,7 +117,7 @@ function App() {
             <ProtectedRoute allowedRoles={[2]}>
               <div className="flex min-h-screen">
                 <SidebarEmployee />
-                <div className="flex-1 ml-16 md:ml-64">
+                <div className="flex-1 md:ml-52 lg:ml-64">
                   <EmployeeHomePage />
                 </div>
               </div>
@@ -130,7 +130,7 @@ function App() {
             <ProtectedRoute allowedRoles={[2]}>
               <div className="flex min-h-screen">
                 <SidebarEmployee />
-                <div className="flex-1 ml-16 md:ml-64">
+                <div className="flex-1 md:ml-52 lg:ml-64">
                   <EmployeeProfilePage />
                 </div>
               </div>
@@ -142,7 +142,7 @@ function App() {
             <ProtectedRoute allowedRoles={[2]}>
               <div className="flex min-h-screen">
                 <SidebarEmployee />
-                <div className="flex-1">
+                <div className="flex-1 md:ml-52 lg:ml-64">
                   <EmployeeUtilitiesPage />
                 </div>
               </div>

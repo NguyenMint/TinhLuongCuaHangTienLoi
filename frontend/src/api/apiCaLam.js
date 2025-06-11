@@ -8,15 +8,6 @@ export const fetchCaLam = async () => {
     return { message: "Lỗi kết nối đến server" };
   }
 };
-export const getDetailCaLam = async (MaCaLam) => {
-  try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/calam/${MaCaLam}`);
-    return response.data;
-  } catch (error) {
-    console.error("Lỗi lấy Ca làm:", error);
-    return { message: "Lỗi kết nối đến server" };
-  }
-};
 export const createCaLam = async (caLamData) => {
   try {
     const token = localStorage.getItem("token");

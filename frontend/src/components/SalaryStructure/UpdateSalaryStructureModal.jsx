@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { updateThangLuong } from "../../api/apiThangLuong";
-import { formatCurrency } from "../../utils/formatCurrency.js";
+import { formatCurrency } from "../../utils/format";
 export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong,salaryStructure }) {
   const [form, setForm] = useState({
     LuongCoBan: salaryStructure.LuongCoBan ,

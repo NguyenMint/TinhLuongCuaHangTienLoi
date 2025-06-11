@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { formatCurrency } from "../../utils/format";
 export function PayrollTable({
   payrolls,
   onRowClick,

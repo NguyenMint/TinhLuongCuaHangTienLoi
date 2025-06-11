@@ -31,6 +31,7 @@ exports.create = async (req, res) => {
       {
         model: ChamCong,
         as: "cham_congs",
+        required:true,
         include: [
           {
             model: DangKyCa,

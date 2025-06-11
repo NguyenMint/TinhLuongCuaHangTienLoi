@@ -1,6 +1,6 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAllThangLuongFullTime } from "../../api/apiThangLuong";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { formatCurrency } from "../../utils/format";
 import { getAllQuanLyByChiNhanh } from "../../api/apiTaiKhoan";
 import { createEmployee } from "../../api/apiTaiKhoan";
 export function AddEmployeeModal({
