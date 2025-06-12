@@ -7,8 +7,9 @@ const ThangLuong = db.ThangLuong;
 const KhenThuongKyLuat = db.KhenThuongKyLuat;
 const DangKyCa = db.DangKyCa;
 const CaLam = db.CaLam;
+const HeSoPhuCap = db.HeSoPhuCap;
 const { Op, where } = require("sequelize");
-const { getSoNgayTrongThang, tinhTongGioLamCaLam } = require("../util/util");
+const { getSoNgayTrongThang, tinhTongGioLamCaLam,isWeekend } = require("../util/util");
 // Create a new salary detail
 exports.create = async (req, res) => {
   try {
@@ -33,12 +34,15 @@ exports.create = async (req, res) => {
         },
       ],
     });
-    let GioLamViecTrongNgay = 0;
-    chamCongList.forEach((record) => {
-      GioLamViecTrongNgay += tinhTongGioLamCaLam(
-        record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.ThoiGianBatDau,
-        record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.ThoiGianKetThuc
-      );
+    const heSoPhuCapNgayLe = await HeSoPhuCap.findOne({
+      where: {
+        Ngay,
+      },
+    });
+    const heSoPhuCapCuoiTuan = await HeSoPhuCap.findOne({
+      where: {
+        LoaiNgay: "Cuối tuần",
+      },
     });
     const taiKhoan = await TaiKhoan.findByPk(MaTK);
     const thangluong = await ThangLuong.findOne({
@@ -51,7 +55,28 @@ exports.create = async (req, res) => {
     const soNgayPhep = thangluong ? thangluong.SoNgayPhep : 0;
     const luongOneHour =
       taiKhoan.LuongCoBanHienTai / (getSoNgayTrongThang(Ngay) - soNgayPhep) / 8;
-    let TienLuongNgay = GioLamViecTrongNgay * luongOneHour;
+    let GioLamViecTrongNgay = 0,
+      TienLuongNgay = 0,
+      heSoNgay = 1.0;
+    if (heSoPhuCapNgayLe) {
+      heSoNgay = parseFloat(heSoPhuCapNgayLe.HeSoLuong);
+    } else if (heSoPhuCapCuoiTuan && isWeekend(Ngay)) {
+      heSoNgay = parseFloat(heSoPhuCapCuoiTuan.HeSoLuong);
+    }
+    chamCongList.forEach((record) => {
+      const gioLam = tinhTongGioLamCaLam(
+        record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.ThoiGianBatDau,
+        record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.ThoiGianKetThuc
+      );
+      GioLamViecTrongNgay += gioLam;
+      const tienLuongCa =
+        gioLam *
+        luongOneHour *
+        parseFloat(record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.HeSoLuong) *
+        heSoNgay;
+      TienLuongNgay += tienLuongCa;
+      console.log(TienLuongNgay,tienLuongCa,heSoNgay);
+    });
     const khenThuongs = await KhenThuongKyLuat.findAll({
       where: { MaTK, NgayApDung: Ngay, ThuongPhat: true },
     });

@@ -10,10 +10,16 @@ function tinhTongGioLamCaLam(thoiGianBatDau, thoiGianKetThuc) {
   }
   return (ketThuc - batDau) / 3600000;
 }
-const formatDate = (date) => {
+function formatDate (date) {
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 };
-module.exports = { getSoNgayTrongThang, tinhTongGioLamCaLam, formatDate };
+function isWeekend(dateStr) {
+  const date = new Date(dateStr);
+  const day = date.getDay();
+  return day === 0;
+}
+
+module.exports = { getSoNgayTrongThang, tinhTongGioLamCaLam, formatDate, isWeekend };

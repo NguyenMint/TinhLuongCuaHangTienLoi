@@ -113,7 +113,12 @@ class bangLuongController {
         KyLuong,
         MaTK,
       });
-      res.status(200).json({ success: true, bangLuong });
+      for(const ct of chiTietBangLuongs){
+        await ct.update({
+          MaBangLuong:bangLuong.MaBangLuong
+        });
+      }
+      res.status(200).json({success:true,bangLuong});
     } catch (error) {
       res
         .status(500)

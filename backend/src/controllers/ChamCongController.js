@@ -21,11 +21,10 @@ class ChamCongController {
           .json({ message: "Không tồn tại lịch đăng ký ca này" });
       }
 
-      const { ThoiGianBatDau, ThoiGianKetThuc, NgayDangKy } =
+      const { ThoiGianBatDau, ThoiGianKetThuc} =
         dangKyCa.MaCaLam_ca_lam;
       let DiTre = 0;
       let VeSom = 0;
-
       const [gioBatDau] = ThoiGianBatDau.split(":").map(Number);
       const [gioKetThuc] = ThoiGianKetThuc.split(":").map(Number);
       const isCaQuaNgay = gioKetThuc < gioBatDau;
@@ -41,14 +40,13 @@ class ChamCongController {
           DiTre = vaoThucTe - vaoChuan;
         }
       }
-      const isNextDay = (date1, date2) => {
-        const d1 = new Date(date1);
-        const d2 = new Date(date2);
-        return (
-          d1.getFullYear() === d2.getFullYear() &&
-          d1.getMonth() === d2.getMonth() &&
-          d1.getDate() === d2.getDate() + 1
-        );
+      const isNextDay = (afterDate, beforeDate) => {
+        const d1 = new Date(afterDate);
+        const d2 = new Date(beforeDate);
+        d1.setHours(0, 0, 0, 0);
+        d2.setHours(0, 0, 0, 0);
+        const diffInDays = (d1 - d2) / (1000 * 60 * 60 * 24);
+        return diffInDays === 1;
       };
       // Tính về sớm nếu có GioRa
       if (GioRa) {
@@ -56,7 +54,7 @@ class ChamCongController {
         let raThucTe = timeToMinutes(GioRa);
         if (isCaQuaNgay) {
           raChuan += 24 * 60;
-          if (isNextDay(NgayChamCong, NgayDangKy)) {
+          if (isNextDay(NgayChamCong, dangKyCa.NgayDangKy)) {
             raThucTe += 24 * 60;
           }
         }
@@ -74,7 +72,7 @@ class ChamCongController {
           DiTre,
           VeSom,
           NgayLe,
-          NgayChamCong,
+          NgayChamCong:dangKyCa.NgayDangKy,
         });
         return res.status(200).json(existing);
       } else {
@@ -84,7 +82,7 @@ class ChamCongController {
           GioRa,
           DiTre,
           VeSom,
-          NgayChamCong,
+          NgayChamCong:dangKyCa.NgayDangKy,
           NgayLe,
           trangthai: "Chờ duyệt",
         });
