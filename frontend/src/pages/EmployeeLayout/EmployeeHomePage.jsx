@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { UserIcon, AlertCircle } from "lucide-react";
 import { fetchDKCByNhanVien } from "../../api/apiDangKyCa";
-import { chamCongVao,chamCongRa } from "../../api/apiChamCong";
-import { formatDate,formatTime } from "../../utils/format";
+import { chamCongVao, chamCongRa } from "../../api/apiChamCong";
+import { formatDate, formatTime } from "../../utils/format";
 export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   const [now, setNow] = useState(new Date());
-  const ngay = now.toISOString().slice(0,10);
+  const ngay = now.toISOString().slice(0, 10);
+  // const tomorrow = new Date();
+  // tomorrow.setDate(tomorrow.getDate() + 1);
+  // const ngay = tomorrow.toISOString().slice(0, 10);
   const timeStr = now.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
@@ -30,23 +33,24 @@ export function EmployeeHomePage() {
     const manv = user.MaTK;
     const response = await fetchDKCByNhanVien(manv, ngay);
     setShifts(response);
-  }; 
+  };
   const ChamCongVao = async (MaDKC) => {
     const gioVao = gioHienTai;
-    // const gioVao = "06:05:00";
-    const response = await chamCongVao(ngay,gioVao,MaDKC,false);
-    if( !response.success) {
+    //const gioVao = "22:05:00";
+    const response = await chamCongVao(ngay, gioVao, MaDKC, false);
+    if (!response.success) {
       alert(response.message || "Chấm công thất bại");
     }
     getDKCByNhanVien();
   };
   const ChamCongRa = async (MaDKC) => {
     const gioRa = gioHienTai;
-    // const gioRa = "13:49:00";
-    const response = await chamCongRa(ngay,gioRa,MaDKC,false);
-    if( !response.success) {
+    //const gioRa = "06:09:00";
+    const response = await chamCongRa(ngay, gioRa, MaDKC, false);
+    if (!response.success) {
       alert(response.message || "Chấm công thất bại");
     }
+    console.log(ngay);
     getDKCByNhanVien();
   };
   if (shifts === null) {
@@ -80,11 +84,8 @@ export function EmployeeHomePage() {
         </div>
       </div>
 
-      
       <div className="flex flex-col items-center mb-6">
-        <div className="text-gray-500 text-base">
-          {formatDate(now)}
-        </div>
+        <div className="text-gray-500 text-base">{formatDate(now)}</div>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-6xl font-extrabold tracking-widest">
             {timeStr}
@@ -92,8 +93,6 @@ export function EmployeeHomePage() {
         </div>
       </div>
 
-      
-      
       {shifts.length === 0 ? (
         <div className="flex items-center gap-2 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded mb-6">
           <AlertCircle className="w-5 h-5" />
@@ -118,7 +117,7 @@ export function EmployeeHomePage() {
                 <tr key={shift.id} className="text-center">
                   <td className="p-2 border">{shift.MaCaLam_ca_lam?.TenCa}</td>
                   <td className="p-2 border">
-                    {formatTime(shift.MaCaLam_ca_lam?.ThoiGianBatDau)} - 
+                    {formatTime(shift.MaCaLam_ca_lam?.ThoiGianBatDau)} -
                     {formatTime(shift.MaCaLam_ca_lam?.ThoiGianKetThuc)}
                   </td>
                   <td className="p-2 border">
