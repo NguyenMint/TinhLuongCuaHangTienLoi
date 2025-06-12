@@ -58,7 +58,7 @@ export function HomePage() {
   }, []);
 
   useEffect(() => {
-    let filtered = [...employees];
+    let filtered = Array.isArray(employees) ? [...employees] : [];
 
     // Lọc theo chi nhánh
     if (selectedChiNhanh) {

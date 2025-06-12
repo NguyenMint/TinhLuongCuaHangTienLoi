@@ -106,7 +106,7 @@ export function PayrollPage() {
   // }, [statusFilters]);
 
   useEffect(() => {
-    let filtered = [...payrolls];
+    let filtered = Array.isArray(payrolls) ? [...payrolls] : [];
     // console.log(selectedChiNhanh);
 
     if (selectedChiNhanh) {

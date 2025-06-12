@@ -20,7 +20,7 @@ export const ScheduleTable = ({
     (_, i) => addDays(startDate, i)
   );
 
-  const formatted = schedules.reduce((acc, employee) => {
+  const formatted = schedules?.reduce?.((acc, employee) => {
     const employeeKey = employee.MaNS;
 
     if (!acc[employeeKey]) {
@@ -103,28 +103,36 @@ export const ScheduleTable = ({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {employees.map((employee) => (
-            <tr key={employee.MaTK}>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div>
-                  <div className="text-sm font-medium text-gray-900">
-                    {employee.HoTen}
+          {employees && employees.length > 0 ? (
+            employees.map((employee) => (
+              <tr key={employee.MaTK}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {employee.HoTen}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Mã: {employee.MaTK}
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Mã: {employee.MaTK}
-                  </div>
-                </div>
-              </td>
-              {weekDays.map((day, index) => (
-                <td key={index} className="px-6 py-4 whitespace-nowrap">
-                  {renderShift(employee, day)}
                 </td>
-              ))}
-              {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {weekDays.map((day, index) => (
+                  <td key={index} className="px-6 py-4 whitespace-nowrap">
+                    {renderShift(employee, day)}
+                  </td>
+                ))}
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 Chưa thiết lập lương
               </td> */}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center py-8 text-gray-500">
+                Không có lịch làm việc nào để hiển thị.
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
