@@ -107,29 +107,37 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, schedules, shifts }) => {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200 text-sm">
-          {shifts.map((shift) => (
-            <tr key={shift.MaCa} className="hover:bg-gray-50">
-              <td className="px-4 py-3">
-                <div>
-                  <div className="font-medium">{shift.TenCa}</div>
-                  <div className="text-xs text-gray-500">
-                    {shift.ThoiGianBatDau} - {shift.ThoiGianKetThuc}{" "}
+          {shifts && shifts.length > 0 ? (
+            shifts.map((shift) => (
+              <tr key={shift.MaCa} className="hover:bg-gray-50">
+                <td className="px-4 py-3">
+                  <div>
+                    <div className="font-medium">{shift.TenCa}</div>
+                    <div className="text-xs text-gray-500">
+                      {shift.ThoiGianBatDau} - {shift.ThoiGianKetThuc}{" "}
+                    </div>
                   </div>
-                </div>
-              </td>
-              {weekDays.map((day) => (
-                <td
-                  key={`${shift.MaCa}-${day}`}
-                  className=" border p-1 align-top "
-                >
-                  {renderShift(shift, day)}
                 </td>
-              ))}
-              {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {weekDays.map((day) => (
+                  <td
+                    key={`${shift.MaCa}-${day}`}
+                    className=" border p-1 align-top "
+                  >
+                    {renderShift(shift, day)}
+                  </td>
+                ))}
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 Chưa thiết lập lương
               </td> */}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" className="text-center py-8 text-gray-500">
+                Không có ca làm việc nào để hiển thị.
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

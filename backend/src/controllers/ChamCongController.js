@@ -1,5 +1,6 @@
 const { where } = require("sequelize");
 const db = require("../models");
+const ChiTietBangLuongController = require("./chiTietBangLuongController");
 const ChamCong = db.ChamCong;
 class ChamCongController {
   async chamcong(req, res) {
@@ -96,38 +97,44 @@ class ChamCongController {
   async update_chamcong(req, res) {
     try {
       const { GioVao, DiTre, GioRa, VeSom, MaChamCong } = req.body;
-      const dangKyCa = await db.ChamCong.findOne({
+
+      const chamCongRecord = await db.ChamCong.findOne({
         where: { MaChamCong },
+        include: [
+          {
+            model: db.DangKyCa,
+            as: "MaDKC_dang_ky_ca",
+          },
+        ],
       });
 
-      if (!dangKyCa) {
+      if (!chamCongRecord || !chamCongRecord.MaDKC_dang_ky_ca) {
         return res
           .status(404)
           .json({ message: "Không tồn tại lịch đăng ký ca này" });
       }
 
-      const chamCong = await ChamCong.update(
-        {
-          GioVao,
-          DiTre,
-          GioRa,
-          VeSom,
-          trangthai: "Hoàn thành",
-        },
-        {
-          where: { MaChamCong },
-        }
+      await db.ChamCong.update(
+        { GioVao, DiTre, GioRa, VeSom, trangthai: "Hoàn thành" },
+        { where: { MaChamCong } }
       );
 
-      const updatedChamCong = await db.ChamCong.findOne({
-        where: { MaChamCong },
-      });
+      const updated = await db.ChamCong.findOne({ where: { MaChamCong } });
 
-      if (!updatedChamCong) {
+      if (!updated) {
         return res.status(404).json({ message: "Cập nhật không thành công" });
       }
 
-      return res.status(201).json(updatedChamCong);
+      try {
+        await ChiTietBangLuongController.create({
+          Ngay: updated.NgayChamCong,
+          MaTK: chamCongRecord.MaDKC_dang_ky_ca.MaNS,
+        });
+      } catch (err) {
+        console.warn("Không thể tạo bảng lương:", err.message);
+      }
+
+      return res.status(201).json(updated);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
-import {formatCurrency,formatDate,formatTime} from "../../utils/format";
+import { formatCurrency, formatDate, formatTime } from "../../utils/format";
 export function EmployeeProfilePage() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [selectedDate, setSelectedDate] = useState(
@@ -24,7 +24,6 @@ export function EmployeeProfilePage() {
   useEffect(() => {
     fetchSalaryData(selectedDate);
   }, []);
-
 
   return (
     <div className="bg-gray-50 min-h-screen p-4 mt-5">
@@ -97,8 +96,8 @@ export function EmployeeProfilePage() {
               value={selectedDate}
               onChange={(e) => {
                 const date = e.target.value;
-                setSelectedDate(date); 
-                fetchSalaryData(date); 
+                setSelectedDate(date);
+                fetchSalaryData(date);
               }}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />

@@ -29,7 +29,7 @@ export function FilterSidebar({
             }}
           >
             <option value="">Chọn chi nhánh...</option>
-            {(chinhanhs || []).map((chinhanh) => (
+            {chinhanhs.map?.((chinhanh) => (
               <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
                 {chinhanh.TenChiNhanh}
               </option>
@@ -51,7 +51,7 @@ export function FilterSidebar({
             }}
           >
             <option value="">Chọn kỳ hạn trả lương</option>
-            {(kyLuongs || []).map((kyLuong, index) => (
+            {kyLuongs.map?.((kyLuong, index) => (
               <option key={index} value={kyLuong.KyLuong}>
                 {kyLuong.KyLuong}
               </option>

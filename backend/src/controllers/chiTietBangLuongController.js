@@ -13,7 +13,8 @@ const { getSoNgayTrongThang, tinhTongGioLamCaLam,isWeekend } = require("../util/
 // Create a new salary detail
 exports.create = async (req, res) => {
   try {
-    const { Ngay, MaTK } = req.body;
+    const { Ngay, MaTK } = req;
+
     const chamCongList = await ChamCong.findAll({
       where: {
         NgayChamCong: Ngay,
@@ -121,7 +122,7 @@ exports.create = async (req, res) => {
       for (const chamCong of chamCongList) {
         await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
       }
-      return res.status(200).json(chiTietBangLuong);
+      return chiTietBangLuong;
     }
     const chiTietBangLuong = await ChiTietBangLuong.create({
       GioLamViecTrongNgay,
@@ -136,7 +137,7 @@ exports.create = async (req, res) => {
     for (const chamCong of chamCongList) {
       await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
     }
-    res.status(201).json(chiTietBangLuong);
+    return chiTietBangLuong;
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -307,161 +308,6 @@ exports.delete = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error deleting salary detail",
-      error: error.message,
-    });
-  }
-};
-
-exports.calculateDailySalary = async (req, res) => {
-  try {
-    // const { MaBangLuong, NgayChamCong } = req.body;
-    const { MaDKC } = req.body;
-    // // Get salary sheet
-    // const bangLuong = await BangLuong.findByPk(MaBangLuong, {
-    //   include: [
-    //     {
-    //       model: TaiKhoan,
-    //       as: "MaTK_tai_khoan",
-    //     },
-    //   ],
-    // });
-
-    // if (!bangLuong) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Salary sheet not found",
-    //   });
-    // }
-
-    const dangKyCa = await db.DangKyCa.findOne({
-      where: { MaDKC },
-      include: [
-        { model: db.CaLam, as: "MaCaLam_ca_lam" },
-        { model: db.ChamCong, as: "cham_congs" },
-        {
-          model: db.TaiKhoan,
-          attributes: ["luongCoBanHienTai", "MaTK", "LoaiNV"],
-          as: "MaNS_tai_khoan",
-        },
-      ],
-    });
-
-    // console.log(dangKyCa.MaNS_tai_khoan);
-
-    const { ThoiGianBatDau, ThoiGianKetThuc } = dangKyCa.MaCaLam_ca_lam;
-
-    // Col1. Tính tiền làm việc theo ca
-    let luongTheoGio = 0;
-    const soNgay = getSoNgayTrongThang(dangKyCa.NgayDangKy); // Lấy số ngày trong tháng
-
-    if (dangKyCa.MaNS_tai_khoan.LoaiNV == "FullTime") {
-      luongTheoGio = (
-        dangKyCa.MaNS_tai_khoan.dataValues.luongCoBanHienTai / soNgay
-      ).toFixed(2);
-    } else {
-      luongTheoGio = dangKyCa.MaNS_tai_khoan.dataValues.luongCoBanHienTai;
-    }
-
-    const batDau = new Date(`2025-01-01T${ThoiGianBatDau}`);
-    let ketThuc = new Date(`2025-01-01T${ThoiGianKetThuc}`);
-
-    if (ketThuc <= batDau) {
-      ketThuc.setDate(ketThuc.getDate() + 1);
-    }
-
-    let tongGioLam = (ketThuc - batDau) / 3600000; //Chuyển từ giây qua số giờ làm việc
-
-    // Col2. Tiền phạt từ đi trễ và về sớm
-    let TienPhat = 0;
-    const DiTre = dangKyCa.cham_congs[0].dataValues?.DiTre ?? 0;
-    const VeSom = dangKyCa.cham_congs[0].dataValues?.VeSom ?? 0;
-
-    console.log(DiTre, VeSom);
-
-    if (DiTre < 5) {
-      console.log("Không trễ");
-    } else if (DiTre < 15) {
-      tongGioLam -= 1;
-    } else if (DiTre < 60) {
-      tongGioLam -= 2;
-    } else {
-      tongGioLam = 0;
-    }
-
-    if (VeSom < 5) {
-      console.log("Không về sớm");
-    } else if (VeSom < 15) {
-      tongGioLam -= 1;
-    } else if (VeSom < 60) {
-      tongGioLam -= 2;
-    } else {
-      tongGioLam = 0;
-    }
-
-    const tienLuongNgay = parseFloat((luongTheoGio * tongGioLam).toFixed(2));
-
-    console.log(dangKyCa.cham_congs);
-
-    // Get attendance records for the day
-    // const chamCong = await ChamCong.findOne({
-    //   where: {
-    //     MaCTBL: null,
-    //     NgayChamCong,
-    //     MaDKC: {
-    //       [Op.in]: db.sequelize.literal(`(
-    //         SELECT MaDKC
-    //         FROM dang_ky_ca
-    //         WHERE MaNS = ${bangLuong.MaTK}
-    //       )`),
-    //     },
-    //   },
-    // });
-
-    // if (!chamCong) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "No attendance record found for this day",
-    //   });
-    // }
-
-    // // Calculate working hours
-    // const gioVao = new Date(chamCong.GioVao);
-    // const gioRa = new Date(chamCong.GioRa);
-    // const gioLamViec = (gioRa - gioVao) / (1000 * 60 * 60); // Convert to hours
-
-    // // Calculate daily salary based on working hours
-    // const luongTheoGio = bangLuong.MaTK_tai_khoan.LuongCoBanHienTai / 176; // Assuming 176 working hours per month
-    // const tienLuongNgay = luongTheoGio * gioLamViec;
-
-    // // Calculate penalties for late arrival and early departure
-    // const tienPhat =
-    //   (chamCong.DiTre || 0) * 50000 + (chamCong.VeSom || 0) * 50000;
-
-    // // Calculate allowances
-    // const tienPhuCap = 0; // This should be calculated based on allowances for the day
-    // const loaiPhuCap = ""; // This should be determined based on the type of allowance
-
-    // // Calculate total
-    // const tongtien = tienLuongNgay + tienPhuCap - tienPhat;
-
-    // const chiTietBangLuong = {
-    //   MaBangLuong,
-    //   GioLamViecTrongNgay: gioLamViec,
-    //   TienLuongNgay: tienLuongNgay,
-    //   TienPhat: tienPhat,
-    //   TienPhuCap: tienPhuCap,
-    //   LoaiPhuCap: loaiPhuCap,
-    //   tongtien,
-    // };
-
-    res.status(200).json({
-      success: true,
-      data: chiTietBangLuong,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error calculating daily salary",
       error: error.message,
     });
   }
