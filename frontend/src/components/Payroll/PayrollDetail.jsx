@@ -72,6 +72,12 @@ export function PayrollDetail({ payroll, onCancel, onExport }) {
                   {payroll.MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh}
                 </div>
               </div>
+              <div className="flex">
+                <div className="w-1/3 text-gray-600">Lương thực nhận:</div>
+                <div className="w-2/3">
+                  {formatCurrency(payroll.LuongThucNhan)}
+                </div>
+              </div>
             </div>
             <div className="space-y-4">
               <div className="flex">
