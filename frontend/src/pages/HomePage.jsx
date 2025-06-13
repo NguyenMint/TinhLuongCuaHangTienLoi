@@ -72,11 +72,29 @@ export function HomePage() {
     if (statusFilter === "working") {
       filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
     } else if (statusFilter === "resigned") {
-      filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
+      filtered = filtered.filter((emp) => emp.TrangThai === "Ngừng làm việc");
     }
     setFilteredEmployees(filtered);
   }, [employees, selectedChiNhanh, statusFilter]);
 
+  const refreshEmployeeData = async () => {
+    try {
+      const data = await fetchAllNhanVien();
+      setEmployees(data);
+
+      // Update selected employee with fresh data if one is selected
+      if (selectedEmployee) {
+        const updatedEmployee = data.find(
+          (emp) => emp.MaTK === selectedEmployee.MaTK
+        );
+        if (updatedEmployee) {
+          setSelectedEmployee(updatedEmployee);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi làm mới dữ liệu nhân viên:", error);
+    }
+  };
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
   };
@@ -165,6 +183,7 @@ export function HomePage() {
                 employee={selectedEmployee}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                onEmployeeStatusChange={refreshEmployeeData}
               />
             </div>
           )}
