@@ -53,7 +53,7 @@ export const CheckInTab = ({
 
   const getCheckInStatus = () => {
     const diff = getTimeDifference(startTime, checkInTime);
-
+    
     if (diff > 10) return "late";
     if (diff < 0) return "overtime";
     return "ontime";
@@ -61,7 +61,7 @@ export const CheckInTab = ({
 
   const getCheckOutStatus = () => {
     const diff = getTimeDifference(endTime, checkOutTime);
-    if (diff < 10) return "early";
+    if (diff < -10) return "early";
     if (diff > 0) return "overtime";
     return "ontime";
   };

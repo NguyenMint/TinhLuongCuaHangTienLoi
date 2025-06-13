@@ -1,3 +1,3 @@
 export const calculatePhat = (lateMinutes, luong) => {
-  return (lateMinutes * luong).toFixed(2);
+  return ((lateMinutes / 60) * luong).toFixed(2);
 };
