@@ -57,6 +57,7 @@ class TaiKhoanController {
     try {
       const taikhoans = await TaiKhoan.findAll({
         where: { MaVaiTro: { [Op.in]: [2, 1] } },
+        include: [{ model: db.VaiTro, as: "MaVaiTro_vai_tro" }],
       });
       res.status(200).json(taikhoans);
     } catch (error) {
@@ -351,7 +352,7 @@ class TaiKhoanController {
       const { MaTK } = req.body;
       const taikhoan = await TaiKhoan.findByPk(MaTK);
       console.log(taikhoan);
-      
+
       await taikhoan.update({ TrangThai: "Đang làm" });
       res.status(200).json(taikhoan);
     } catch (error) {

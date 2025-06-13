@@ -44,6 +44,7 @@ export const EmployeeDetail = ({
     console.log("Get confirmation code clicked");
     // Implementation would go here
   };
+
   return (
     <div>
       {/* Tabs */}
@@ -180,7 +181,11 @@ export const EmployeeDetail = ({
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Chức danh:</p>
-                  <p className="font-medium">{employee.LoaiNV}</p>
+                  <p className="font-medium">
+                    {employee.MaVaiTro_vai_tro.Quyen === "NhanVien"
+                      ? `Nhân Viên - ${employee?.LoaiNV}`
+                      : "Quản Lý"}
+                  </p>
                 </div>
               </div>
             </div>
