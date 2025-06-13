@@ -22,6 +22,17 @@ class ThangLuongController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async getAllMauLuongPartTime(req,res){
+    try {
+      const thangLuongs = await ThangLuong.findAll({
+        where: { LoaiNV: "PartTime" },
+      });
+      res.status(200).json(thangLuongs);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
   async getById(req, res) {
     try {
       const thangLuong = await ThangLuong.findByPk(req.params.id);

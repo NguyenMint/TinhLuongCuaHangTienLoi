@@ -4,6 +4,7 @@ const ThangLuongController = require('../controllers/ThangLuongController');
 const { authMiddleware} = require('../middleware/authMiddleware');
 const { authorizeRoles } = require('../middleware/authMiddleware');
 route.get('/fulltime', ThangLuongController.getAllThangLuongFullTime);
+route.get('/parttime', ThangLuongController.getAllMauLuongPartTime);
 route.get('/', ThangLuongController.getAll);
 route.get('/:id', ThangLuongController.getById);
 route.post('/',authMiddleware,authorizeRoles(3), ThangLuongController.create);

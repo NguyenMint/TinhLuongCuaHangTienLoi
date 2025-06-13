@@ -145,7 +145,7 @@ export function EmployeeProfilePage() {
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">Phụ cấp</p>
+                    <p className="text-sm text-blue-600 font-medium">Thưởng Phụ cấp</p>
                     <p className="text-lg font-bold text-blue-800">
                       {formatCurrency(
                         parseFloat(salaryData.chiTietBangLuong?.TienPhuCap || 0)
@@ -189,7 +189,7 @@ export function EmployeeProfilePage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Phụ cấp:</span>
+                  <span className="text-gray-600">Thưởng Phụ cấp:</span>
                   <span className="font-medium text-blue-600">
                     +
                     {formatCurrency(
@@ -217,8 +217,6 @@ export function EmployeeProfilePage() {
                 </div>
               </div>
             </div>
-
-            {/* Thông tin chấm công */}
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <h4 className="font-semibold text-gray-800 mb-3">
                 Thông tin chấm công
@@ -283,8 +281,6 @@ export function EmployeeProfilePage() {
                 )}
               </div>
             </div>
-
-            {/* Khen thưởng - Kỷ luật */}
             {salaryData.khenThuongKyLuats &&
               salaryData.khenThuongKyLuats.length > 0 && (
                 <div className="bg-gray-50 rounded-lg p-4">
