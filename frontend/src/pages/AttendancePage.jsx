@@ -89,13 +89,6 @@ export function AttendancePage() {
     fetchChiNhanh();
   }, []);
 
-  // Remove the old useEffect that fetched wage based on dataUpdate changes
-  // useEffect(() => {
-  //   if (dataUpdate.MaTK && dataUpdate.NgayDangKy) {
-  //     fetchLuong();
-  //   }
-  // }, [dataUpdate.MaTK, dataUpdate.NgayDangKy]);
-
   const handlePreviousWeek = () => {
     setCurrentDate(subWeeks(currentDate, 1));
   };
@@ -118,24 +111,6 @@ export function AttendancePage() {
       fetchLuong(maTK, ngayDangKy);
     }
   };
-  // const handleSearch = async (query) => {
-  //   let filtered = Array.isArray(employees) ? [...employees] : [];
-  //   if (selectedChiNhanh) {
-  //     filtered = filtered.filter(
-  //       (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
-  //     );
-  //   }
-  //   // try {
-  //   //   if (!query.trim()) {
-  //   //     const lowerSearch = searchTerm.toLowerCase();
-  //   //     filtered = filtered.filter((emp) =>
-  //   //       emp.MaNS_tai_khoan?.HoTen?.toLowerCase().includes(lowerSearch)
-  //   //     );
-  //   //   }
-  //   // } catch (error) {
-  //   //   console.error("Lỗi khi tìm kiếm:", error);
-  //   // }
-  // };
 
   useEffect(() => {
     let filtered = Array.isArray(dangKyCas) ? [...dangKyCas] : [];
@@ -156,22 +131,16 @@ export function AttendancePage() {
     }
 
     setFilteredDKCs(filtered);
-    // }, [employees, selectedChiNhanh, statusFilter, searchTerm]);
   }, [selectedChiNhanh, dangKyCas, searchQuery]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setLuongTheoGio(0); // Reset wage when closing modal
+    setLuongTheoGio(0);
     setisLoadingForLuong(false);
   };
 
   const handleSaveShift = async () => {
     try {
-      // if(!dataUpdate.DiTre || !dataUpdate.GioRa) {
-      //   alert("Vui lòng nhập giờ vào và giờ ra.");
-      //   return;
-      // }
-
       const records = [
         ...(dataUpdate.violations || []).map((violation) => ({
           NgayApDung: dataUpdate.NgayDangKy,

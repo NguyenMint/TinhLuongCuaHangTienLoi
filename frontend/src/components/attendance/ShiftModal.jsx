@@ -23,8 +23,7 @@ const ShiftModal = ({
     attendanceType: shift.attendanceType || "working",
     substituteId: shift.substituteId || "",
   });
- 
-  
+
   // Set initial dataUpdate when formData changes
   useEffect(() => {
     const calcLateMinutes = () => {
@@ -37,7 +36,8 @@ const ShiftModal = ({
       const startDate = new Date(2000, 0, 1, startHours, startMinutes);
       const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
       const diff = (checkDate - startDate) / (1000 * 60);
-      return diff > 0 ? diff : 0;
+
+      return diff > 10 ? diff : 0;
     };
 
     const calcEarlyMinutes = () => {
@@ -50,7 +50,7 @@ const ShiftModal = ({
       const endDate = new Date(2000, 0, 1, endHours, endMinutes);
       const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
       const diff = (endDate - checkDate) / (1000 * 60);
-      return diff > 0 ? diff : 0;
+      return diff > 10 ? diff : 0;
     };
 
     setDataUpdate({
