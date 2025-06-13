@@ -9,6 +9,8 @@ route.get('/getAllNhanVienVaQuanLy',TaiKhoanController.getAllNhanVienVaQuanLy);
 route.get('/getAllQuanLyByChiNhanh/:MaCN',TaiKhoanController.getAllQuanLyByChiNhanh);
 route.put('/resetPass/:MaTK',TaiKhoanController.resetMK);
 route.put('/changePass/:MaTK',TaiKhoanController.changePass);
+route.put('/updateNgungLamViec',TaiKhoanController.updateNgungLamViec);
+route.put('/updateTiepTucLamViec',TaiKhoanController.updateTiepTucLamViec);
 route.post('/luongTheoGio',TaiKhoanController.getLuongGio);
 route.get('/',TaiKhoanController.getAll);
 route.get('/:MaTK',TaiKhoanController.getById);

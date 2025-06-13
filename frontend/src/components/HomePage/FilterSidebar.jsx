@@ -38,7 +38,7 @@ export const FilterSidebar = ({
               onChange={() => setStatusFilter("resigned")}
               className="h-4 w-4 text-blue-600"
             />
-            <span className="ml-2 text-sm text-gray-700">Đã nghỉ</span>
+            <span className="ml-2 text-sm text-gray-700">Ngừng làm việc</span>
           </label>
         </div>
       </div>

@@ -11,6 +11,38 @@ const jwt = require("jsonwebtoken");
 const { log } = require("console");
 const { getSoNgayTrongThang } = require("../util/util");
 
+async function generateMaNhanVien(LoaiNV, MaVaiTro) {
+  let prefix = "";
+
+  if (MaVaiTro == 1) {
+    prefix = "QL";
+  } else if (LoaiNV === "PartTime") {
+    prefix = "PT";
+  } else if (LoaiNV === "FullTime") {
+    prefix = "FT";
+  } else {
+    throw new Error("Loại nhân viên không hợp lệ");
+  }
+
+  const whereCondition =
+    prefix === "QL"
+      ? { MaVaiTro: 1, MaNhanVien: { [Op.like]: `${prefix}%` } }
+      : { LoaiNV, MaNhanVien: { [Op.like]: `${prefix}%` } };
+
+  const last = await TaiKhoan.findOne({
+    where: whereCondition,
+    order: [["MaNhanVien", "DESC"]],
+  });
+
+  let nextNumber = 1;
+  if (last && last.MaNhanVien) {
+    const lastNumber = parseInt(last.MaNhanVien.slice(2));
+    if (!isNaN(lastNumber)) nextNumber = lastNumber + 1;
+  }
+
+  return `${prefix}${nextNumber.toString().padStart(4, "0")}`;
+}
+
 class TaiKhoanController {
   async getAll(req, res) {
     try {
@@ -25,6 +57,7 @@ class TaiKhoanController {
     try {
       const taikhoans = await TaiKhoan.findAll({
         where: { MaVaiTro: { [Op.in]: [2, 1] } },
+        include: [{ model: db.VaiTro, as: "MaVaiTro_vai_tro" }],
       });
       res.status(200).json(taikhoans);
     } catch (error) {
@@ -58,7 +91,9 @@ class TaiKhoanController {
   }
   async create(req, res) {
     try {
-      const { CCCD, STK, Email, SoNgayNghiPhep } = req.body;
+      console.log(req.body);
+
+      const { CCCD, STK, Email, SoNgayNghiPhep, LoaiNV, MaVaiTro } = req.body;
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -71,6 +106,7 @@ class TaiKhoanController {
           });
         }
       };
+      const MaNhanVien = await generateMaNhanVien(LoaiNV, MaVaiTro);
       const existCCCD = await TaiKhoan.findOne({ where: { CCCD } });
       const existCCCDNPT = await NguoiPhuThuoc.findOne({ where: { CCCD } });
       if (existCCCD || existCCCDNPT) {
@@ -94,6 +130,7 @@ class TaiKhoanController {
       const hashedPassword = await bcrypt.hash("1", 10);
       const newTaiKhoan = await TaiKhoan.create({
         ...req.body,
+        MaNhanVien,
         Avatar: avatarPath,
         STK,
         Email,
@@ -179,7 +216,7 @@ class TaiKhoanController {
       const filterTK = await TaiKhoan.findAll({
         where: {
           [Op.or]: [
-            { MaTK: { [Op.like]: `%${keyword}%` } },
+            { MaNhanVien: { [Op.like]: `%${keyword}%` } },
             { HoTen: { [Op.like]: `%${keyword}%` } },
           ],
         },
@@ -321,5 +358,31 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  async updateNgungLamViec(req, res) {
+    try {
+      const { MaTK } = req.body;
+      const taikhoan = await TaiKhoan.findByPk(MaTK);
+      await taikhoan.update({ TrangThai: "Ngừng làm việc" });
+      res.status(200).json(taikhoan);
+    } catch (error) {
+      console.error("Lỗi khi update tài khoản:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async updateTiepTucLamViec(req, res) {
+    try {
+      const { MaTK } = req.body;
+      const taikhoan = await TaiKhoan.findByPk(MaTK);
+      console.log(taikhoan);
+
+      await taikhoan.update({ TrangThai: "Đang làm" });
+      res.status(200).json(taikhoan);
+    } catch (error) {
+      console.error("Lỗi khi update tài khoản:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
+
 module.exports = new TaiKhoanController();

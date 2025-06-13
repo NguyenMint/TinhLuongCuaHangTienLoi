@@ -12,6 +12,7 @@ import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import { deleteDangKyCa, fetchDangKyCa } from "../api/apiDangKyCa.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
+import { getChiNhanh } from "../api/apiChiNhanh.js";
 
 export const WorkSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -24,7 +25,10 @@ export const WorkSchedule = () => {
   const [schedules, setSchedules] = useState([]);
 
   const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [chinhanhs, setChiNhanhs] = useState([]);
+  const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
 
   const getAllNhanVien = async () => {
     try {
@@ -48,6 +52,15 @@ export const WorkSchedule = () => {
     try {
       const data = await fetchDangKyCa();
       setSchedules(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
+
+  const fetchChiNhanh = async () => {
+    try {
+      const data = await getChiNhanh();
+      setChiNhanhs(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
@@ -89,7 +102,27 @@ export const WorkSchedule = () => {
     getAllNhanVien();
     getAllCaLam();
     getAllDangKyCa();
+    fetchChiNhanh();
   }, []);
+
+  useEffect(() => {
+    let filtered = Array.isArray(employees) ? [...employees] : [];
+
+    // Lọc theo chi nhánh
+    if (selectedChiNhanh) {
+      filtered = filtered.filter(
+        (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
+      );
+    }
+
+    // Lọc theo trạng thái
+    // if (statusFilter === "working") {
+    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
+    // } else if (statusFilter === "resigned") {
+    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
+    // }
+    setFilteredEmployees(filtered);
+  }, [employees, selectedChiNhanh]);
 
   const handleDeleteShift = async (employee, date, shift) => {
     if (
@@ -135,14 +168,22 @@ export const WorkSchedule = () => {
             </div>
             <div className="relative">
               <select
-                value={viewType}
-                onChange={(e) => setViewType(e.target.value)}
-                className="appearance-none w-48 pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={selectedChiNhanh.TenCN}
+                onChange={(e) => {
+                  const selected = chinhanhs?.find(
+                    (chinhanh) => chinhanh.TenChiNhanh === e.target.value
+                  );
+                  setSelectedChiNhanh(selected ?? "");
+                }}
+                className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="employee">Xem theo nhân viên</option>
-                <option value="department">Xem theo chi nhánh</option>
+                <option value="">Chọn chi nhánh...</option>
+                {chinhanhs?.map?.((chinhanh) => (
+                  <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
+                    {chinhanh.TenChiNhanh}
+                  </option>
+                ))}
               </select>
-              <ChevronDownIcon className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
           </div>
           {/* Week Navigation */}
@@ -179,7 +220,7 @@ export const WorkSchedule = () => {
       <ScheduleTable
         currentDate={currentDate}
         onDeleteShift={handleDeleteShift}
-        employees={employees}
+        employees={filteredEmployees}
         onAddShift={handleAddShift}
         schedules={schedules}
       />

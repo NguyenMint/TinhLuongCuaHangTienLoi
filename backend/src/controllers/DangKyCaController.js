@@ -11,7 +11,7 @@ class DangKyCaController {
           {
             model: db.TaiKhoan,
             as: "MaNS_tai_khoan",
-            attributes: ["MaTK", "HoTen"],
+            attributes: ["MaTK", "HoTen","MaCN"],
             include: [
               {
                 model: db.KhenThuongKyLuat,
