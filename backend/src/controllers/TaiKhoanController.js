@@ -215,7 +215,7 @@ class TaiKhoanController {
       const filterTK = await TaiKhoan.findAll({
         where: {
           [Op.or]: [
-            { MaTK: { [Op.like]: `%${keyword}%` } },
+            { MaNhanVien: { [Op.like]: `%${keyword}%` } },
             { HoTen: { [Op.like]: `%${keyword}%` } },
           ],
         },
