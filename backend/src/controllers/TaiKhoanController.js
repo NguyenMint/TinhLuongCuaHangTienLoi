@@ -11,6 +11,38 @@ const jwt = require("jsonwebtoken");
 const { log } = require("console");
 const { getSoNgayTrongThang } = require("../util/util");
 
+async function generateMaNhanVien(LoaiNV, MaVaiTro) {
+  let prefix = "";
+
+  if (MaVaiTro == 1) {
+    prefix = "QL";
+  } else if (LoaiNV === "PartTime") {
+    prefix = "PT";
+  } else if (LoaiNV === "FullTime") {
+    prefix = "FT";
+  } else {
+    throw new Error("Loại nhân viên không hợp lệ");
+  }
+
+  const whereCondition =
+    prefix === "QL"
+      ? { MaVaiTro: 1, MaNhanVien: { [Op.like]: `${prefix}%` } }
+      : { LoaiNV, MaNhanVien: { [Op.like]: `${prefix}%` } };
+
+  const last = await TaiKhoan.findOne({
+    where: whereCondition,
+    order: [["MaNhanVien", "DESC"]],
+  });
+
+  let nextNumber = 1;
+  if (last && last.MaNhanVien) {
+    const lastNumber = parseInt(last.MaNhanVien.slice(2));
+    if (!isNaN(lastNumber)) nextNumber = lastNumber + 1;
+  }
+
+  return `${prefix}${nextNumber.toString().padStart(4, "0")}`;
+}
+
 class TaiKhoanController {
   async getAll(req, res) {
     try {
@@ -58,7 +90,9 @@ class TaiKhoanController {
   }
   async create(req, res) {
     try {
-      const { CCCD, STK, Email, SoNgayNghiPhep } = req.body;
+      console.log(req.body);
+
+      const { CCCD, STK, Email, SoNgayNghiPhep, LoaiNV, MaVaiTro } = req.body;
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -71,6 +105,7 @@ class TaiKhoanController {
           });
         }
       };
+      const MaNhanVien = await generateMaNhanVien(LoaiNV, MaVaiTro);
       const existCCCD = await TaiKhoan.findOne({ where: { CCCD } });
       const existCCCDNPT = await NguoiPhuThuoc.findOne({ where: { CCCD } });
       if (existCCCD || existCCCDNPT) {
@@ -94,6 +129,7 @@ class TaiKhoanController {
       const hashedPassword = await bcrypt.hash("1", 10);
       const newTaiKhoan = await TaiKhoan.create({
         ...req.body,
+        MaNhanVien,
         Avatar: avatarPath,
         STK,
         Email,
@@ -292,11 +328,12 @@ class TaiKhoanController {
           .status(404)
           .json({ message: "Không tồn tại người dùng này" });
       }
-      res.status(200).json( luongTheoGio );
+      res.status(200).json(luongTheoGio);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
     }
   }
 }
+
 module.exports = new TaiKhoanController();

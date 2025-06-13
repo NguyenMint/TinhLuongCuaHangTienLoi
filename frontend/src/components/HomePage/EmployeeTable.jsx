@@ -151,7 +151,7 @@ export const EmployeeTable = ({
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
-                      {employee.MaTK}
+                      {employee.MaNhanVien}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {employee.timekeepingCode}
