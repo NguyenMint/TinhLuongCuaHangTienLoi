@@ -109,8 +109,23 @@ export const layLuongTheoGio = async (MaTK, NgayDangKy) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-
-export const updateNgungLamViec = async (MaTK) => {
+export const changePassword = async (MaTK, Password, NewPassword) => {
+  try {
+     await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/changePass/${MaTK}`,
+      {
+        Password,
+        NewPassword
+      }
+    );
+    return {success:true}
+  } catch (error) {
+    if (error.response.status === 401 || error.response.status===404) {
+      return { sucesss: false, message: error.response.data.message };
+    }
+    console.error("Lỗi đăng nhập:", error);
+};
+  export const updateNgungLamViec = async (MaTK) => {
   try {
     const response = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/taikhoan/updateNgungLamViec`,
@@ -137,4 +152,4 @@ export const updateTiepTucLamViec = async (MaTK) => {
     console.error("Lỗi :", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
-};
+}

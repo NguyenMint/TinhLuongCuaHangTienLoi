@@ -335,6 +335,29 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async changePass(req, res) {
+    try {
+      const {Password,NewPassword} = req.body;
+      const taiKhoan = await TaiKhoan.findByPk(req.params.MaTK);
+      if (!taiKhoan) {
+        return res
+          .status(404)
+          .json({ messeage: "Tai khoản không tồn tại" });
+      }
+      const isMatch = await bcrypt.compare(Password, taiKhoan.Password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Mật khẩu không đúng" });
+      }
+      const newPass = await bcrypt.hash(NewPassword, 10);
+      await taiKhoan.update({
+        Password: newPass,
+      });
+      res.status(200).json({ message: "Thay đổi password thành công" });
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 
   async updateNgungLamViec(req, res) {
     try {

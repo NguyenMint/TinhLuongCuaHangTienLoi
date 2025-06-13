@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getAllThangLuongFullTime } from "../../api/apiThangLuong";
+import {
+  getAllThangLuongFullTime,
+  getAllThangLuongPartTime,
+} from "../../api/apiThangLuong";
 import { formatCurrency } from "../../utils/format";
 import { getAllQuanLyByChiNhanh } from "../../api/apiTaiKhoan";
 import { createEmployee } from "../../api/apiTaiKhoan";
@@ -28,15 +31,24 @@ export function AddEmployeeModal({
     QuanLyBoi: "",
   });
   const [thangLuong, setThangLuong] = useState([]);
+  const [mauLuong, setMauLuong] = useState([]);
   const [quanLys, setQuanLys] = useState([]);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "ThangLuong") {
+    if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
       const { BacLuong, LuongCoBanHienTai } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
         BacLuong,
         LuongCoBanHienTai,
+      }));
+      return;
+    }
+    if (name === "ThangLuong" && form.LoaiNV === "PartTime") {
+      const { LuongTheoGio } = JSON.parse(value);
+      setForm((prev) => ({
+        ...prev,
+        LuongCoBanHienTai:LuongTheoGio
       }));
       return;
     }
@@ -75,7 +87,7 @@ export function AddEmployeeModal({
     }
     if (form.LoaiNV === "PartTime") {
       formData.set("BacLuong", 0);
-      formData.set("LuongCoBanHienTai", 0);
+      formData.set("MaVaiTro", 2);
     }
     const result = await createEmployee(formData);
     if (!result.success) {
@@ -94,6 +106,15 @@ export function AddEmployeeModal({
       console.error("Lỗi khi lấy Tháng lương:", error);
     }
   };
+  const fetchAllThangLuongPartTime = async () => {
+    try {
+      const response = await getAllThangLuongPartTime();
+      console.log(response);
+      setMauLuong(response);
+    } catch (error) {
+      console.error("Lỗi khi lấy Tháng lương:", error);
+    }
+  };
   const fetchAllQuanLyByChiNhanh = async () => {
     try {
       const response = await getAllQuanLyByChiNhanh(form.MaCN);
@@ -104,7 +125,7 @@ export function AddEmployeeModal({
   };
   useEffect(() => {
     fetchAllThangLuongFullTime();
-    console.log("token", localStorage.getItem("token"));
+    fetchAllThangLuongPartTime();
   }, []);
   useEffect(() => {
     fetchAllQuanLyByChiNhanh();
@@ -201,32 +222,33 @@ export function AddEmployeeModal({
             <label className="block mb-1 font-medium">Avatar</label>
             <input type="file" name="avatar"></input>
           </div>
-          <div>
-            <label className="block mb-1 font-medium">Chức vụ</label>
-            <select
-              name="MaVaiTro"
-              value={form.MaVaiTro}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              <option value={2}>Nhân viên</option>
-              <option value={1}>Quản lý</option>
-            </select>
-          </div>
-          {form.MaVaiTro === "2" && (
+          {form.LoaiNV === "FullTime" && (
             <div>
-              <label className="block mb-1 font-medium">Loại NV</label>
+              <label className="block mb-1 font-medium">Chức vụ</label>
               <select
-                name="LoaiNV"
-                value={form.LoaiNV}
+                name="MaVaiTro"
+                value={form.MaVaiTro}
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
               >
-                <option value="FullTime">FullTime</option>
-                <option value="PartTime">PartTime</option>
+                <option value={2}>Nhân viên</option>
+                <option value={1}>Quản lý</option>
               </select>
             </div>
           )}
+          <div>
+            <label className="block mb-1 font-medium">Loại NV</label>
+            <select
+              name="LoaiNV"
+              value={form.LoaiNV}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            >
+              <option value="FullTime">FullTime</option>
+              <option value="PartTime">PartTime</option>
+            </select>
+          </div>
+
           <div>
             <label className="block mb-1 font-medium">Chi nhánh</label>
             <select
@@ -262,32 +284,57 @@ export function AddEmployeeModal({
               required
             />
           </div>
-          <div>
-            <label className="block mb-1 font-medium">Thang lương</label>
-            <select
-              name="ThangLuong"
-              value={form.ThangLuong}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              required
-            >
-              <option value="">Chọn thang lương</option>
-              {thangLuong
-                .filter((tl) => tl.MaVaiTro === Number(form.MaVaiTro))
-                .map((thangluong) => (
+          {form.LoaiNV === "FullTime" && (
+            <div>
+              <label className="block mb-1 font-medium">Thang lương</label>
+              <select
+                name="ThangLuong"
+                value={form.ThangLuong}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+                required
+              >
+                <option value="">Chọn thang lương</option>
+                {thangLuong
+                  .filter((tl) => tl.MaVaiTro === Number(form.MaVaiTro))
+                  .map((thangluong) => (
+                    <option
+                      key={thangluong.BacLuong}
+                      value={JSON.stringify({
+                        BacLuong: thangluong.BacLuong,
+                        LuongCoBanHienTai: thangluong.LuongCoBan,
+                      })}
+                    >
+                      Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}
+                      {formatCurrency(thangluong.LuongCoBan)}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+          {form.LoaiNV === "PartTime" && (
+            <div>
+              <label className="block mb-1 font-medium">Mẫu lương</label>
+              <select
+                name="ThangLuong"
+                value={form.ThangLuong}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+                required
+              >
+                <option value="">Chọn mẫu lương</option>
+                {mauLuong.map((mauluong) => (
                   <option
-                    key={thangluong.BacLuong}
                     value={JSON.stringify({
-                      BacLuong: thangluong.BacLuong,
-                      LuongCoBanHienTai: thangluong.LuongCoBan,
+                      LuongTheoGio: mauluong.LuongTheoGio,
                     })}
                   >
-                    Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}
-                    {formatCurrency(thangluong.LuongCoBan)}
+                   Lương theo giờ: {formatCurrency(mauluong.LuongTheoGio)}
                   </option>
                 ))}
-            </select>
-          </div>
+              </select>
+            </div>
+          )}
           <div>
             <label className="block mb-1 font-medium">
               Số ngày nghỉ phép trong năm
