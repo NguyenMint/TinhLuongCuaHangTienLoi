@@ -334,6 +334,31 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  async updateNgungLamViec(req, res) {
+    try {
+      const { MaTK } = req.body;
+      const taikhoan = await TaiKhoan.findByPk(MaTK);
+      await taikhoan.update({ TrangThai: "Ngừng làm việc" });
+      res.status(200).json(taikhoan);
+    } catch (error) {
+      console.error("Lỗi khi update tài khoản:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async updateTiepTucLamViec(req, res) {
+    try {
+      const { MaTK } = req.body;
+      const taikhoan = await TaiKhoan.findByPk(MaTK);
+      console.log(taikhoan);
+      
+      await taikhoan.update({ TrangThai: "Đang làm" });
+      res.status(200).json(taikhoan);
+    } catch (error) {
+      console.error("Lỗi khi update tài khoản:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
 
 module.exports = new TaiKhoanController();

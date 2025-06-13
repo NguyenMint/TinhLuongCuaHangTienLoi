@@ -1,15 +1,44 @@
 import React from "react";
 import { CalendarIcon, DollarSignIcon, CoinsIcon } from "lucide-react";
-export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
-
-
+import {
+  updateNgungLamViec,
+  updateTiepTucLamViec,
+} from "../../api/apiTaiKhoan";
+export const EmployeeDetail = ({
+  employee,
+  activeTab,
+  setActiveTab,
+  onEmployeeStatusChange,
+}) => {
   const handleUpdateEmployee = () => {
     console.log("Update employee clicked");
     // Implementation would go here
   };
-  const handleStopWorking = () => {
-    console.log("Stop working clicked");
-    // Implementation would go here
+  const handleDungLam = async (MaTK) => {
+    const confirmed = window.confirm(
+      "Bạn có chắc chắn cho nhân viên này ngừng làm việc?"
+    );
+    if (!confirmed) return;
+    try {
+      await updateNgungLamViec(MaTK);
+      onEmployeeStatusChange();
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Lỗi: " + (error.message || "Lỗi không xác định"));
+    }
+  };
+  const handleTiepTucLam = async (MaTK) => {
+    const confirmed = window.confirm(
+      "Bạn có chắc chắn cho nhân viên này đã trở lại làm việc?"
+    );
+    if (!confirmed) return;
+    try {
+      await updateTiepTucLamViec(MaTK);
+      onEmployeeStatusChange();
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Lỗi: " + (error.message || "Lỗi không xác định"));
+    }
   };
   const handleGetConfirmationCode = () => {
     console.log("Get confirmation code clicked");
@@ -97,7 +126,7 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Mã nhân viên:</p>
-                  <p className="font-medium">{employee.MaTK}</p>
+                  <p className="font-medium">{employee.MaNhanVien}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">
@@ -187,12 +216,21 @@ export const EmployeeDetail = ({ employee, activeTab, setActiveTab }) => {
         >
           Cập nhật
         </button>
-        <button
-          onClick={handleStopWorking}
-          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
-        >
-          Ngừng làm việc
-        </button>
+        {employee.TrangThai === "Đang làm" ? (
+          <button
+            onClick={() => handleDungLam(employee.MaTK)}
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+          >
+            Ngừng làm việc
+          </button>
+        ) : (
+          <button
+            onClick={() => handleTiepTucLam(employee.MaTK)}
+            className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
+          >
+            Tiếp tục công việc
+          </button>
+        )}
       </div>
     </div>
   );

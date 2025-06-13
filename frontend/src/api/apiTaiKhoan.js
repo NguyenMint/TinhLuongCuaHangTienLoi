@@ -109,3 +109,32 @@ export const layLuongTheoGio = async (MaTK, NgayDangKy) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+
+export const updateNgungLamViec = async (MaTK) => {
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/updateNgungLamViec`,
+      {
+        MaTK,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi :", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+export const updateTiepTucLamViec = async (MaTK) => {
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/updateTiepTucLamViec`,
+      {
+        MaTK,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi :", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
