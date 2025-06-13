@@ -9,7 +9,11 @@ const DangKyCa = db.DangKyCa;
 const CaLam = db.CaLam;
 const HeSoPhuCap = db.HeSoPhuCap;
 const { Op, where } = require("sequelize");
-const { getSoNgayTrongThang, tinhTongGioLamCaLam,isWeekend } = require("../util/util");
+const {
+  getSoNgayTrongThang,
+  tinhTongGioLamCaLam,
+  isWeekend,
+} = require("../util/util");
 // Create a new salary detail
 exports.create = async (req, res) => {
   try {
@@ -75,7 +79,7 @@ exports.create = async (req, res) => {
         parseFloat(record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.HeSoLuong) *
         heSoNgay;
       TienLuongNgay += tienLuongCa;
-      console.log(TienLuongNgay,tienLuongCa,heSoNgay);
+      console.log(TienLuongNgay, tienLuongCa, heSoNgay);
     });
     const khenThuongs = await KhenThuongKyLuat.findAll({
       where: { MaTK, NgayApDung: Ngay, ThuongPhat: true },
