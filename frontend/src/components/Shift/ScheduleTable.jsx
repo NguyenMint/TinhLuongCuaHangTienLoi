@@ -8,6 +8,7 @@ export const ScheduleTable = ({
   employees,
   onDeleteShift,
   schedules,
+  onUpdateShift
 }) => {
   const startDate = startOfWeek(currentDate, {
     weekStartsOn: 1,
@@ -54,7 +55,7 @@ export const ScheduleTable = ({
             {shift.map((shift, index) => (
               <div
                 key={index}
-                onClick={() => onDeleteShift?.(employee, date, shift)}
+                onClick={() => onDeleteShift(employee, date, shift)}
                 className="p-2 text-xs font-bold rounded w-full bg-blue-50 text-blue-700 text-center cursor-pointer"
               >
                 {shift.TenCa}

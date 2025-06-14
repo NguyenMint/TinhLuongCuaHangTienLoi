@@ -3,7 +3,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   FileIcon,
-  ChevronDownIcon,
+  BellIcon,
 } from "lucide-react";
 import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
@@ -13,16 +13,16 @@ import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import { deleteDangKyCa, fetchDangKyCa } from "../api/apiDangKyCa.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
+import { Link } from "react-router-dom";
 
 export const WorkSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  // const [searchQuery, setSearchQuery] = useState("");
-  const [viewType, setViewType] = useState("employee");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [shifts, setShifts] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
@@ -44,16 +44,26 @@ export const WorkSchedule = () => {
       const data = await fetchCaLam();
       setShifts(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Ca làm:", error);
     }
   };
 
   const getAllDangKyCa = async () => {
     try {
       const data = await fetchDangKyCa();
-      setSchedules(data);
+      // Chỉ lấy các ca đã được duyệt cho trang lịch chính
+      const approvedSchedules = data.filter(
+        (schedule) => schedule.TrangThai === "Đã Đăng Ký"
+      );
+      setSchedules(approvedSchedules);
+
+      // Đếm số lượng đăng ký chờ duyệt
+      const pending = data.filter(
+        (schedule) => schedule.TrangThai === "Chờ Xác Nhận"
+      );
+      setPendingRequests(pending);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Đăng ký ca:", error);
     }
   };
 
@@ -62,24 +72,28 @@ export const WorkSchedule = () => {
       const data = await getChiNhanh();
       setChiNhanhs(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Chi nhánh:", error);
     }
   };
 
   const handlePreviousWeek = () => {
     setCurrentDate(subWeeks(currentDate, 1));
   };
+
   const handleNextWeek = () => {
     setCurrentDate(addWeeks(currentDate, 1));
   };
+
   const handleThisWeek = () => {
     setCurrentDate(new Date());
   };
+
   const handleAddShift = (employee, date) => {
     setSelectedEmployee(employee);
     setSelectedDate(date);
     setIsModalOpen(true);
   };
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedEmployee(null);
@@ -98,6 +112,7 @@ export const WorkSchedule = () => {
       console.error("Lỗi khi tìm kiếm:", error);
     }
   };
+
   useEffect(() => {
     getAllNhanVien();
     getAllCaLam();
@@ -114,13 +129,6 @@ export const WorkSchedule = () => {
         (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
-
-    // Lọc theo trạng thái
-    // if (statusFilter === "working") {
-    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
-    // } else if (statusFilter === "resigned") {
-    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
-    // }
     setFilteredEmployees(filtered);
   }, [employees, selectedChiNhanh]);
 
@@ -137,7 +145,7 @@ export const WorkSchedule = () => {
       try {
         const result = await deleteDangKyCa(shift.MaDKC);
         if (!result.success) {
-          alert(result.message || "Xóa thang lương thất bại.");
+          alert(result.message || "Xóa ca làm thất bại.");
           return;
         }
         await getAllDangKyCa();
@@ -150,11 +158,26 @@ export const WorkSchedule = () => {
   const weekNumber = Math.ceil(currentDate.getDate() / 7);
   const monthYear = format(currentDate, "MM.yyyy");
   const weekLabel = `Tuần ${weekNumber} - Th.${monthYear}`;
+
   return (
     <div className="container mx-auto px-4 py-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Lịch làm việc</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-gray-800">Lịch làm việc</h1>
+
+          {/* Notification về đăng ký chờ duyệt */}
+          {pendingRequests.length > 0 && (
+            <Link
+              to="/dang-ky-ca"
+              className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+            >
+              <BellIcon className="h-4 w-4 mr-2" />
+              {pendingRequests.length} đăng ký chờ duyệt
+            </Link>
+          )}
+        </div>
+
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
           {/* Search and View Type */}
           <div className="flex flex-1 max-w-xl space-x-4">
@@ -164,16 +187,15 @@ export const WorkSchedule = () => {
                 onSearch={handleSearch}
                 setQuery={setSearchQuery}
               />
-              {/* <CreateInvoice /> */}
             </div>
             <div className="relative">
               <select
-                value={selectedChiNhanh.TenCN}
+                value={selectedChiNhanh.TenCN || ""}
                 onChange={(e) => {
                   const selected = chinhanhs?.find(
                     (chinhanh) => chinhanh.TenChiNhanh === e.target.value
                   );
-                  setSelectedChiNhanh(selected ?? "");
+                  setSelectedChiNhanh(selected || "");
                 }}
                 className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
@@ -186,6 +208,7 @@ export const WorkSchedule = () => {
               </select>
             </div>
           </div>
+
           {/* Week Navigation */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -216,6 +239,7 @@ export const WorkSchedule = () => {
           </div>
         </div>
       </div>
+
       {/* Schedule Table */}
       <ScheduleTable
         currentDate={currentDate}
@@ -224,6 +248,7 @@ export const WorkSchedule = () => {
         onAddShift={handleAddShift}
         schedules={schedules}
       />
+
       {/* Add Shift Modal */}
       {isModalOpen && (
         <AddShiftModal

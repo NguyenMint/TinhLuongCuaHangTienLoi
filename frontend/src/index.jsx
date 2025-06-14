@@ -10,15 +10,16 @@ import { WorkSchedule } from "./pages/WorkSchedulePage";
 // setting page
 import { SettingsPage } from "./pages/SettingPage/SettingsPage";
 import { ShiftPage } from "./pages/SettingPage/ShiftPage";
-import {SalaryStructure} from "./pages/SettingPage/SalaryStructurePage";
+import { SalaryStructure } from "./pages/SettingPage/SalaryStructurePage";
 import { AllowanceCoefficientPage } from "./pages/SettingPage/AllowanceCoefficientPage";
 // role nhan vien page
-import { EmployeeHomePage} from "./pages/EmployeeLayout/EmployeeHomePage";
+import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
 import { EmployeeProfilePage } from "./pages/EmployeeLayout/EmployeeProfilePage";
 import { EmployeeUtilitiesPage } from "./pages/EmployeeLayout/EmployeeUtilitiesPage";
 import { PayrollPage } from "./pages/PayrollPage";
+import { ShiftRequests } from "./pages/ShiftRequestsPage";
 
 function App() {
   const getRole = () => {
@@ -47,6 +48,16 @@ function App() {
             <ProtectedRoute allowedRoles={[3, 1]}>
               <MainLayout>
                 <WorkSchedule />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dang-ky-ca"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <ShiftRequests />
               </MainLayout>
             </ProtectedRoute>
           }
@@ -81,25 +92,25 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
-        <Route 
-        path="/settings/salary-structure"
-        element ={
-          <ProtectedRoute allowedRoles={[3, 1]}>
-            <MainLayout>
-              <SalaryStructure />
-            </MainLayout>
-          </ProtectedRoute>
-        }
+        <Route
+          path="/settings/salary-structure"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <SalaryStructure />
+              </MainLayout>
+            </ProtectedRoute>
+          }
         ></Route>
-        <Route 
-        path="/settings/allowance-coefficient"
-        element ={
-          <ProtectedRoute allowedRoles={[3, 1]}>
-            <MainLayout>
-              <AllowanceCoefficientPage/>
-            </MainLayout>
-          </ProtectedRoute>
-        }
+        <Route
+          path="/settings/allowance-coefficient"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <AllowanceCoefficientPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
         ></Route>
         <Route
           path="/bang-luong"
@@ -134,8 +145,9 @@ function App() {
                   <EmployeeProfilePage />
                 </div>
               </div>
-           </ProtectedRoute>
-        }></Route>
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route
           path="/employee-utility"
           element={
@@ -146,8 +158,9 @@ function App() {
                   <EmployeeUtilitiesPage />
                 </div>
               </div>
-           </ProtectedRoute>
-        }></Route>
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route
           path="*"
           element={
