@@ -78,13 +78,13 @@ export const EmployeeTable = ({
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Mã chấm công
+                Tên nhân viên
               </th>
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Tên nhân viên
+                Giới tính
               </th>
               <th
                 scope="col"
@@ -103,12 +103,6 @@ export const EmployeeTable = ({
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Chức vụ
-              </th>
-              <th
-                scope="col"
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Ghi chú
               </th>
             </tr>
           </thead>
@@ -153,11 +147,11 @@ export const EmployeeTable = ({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                       {employee.MaNhanVien}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {employee.timekeepingCode}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {employee.HoTen}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {employee.GioiTinh===true?"Nam":"Nữ"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {employee.SoDienThoai}
@@ -167,9 +161,6 @@ export const EmployeeTable = ({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {employee.MaVaiTro === 1 ? "Quản lý" : "Nhân viên"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {employee.notes}
                     </td>
                   </tr>
                 </React.Fragment>

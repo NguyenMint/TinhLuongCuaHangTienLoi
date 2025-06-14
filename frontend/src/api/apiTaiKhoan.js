@@ -89,6 +89,29 @@ export async function createEmployee(formData) {
   }
 }
 
+export async function updateEmployee(formData) {
+  try {
+    const maTK = formData.get("MaTK");
+    const res = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/${maTK}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return { success: true, data: res.data };
+  } catch (error) {
+    if (error.response.status === 409) {
+      return { sucesss: false, message: error.response.data.message };
+    }
+    console.error("Lỗi update nhân viên:", error);
+    return { sucesss: false, message: "Lỗi kết nối server" };
+  }
+}
+
 export const layLuongTheoGio = async (MaTK, NgayDangKy) => {
   try {
     const response = await axios.post(

@@ -148,6 +148,7 @@ class TaiKhoanController {
   async update(req, res) {
     try {
       const { MaTK } = req.params;
+      console.log(MaTK);
       const taikhoan = await TaiKhoan.findByPk(MaTK);
       if (!taikhoan) {
         return res.status(404).json({ message: "Không tồn tại tài khoản này" });

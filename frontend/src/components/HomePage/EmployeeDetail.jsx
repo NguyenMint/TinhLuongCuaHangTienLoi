@@ -9,11 +9,8 @@ export const EmployeeDetail = ({
   activeTab,
   setActiveTab,
   onEmployeeStatusChange,
+  setShowModalUpdate
 }) => {
-  const handleUpdateEmployee = () => {
-    console.log("Update employee clicked");
-    // Implementation would go here
-  };
   const handleDungLam = async (MaTK) => {
     const confirmed = window.confirm(
       "Bạn có chắc chắn cho nhân viên này ngừng làm việc?"
@@ -216,7 +213,9 @@ export const EmployeeDetail = ({
           Lấy mã xác nhận
         </button>
         <button
-          onClick={handleUpdateEmployee}
+          onClick={()=>{
+            setShowModalUpdate(true);
+          }}
           className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
         >
           Cập nhật

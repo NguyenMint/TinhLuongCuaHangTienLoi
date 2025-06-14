@@ -7,6 +7,7 @@ import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import { useEffect } from "react";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx";
+import { UpdateEmployeeModal } from "../components/Employee/UpdateEmployeeModal.jsx";
 import { Pagination } from "../components/Pagination.jsx";
 export function HomePage() {
   // State for filters
@@ -184,6 +185,7 @@ export function HomePage() {
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 onEmployeeStatusChange={refreshEmployeeData}
+                setShowModalUpdate={setShowModalUpdate}
               />
             </div>
           )}
@@ -195,6 +197,12 @@ export function HomePage() {
             chiNhanhs={chinhanhs}
           />
         )}
+        {showModalUpdate && <UpdateEmployeeModal
+        setShowModalUpdate={setShowModalUpdate}
+        refreshEmployeeData={refreshEmployeeData}
+        chiNhanhs={chinhanhs}
+        employee={selectedEmployee}
+        ></UpdateEmployeeModal>}
       </div>
     </div>
   );
