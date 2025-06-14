@@ -18,6 +18,17 @@ class bangLuongController {
       const startOfMonth = new Date(Nam, Thang - 1, 1);
       const endOfMonth = new Date(Nam, Thang, 0);
       const KyLuong = formatDate(startOfMonth) + " - " + formatDate(endOfMonth);
+      const bangLuongExist = await BangLuong.findOne({
+        where: {
+          MaTK,
+          KyLuong,
+        },
+      });
+      if (bangLuongExist) {
+        return res.status(409).json({
+          message: "Bảng lương của nhân viên ở kỳ lương này đã có rồi",
+        });
+      }
       const phuCaps = await PhuCap.findAll({
         where: {
           MaTK,
@@ -113,12 +124,12 @@ class bangLuongController {
         KyLuong,
         MaTK,
       });
-      for(const ct of chiTietBangLuongs){
+      for (const ct of chiTietBangLuongs) {
         await ct.update({
-          MaBangLuong:bangLuong.MaBangLuong
+          MaBangLuong: bangLuong.MaBangLuong,
         });
       }
-      res.status(200).json({success:true,bangLuong});
+      res.status(200).json({ success: true, bangLuong });
     } catch (error) {
       res
         .status(500)
