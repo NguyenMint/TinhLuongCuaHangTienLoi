@@ -11,7 +11,7 @@ class DangKyCaController {
           {
             model: db.TaiKhoan,
             as: "MaNS_tai_khoan",
-            attributes: ["MaTK", "HoTen","MaCN"],
+            attributes: ["MaTK", "HoTen", "MaCN"],
             include: [
               {
                 model: db.KhenThuongKyLuat,
@@ -103,12 +103,15 @@ class DangKyCaController {
 
   async update(req, res) {
     try {
-      //add check DangKyCa
-      const DangKyCa = await DangKyCa.findByPk(req.params.id);
-      if (!DangKyCa) {
+      const { MaDKC, status } = req.body;
+      const dangKyCa = await DangKyCa.findByPk(MaDKC);
+
+      if (!dangKyCa) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
       }
-      await DangKyCa.update(req.body);
+      await dangKyCa.update({
+        TrangThai: status,
+      });
       res.status(200).json(DangKyCa);
     } catch (error) {
       console.log("ERROR: " + error);

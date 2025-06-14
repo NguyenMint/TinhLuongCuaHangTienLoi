@@ -203,6 +203,7 @@ export function PayrollPage() {
             setSelectedPayroll={setSelectedPayroll}
             setShowDetail={setShowDetail}
           />
+
           {Array.isArray(payrollCurrent) &&
               <Pagination
                 currentPage={currentPage}
@@ -210,6 +211,7 @@ export function PayrollPage() {
                 onPageChange={handlePageChange}
               />
             }
+
 
           {showCreatePayroll && (
             <div className="mt-4 bg-white rounded-lg shadow">

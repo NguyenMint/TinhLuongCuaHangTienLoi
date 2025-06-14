@@ -4,6 +4,7 @@ import {
   UsersIcon,
   SettingsIcon,
   Coins,
+  NotebookPen,
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -15,6 +16,11 @@ const links = [
     name: "Lịch làm việc",
     href: "/lich-lam-viec",
     icon: FileTextIcon,
+  },
+  {
+    name: "Đăng ký ca",
+    href: "/dang-ky-ca",
+    icon: NotebookPen,
   },
   { name: "Bảng chấm công", href: "/bang-cham-cong", icon: UsersIcon },
   {
