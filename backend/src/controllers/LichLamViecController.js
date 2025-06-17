@@ -11,12 +11,18 @@ class LichLamViecController {
           {
             model: db.TaiKhoan,
             as: "MaTK_tai_khoan",
-            attributes: ["MaTK", "HoTen", "MaCN", "MaNhanVien", "LuongTheoGioHienTai"],
+            attributes: [
+              "MaTK",
+              "HoTen",
+              "MaCN",
+              "MaNhanVien",
+              "LuongTheoGioHienTai",
+            ],
           },
           {
-            model:db.KhenThuongKyLuat,
-            as:"khen_thuong_ky_luats"
-          }
+            model: db.KhenThuongKyLuat,
+            as: "khen_thuong_ky_luats",
+          },
         ],
       });
       res.status(200).json(LichLamViecs);
@@ -93,7 +99,7 @@ class LichLamViecController {
     try {
       const { MaLLV, status } = req.body;
       const lichLamViec = await LichLamViec.findByPk(MaLLV);
-      
+
       if (!lichLamViec) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
       }

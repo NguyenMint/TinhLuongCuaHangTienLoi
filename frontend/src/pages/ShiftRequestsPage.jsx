@@ -88,11 +88,11 @@ export function ShiftRequests() {
 
   useEffect(() => {
     let filtered = Array.isArray(dangKyCas) ? [...dangKyCas] : [];
-
+    
     // Lọc theo chi nhánh
     if (selectedChiNhanh) {
       filtered = filtered.filter(
-        (emp) => emp.MaNS_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
+        (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
 

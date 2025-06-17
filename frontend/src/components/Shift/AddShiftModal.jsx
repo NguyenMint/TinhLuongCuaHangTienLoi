@@ -12,6 +12,7 @@ export const AddShiftModal = ({
   shifts,
   onSuccess,
   schedules,
+  onSubmit
 }) => {
   // console.log(date);
   // console.log(employee);
@@ -24,7 +25,7 @@ export const AddShiftModal = ({
     if (schedules && employee) {
       const employeeSchedules = schedules.filter(
         (schedule) =>
-          schedule.MaNS === employee.MaTK &&
+          schedule.MaTK === employee.MaTK &&
           format(date, "yyyy-MM-dd") ===
             format(new Date(schedule.NgayLam), "yyyy-MM-dd")
       );
@@ -38,39 +39,17 @@ export const AddShiftModal = ({
   }, [schedules, employee]);
 
   const handleSubmit = async () => {
-    try {
-      console.log({
-        employee,
-        date,
-        selectedShifts,
-        repeatWeekly,
-        applyToOthers,
-      });
-
-      const selectedShiftIds = Object.keys(selectedShifts).filter(
-        (key) => selectedShifts[key]
-      );
-
-      if (selectedShiftIds.length === 0) {
-        alert("Vui lòng chọn ít nhất một ca làm việc.");
-        return;
-      }
-
-      const requests = selectedShiftIds.map((MaCaLam) => {
-        const formData = {
-          MaTK: employee.MaTK,
-          NgayLam: format(date, "yyyy-MM-dd"),
-          MaCaLam: MaCaLam,
-          TrangThai: "Đã đăng ký",
-        };
-        createLLV(formData);
-      });
-      await Promise.all(requests);
-      onClose();
-      if (onSuccess) onSuccess();
-    } catch (error) {
-      console.error("Error submitting shift:", error);
+    if (
+      selectedShifts &&
+      Object.keys(selectedShifts).filter((key) => selectedShifts[key])
+        .length === 0
+    ) {
+      alert("Vui lòng chọn ít nhất một ca làm việc.");
+      return;
     }
+
+    // Call parent's submit function
+    await onSubmit(selectedShifts, repeatWeekly, applyToOthers);
   };
 
   if (!isOpen) return null;
