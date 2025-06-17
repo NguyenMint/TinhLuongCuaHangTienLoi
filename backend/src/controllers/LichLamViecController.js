@@ -1,10 +1,10 @@
 const db = require("../models");
-const DangKyCa = db.DangKyCa;
+const LichLamViec = db.LichLamViec;
 const { Op, where } = require("sequelize");
-class DangKyCaController {
+class LichLamViecController {
   async getAll(req, res) {
     try {
-      const DangKyCas = await DangKyCa.findAll({
+      const LichLamViecs = await LichLamViec.findAll({
         include: [
           { model: db.ChamCong, as: "cham_congs" },
           { model: db.CaLam, as: "MaCaLam_ca_lam" },
@@ -21,7 +21,7 @@ class DangKyCaController {
                     "MaNS_tai_khoan.khen_thuong_ky_luats.NgayApDung"
                   ),
                   "=",
-                  db.sequelize.col("DangKyCa.NgayDangKy")
+                  db.sequelize.col("LichLamViec.NgayLam")
                 ),
 
                 required: false,
@@ -30,7 +30,7 @@ class DangKyCaController {
           },
         ],
       });
-      res.status(200).json(DangKyCas);
+      res.status(200).json(LichLamViecs);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
@@ -39,11 +39,11 @@ class DangKyCaController {
 
   async getById(req, res) {
     try {
-      const dangKyCa = await DangKyCa.findByPk(req.params.id);
-      if (!dangKyCa) {
+      const lichLamViec = await LichLamViec.findByPk(req.params.id);
+      if (!lichLamViec) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
       }
-      res.status(200).json(dangKyCa);
+      res.status(200).json(lichLamViec);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
@@ -52,20 +52,20 @@ class DangKyCaController {
   async getCaLamByNhanVien(req, res) {
     try {
       const { MaTK } = req.params;
-      const { NgayDangKy } = req.query;
+      const { NgayLam } = req.query;
       const where = {
-        MaNS: MaTK,
+        MaTK,
         TrangThai: { [Op.in]: ["Đã Đăng Ký", "Chuyển Ca"] },
       };
-      if (NgayDangKy) {
+      if (NgayLam) {
         // Lấy ngày hôm trước
-        const prevDate = new Date(NgayDangKy);
+        const prevDate = new Date(NgayLam);
         prevDate.setDate(prevDate.getDate() - 1);
         const prevDateStr = prevDate.toISOString().slice(0, 10);
         where[Op.or] = [
-          { NgayDangKy: NgayDangKy },
+          { NgayLam: NgayLam },
           {
-            NgayDangKy: prevDateStr,
+            NgayLam: prevDateStr,
             // Điều kiện ca qua đêm: giờ kết thúc < giờ bắt đầu
             "$MaCaLam_ca_lam.ThoiGianKetThuc$": {
               [Op.lt]: db.sequelize.col("MaCaLam_ca_lam.ThoiGianBatDau"),
@@ -73,7 +73,7 @@ class DangKyCaController {
           },
         ];
       }
-      const caLam = await DangKyCa.findAll({
+      const caLam = await LichLamViec.findAll({
         where,
         include: [
           { model: db.CaLam, as: "MaCaLam_ca_lam" },
@@ -92,8 +92,8 @@ class DangKyCaController {
 
   async create(req, res) {
     try {
-      console.log("Creating DangKyCa with data: ", req.body);
-      const response = await DangKyCa.create(req.body);
+      console.log("Creating Lịch làm việc with data: ", req.body);
+      const response = await LichLamViec.create(req.body);
       res.status(201).json(response);
     } catch (error) {
       console.log("ERROR: " + error);
@@ -104,15 +104,15 @@ class DangKyCaController {
   async update(req, res) {
     try {
       const { MaDKC, status } = req.body;
-      const dangKyCa = await DangKyCa.findByPk(MaDKC);
+      const lichLamViec = await LichLamViec.findByPk(MaDKC);
 
-      if (!dangKyCa) {
+      if (!lichLamViec) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
       }
-      await dangKyCa.update({
+      await lichLamViec.update({
         TrangThai: status,
       });
-      res.status(200).json(DangKyCa);
+      res.status(200).json(lichLamViec);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
@@ -121,7 +121,7 @@ class DangKyCaController {
 
   async delete(req, res) {
     try {
-      const dangKyCa = await DangKyCa.findByPk(req.params.id, {
+      const lichLamViec = await LichLamViec.findByPk(req.params.id, {
         include: [
           {
             model: db.ChamCong,
@@ -129,17 +129,17 @@ class DangKyCaController {
           },
         ],
       });
-      if (!dangKyCa) {
+      if (!lichLamViec) {
         return res
           .status(404)
-          .json({ message: "Đăng ký ca làm không tồn tại" });
+          .json({ message: "Lịch làm việc không tồn tại" });
       }
-      if (dangKyCa.cham_congs.length > 0) {
+      if (lichLamViec.cham_congs.length > 0) {
         return res.status(400).json({
-          message: "Không thể xóa đăng ký ca làm khi đã có chấm công",
+          message: "Không thể xóa Lịch làm việc khi đã có chấm công",
         });
       }
-      await dangKyCa.destroy();
+      await lichLamViec.destroy();
       res.status(200).json({ message: "Xóa đăng ký ca làm thành công" });
     } catch (error) {
       console.log("ERROR: " + error);
@@ -148,4 +148,4 @@ class DangKyCaController {
   }
 }
 
-module.exports = new DangKyCaController();
+module.exports = new LichLamViecController();

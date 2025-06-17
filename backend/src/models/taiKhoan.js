@@ -56,7 +56,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: "STK"
     },
     TrangThai: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.ENUM('Đang làm','Đã nghĩ','Thai sản'),
       allowNull: false
     },
     Email: {

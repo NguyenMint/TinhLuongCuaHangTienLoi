@@ -139,8 +139,8 @@ export function PayrollDetail({ payroll, onCancel }) {
                 <div className="w-2/3">{payroll.NgayTao}</div>
               </div>
               <div className="flex">
-                <div className="w-1/3 text-gray-600">Trạng thái:</div>
-                <div className="w-2/3 font-medium">{payroll.status}</div>
+                <div className="w-1/3 text-gray-600">Số người phụ thuộc: </div>
+                <div className="w-2/3 font-medium">{payroll.SoNguoiPhuThuoc}</div>
               </div>
               <div className="flex">
                 <div className="w-1/3 text-gray-600">Chi nhánh:</div>
@@ -160,6 +160,12 @@ export function PayrollDetail({ payroll, onCancel }) {
                 <div className="w-1/3 text-gray-600">Tổng lương:</div>
                 <div className="w-1/3 text-right">
                   {formatCurrency(payroll.TongLuong)}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-1/3 text-gray-600">Mức giảm trừ gia cảnh</div>
+                <div className="w-1/3 text-right">
+                  {formatCurrency(payroll.MucGiamTruGiaCanh)}
                 </div>
               </div>
               <div className="flex">

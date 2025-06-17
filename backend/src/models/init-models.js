@@ -5,10 +5,10 @@ var _ChamCong = require("./chamCong");
 var _ChiNhanh = require("./chiNhanh");
 var _ChiTietBangLuong = require("./chiTietBangLuong");
 var _ChungChi = require("./chungChi");
-var _DangKyCa = require("./dangKyCa");
 var _HeSoPhuCap = require("./heSoPhuCap");
 var _HopDongLd = require("./hopDongLd");
 var _KhenThuongKyLuat = require("./khenThuongKyLuat");
+var _LichLamViec = require("./lichLamViec");
 var _LichSuTangLuong = require("./lichSuTangLuong");
 var _NgayNghiPhep = require("./ngayNghiPhep");
 var _NguoiPhuThuoc = require("./nguoiPhuThuoc");
@@ -24,10 +24,10 @@ function initModels(sequelize) {
   var ChiNhanh = _ChiNhanh(sequelize, DataTypes);
   var ChiTietBangLuong = _ChiTietBangLuong(sequelize, DataTypes);
   var ChungChi = _ChungChi(sequelize, DataTypes);
-  var DangKyCa = _DangKyCa(sequelize, DataTypes);
   var HeSoPhuCap = _HeSoPhuCap(sequelize, DataTypes);
   var HopDongLd = _HopDongLd(sequelize, DataTypes);
   var KhenThuongKyLuat = _KhenThuongKyLuat(sequelize, DataTypes);
+  var LichLamViec = _LichLamViec(sequelize, DataTypes);
   var LichSuTangLuong = _LichSuTangLuong(sequelize, DataTypes);
   var NgayNghiPhep = _NgayNghiPhep(sequelize, DataTypes);
   var NguoiPhuThuoc = _NguoiPhuThuoc(sequelize, DataTypes);
@@ -38,26 +38,26 @@ function initModels(sequelize) {
 
   ChiTietBangLuong.belongsTo(BangLuong, { as: "MaBangLuong_bang_luong", foreignKey: "MaBangLuong"});
   BangLuong.hasMany(ChiTietBangLuong, { as: "chi_tiet_bang_luongs", foreignKey: "MaBangLuong"});
-  DangKyCa.belongsTo(CaLam, { as: "MaCaLam_ca_lam", foreignKey: "MaCaLam"});
-  CaLam.hasMany(DangKyCa, { as: "dang_ky_cas", foreignKey: "MaCaLam"});
+  LichLamViec.belongsTo(CaLam, { as: "MaCaLam_ca_lam", foreignKey: "MaCaLam"});
+  CaLam.hasMany(LichLamViec, { as: "lich_lam_viecs", foreignKey: "MaCaLam"});
   TaiKhoan.belongsTo(ChiNhanh, { as: "MaCN_chi_nhanh", foreignKey: "MaCN"});
   ChiNhanh.hasMany(TaiKhoan, { as: "tai_khoans", foreignKey: "MaCN"});
   ChamCong.belongsTo(ChiTietBangLuong, { as: "MaCTBL_chi_tiet_bang_luong", foreignKey: "MaCTBL"});
   ChiTietBangLuong.hasMany(ChamCong, { as: "cham_congs", foreignKey: "MaCTBL"});
-  ChamCong.belongsTo(DangKyCa, { as: "MaDKC_dang_ky_ca", foreignKey: "MaDKC"});
-  DangKyCa.hasMany(ChamCong, { as: "cham_congs", foreignKey: "MaDKC"});
+  ChamCong.belongsTo(LichLamViec, { as: "MaLLV_lich_lam_viec", foreignKey: "MaLLV"});
+  LichLamViec.hasMany(ChamCong, { as: "cham_congs", foreignKey: "MaLLV"});
   BangLuong.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(BangLuong, { as: "bang_luongs", foreignKey: "MaTK"});
   ChungChi.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(ChungChi, { as: "chung_chis", foreignKey: "MaTK"});
-  DangKyCa.belongsTo(TaiKhoan, { as: "MaNS_tai_khoan", foreignKey: "MaNS"});
-  TaiKhoan.hasMany(DangKyCa, { as: "dang_ky_cas", foreignKey: "MaNS"});
   HeSoPhuCap.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(HeSoPhuCap, { as: "he_so_phu_caps", foreignKey: "MaTK"});
   HopDongLd.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(HopDongLd, { as: "hop_dong_lds", foreignKey: "MaTK"});
   KhenThuongKyLuat.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(KhenThuongKyLuat, { as: "khen_thuong_ky_luats", foreignKey: "MaTK"});
+  LichLamViec.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
+  TaiKhoan.hasMany(LichLamViec, { as: "lich_lam_viecs", foreignKey: "MaTK"});
   LichSuTangLuong.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(LichSuTangLuong, { as: "lich_su_tang_luongs", foreignKey: "MaTK"});
   NgayNghiPhep.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
@@ -82,10 +82,10 @@ function initModels(sequelize) {
     ChiNhanh,
     ChiTietBangLuong,
     ChungChi,
-    DangKyCa,
     HeSoPhuCap,
     HopDongLd,
     KhenThuongKyLuat,
+    LichLamViec,
     LichSuTangLuong,
     NgayNghiPhep,
     NguoiPhuThuoc,

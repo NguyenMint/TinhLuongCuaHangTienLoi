@@ -32,7 +32,6 @@ class ChamCongController {
         const [gioVao, phutVao] = timeStr.split(":").map(Number);
         return gioVao * 60 + phutVao;
       };
-      // Tính đi trễ nếu có GioVao
       if (GioVao) {
         const vaoChuan = timeToMinutes(ThoiGianBatDau);
         const vaoThucTe = timeToMinutes(GioVao);
@@ -48,7 +47,6 @@ class ChamCongController {
         const diffInDays = (d1 - d2) / (1000 * 60 * 60 * 24);
         return diffInDays === 1;
       };
-      // Tính về sớm nếu có GioRa
       if (GioRa) {
         let raChuan = timeToMinutes(ThoiGianKetThuc);
         let raThucTe = timeToMinutes(GioRa);
