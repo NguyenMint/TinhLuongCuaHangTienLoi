@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ApproveTable from "../components/ApproveShift/ApproveTable";
 import { fetchCaLam } from "../api/apiCaLam";
-import { fetchDangKyCa, updateDKC } from "../api/apiDangKyCa";
+import { fetchLichLamViec, updateLLV } from "../api/apiLichLamViec.js";
 import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import Search from "../components/search.jsx";
@@ -51,7 +51,7 @@ export function ShiftRequests() {
 
   const getAllDangKyCa = async () => {
     try {
-      const data = await fetchDangKyCa();
+      const data = await fetchLichLamViec();
       setDangKyCas(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
@@ -115,7 +115,7 @@ export function ShiftRequests() {
 
   const handleSaveShift = async (MaDKC) => {
     try {
-      await updateDKC(MaDKC, "Đã Đăng Ký");
+      await updateLLV(MaDKC, "Đã Đăng Ký");
       await getAllDangKyCa();
       setIsModalOpen(false);
     } catch (error) {
@@ -128,7 +128,7 @@ export function ShiftRequests() {
 
   const handleDeleteShift = async (MaDKC) => {
     try {
-      await updateDKC(MaDKC, "Từ chối");
+      await updateLLV(MaDKC, "Từ chối");
       await getAllDangKyCa();
       setIsModalOpen(false);
     } catch (error) {

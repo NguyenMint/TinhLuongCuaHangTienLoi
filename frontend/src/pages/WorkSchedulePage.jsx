@@ -10,7 +10,7 @@ import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks } from "date-fns";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
-import { deleteDangKyCa, fetchDangKyCa } from "../api/apiDangKyCa.js";
+import { deleteLichLamViec, fetchLichLamViec } from "../api/apiLichLamViec.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { Link } from "react-router-dom";
@@ -50,7 +50,7 @@ export const WorkSchedule = () => {
 
   const getAllDangKyCa = async () => {
     try {
-      const data = await fetchDangKyCa();
+      const data = await fetchLichLamViec();
       // Chỉ lấy các ca đã được duyệt cho trang lịch chính
       const approvedSchedules = data.filter(
         (schedule) => schedule.TrangThai === "Đã Đăng Ký"
@@ -143,7 +143,7 @@ export const WorkSchedule = () => {
         return;
       }
       try {
-        const result = await deleteDangKyCa(shift.MaDKC);
+        const result = await deleteLichLamViec(shift.MaDKC);
         if (!result.success) {
           alert(result.message || "Xóa ca làm thất bại.");
           return;
