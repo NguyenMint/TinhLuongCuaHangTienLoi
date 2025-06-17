@@ -25,6 +25,7 @@ export function AddEmployeeModal({
     STK: "",
     BacLuong: 1,
     LuongCoBanHienTai: "",
+    LuongTheoGioHienTai:"",
     SoNgayNghiPhep: 0,
     MaVaiTro: "2",
     MaCN: "1",
@@ -36,11 +37,12 @@ export function AddEmployeeModal({
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
-      const { BacLuong, LuongCoBanHienTai } = JSON.parse(value);
+      const { BacLuong, LuongCoBanHienTai,LuongTheoGioHienTai } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
         BacLuong,
         LuongCoBanHienTai,
+        LuongTheoGioHienTai
       }));
       return;
     }
@@ -48,7 +50,8 @@ export function AddEmployeeModal({
       const { LuongTheoGio } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
-        LuongCoBanHienTai:LuongTheoGio
+        LuongCoBanHienTai:0,
+        LuongTheoGioHienTai: LuongTheoGio
       }));
       return;
     }
@@ -303,6 +306,7 @@ export function AddEmployeeModal({
                       value={JSON.stringify({
                         BacLuong: thangluong.BacLuong,
                         LuongCoBanHienTai: thangluong.LuongCoBan,
+                        LuongTheoGioHienTai: thangLuong.LuongTheoGio
                       })}
                     >
                       Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}

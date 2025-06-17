@@ -54,7 +54,6 @@ class ThangLuongController {
         LuongCoBan,
         LuongTheoGio,
         LoaiNV,
-        SoNgayPhep,
       } = req.body;
       let thangLuong;
       if (LoaiNV === "FullTime") {
@@ -64,11 +63,12 @@ class ThangLuongController {
         if (existBacLuong) {
           return res.status(409).json({ message: "Bậc lương đã tồn tại" });
         }
+        const LuongTheoGioFullTime = parseFloat(LuongCoBan/30/8);
         thangLuong = await ThangLuong.create({
           LuongCoBan,
+          LuongTheoGio:LuongTheoGioFullTime,
           BacLuong,
           MaVaiTro,
-          SoNgayPhep,
           LoaiNV,
         });
       } else {
@@ -106,8 +106,10 @@ class ThangLuongController {
         if (existBacLuong) {
           return res.status(409).json({ message: "Bậc lương đã tồn tại" });
         }
+        const LuongTheoGioFullTime = parseFloat(LuongCoBan/30/8);
         await thangLuong.update({
           LuongCoBan,
+          LuongTheoGio:LuongTheoGioFullTime,
           BacLuong,
           MaVaiTro,
           SoNgayPhep,
