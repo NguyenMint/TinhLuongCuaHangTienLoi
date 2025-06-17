@@ -48,7 +48,7 @@ export const WorkSchedule = () => {
     }
   };
 
-  const getAllDangKyCa = async () => {
+  const getAllLichLamViec = async () => {
     try {
       const data = await fetchLichLamViec();
       // Chỉ lấy các ca đã được duyệt cho trang lịch chính
@@ -116,7 +116,7 @@ export const WorkSchedule = () => {
   useEffect(() => {
     getAllNhanVien();
     getAllCaLam();
-    getAllDangKyCa();
+    getAllLichLamViec();
     fetchChiNhanh();
   }, []);
 
@@ -148,7 +148,7 @@ export const WorkSchedule = () => {
           alert(result.message || "Xóa ca làm thất bại.");
           return;
         }
-        await getAllDangKyCa();
+        await getAllLichLamViec();
       } catch (error) {
         console.error("Lỗi khi xoá ca:", error);
       }
@@ -254,7 +254,7 @@ export const WorkSchedule = () => {
           onClose={handleModalClose}
           employee={selectedEmployee}
           date={selectedDate}
-          onSuccess={getAllDangKyCa}
+          onSuccess={getAllLichLamViec}
         />
       )}
     </div>

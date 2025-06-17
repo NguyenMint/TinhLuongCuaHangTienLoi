@@ -19,13 +19,13 @@ export function AttendancePage() {
   const [isLoadingForLuong, setisLoadingForLuong] = useState(false);
   // const [viewMode, setViewMode] = useState("Xem theo ca");
   // const [searchQuery, setSearchQuery] = useState("");
-  const [dangKyCas, setDangKyCas] = useState([]);
+  const [lichLamViecs, setLichLamViecs] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   // const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [chinhanhs, setChiNhanhs] = useState([]);
 
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
-  const [filteredDKCs, setFilteredDKCs] = useState([]);
+  const [filteredLLVs, setFilteredLLVs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [dataUpdate, setDataUpdate] = useState({
@@ -35,7 +35,7 @@ export function AttendancePage() {
     MaChamCong: "",
     DiTre: 0,
     RaSom: 0,
-    MaDKC: "",
+    MaLLV: "",
     NgayDangKy: "",
     violations: [],
     rewards: [],
@@ -67,10 +67,10 @@ export function AttendancePage() {
       setisLoadingForLuong(false);
     }
   };
-  const getAllDangKyCa = async () => {
+  const getAllLichLamViec = async () => {
     try {
       const data = await fetchLichLamViec();
-      setDangKyCas(data);
+      setLichLamViecs(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
@@ -85,7 +85,7 @@ export function AttendancePage() {
   };
   useEffect(() => {
     getAllCaLam();
-    getAllDangKyCa();
+    getAllLichLamViec();
     fetchChiNhanh();
   }, []);
 
@@ -113,7 +113,7 @@ export function AttendancePage() {
   };
 
   useEffect(() => {
-    let filtered = Array.isArray(dangKyCas) ? [...dangKyCas] : [];
+    let filtered = Array.isArray(lichLamViecs) ? [...lichLamViecs] : [];
 
     // Lọc theo chi nhánh
     if (selectedChiNhanh) {
@@ -130,8 +130,8 @@ export function AttendancePage() {
       );
     }
 
-    setFilteredDKCs(filtered);
-  }, [selectedChiNhanh, dangKyCas, searchQuery]);
+    setFilteredLLVs(filtered);
+  }, [selectedChiNhanh, lichLamViecs, searchQuery]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -175,7 +175,7 @@ export function AttendancePage() {
           dataUpdate.NgayDangKy,
           dataUpdate.GioVao,
           dataUpdate.GioRa,
-          dataUpdate.MaDKC,
+          dataUpdate.MaLLV,
           false
         );
       }
@@ -199,7 +199,7 @@ export function AttendancePage() {
         alert("Đã duyệt chấm công thành công!");
       }
 
-      await getAllDangKyCa();
+      await getAllLichLamViec();
       setIsModalOpen(false);
       setLuongTheoGio(0); // Reset wage after saving
     } catch (error) {
@@ -288,7 +288,7 @@ export function AttendancePage() {
           <AttendanceTable
             currentDate={currentDate}
             shifts={shifts}
-            dangKyCas={filteredDKCs}
+            lichLamViecs={filteredLLVs}
             onShiftClick={handleShiftClick}
           />
         </div>

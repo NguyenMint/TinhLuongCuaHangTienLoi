@@ -8,7 +8,7 @@ export const ScheduleTable = ({
   employees,
   onDeleteShift,
   schedules,
-  onUpdateShift
+  onUpdateShift,
 }) => {
   const startDate = startOfWeek(currentDate, {
     weekStartsOn: 1,
@@ -22,19 +22,20 @@ export const ScheduleTable = ({
   );
 
   const formatted = schedules?.reduce?.((acc, employee) => {
-    const employeeKey = employee.MaNS;
+    const employeeKey = employee.MaTK;
+    console.log(employee);
 
     if (!acc[employeeKey]) {
       acc[employeeKey] = {};
     }
 
-    if (!acc[employeeKey][employee.NgayDangKy]) {
-      acc[employeeKey][employee.NgayDangKy] = [];
+    if (!acc[employeeKey][employee.NgayLam]) {
+      acc[employeeKey][employee.NgayLam] = [];
     }
 
-    acc[employeeKey][employee.NgayDangKy].push({
+    acc[employeeKey][employee.NgayLam].push({
       TenCa: employee.MaCaLam_ca_lam.TenCa,
-      MaDKC: employee.MaDKC,
+      MaLLV: employee.MaLLV,
     });
 
     return acc;
@@ -42,11 +43,13 @@ export const ScheduleTable = ({
 
   const getShiftForDay = (employeeId, date) => {
     const dateKey = format(date, "yyyy-MM-dd");
+
     return formatted[employeeId]?.[dateKey] || [];
   };
 
   const renderShift = (employee, date) => {
     const shift = getShiftForDay(employee.MaTK, date);
+    console.log(shift);
 
     return (
       <div className="group relative h-full min-h-[40px] flex items-center">

@@ -52,3 +52,16 @@ export const updateLLV = async (MaDKC, status) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const createLLV = async (formData) => {
+  try {
+    const { MaTK, NgayLam, MaCaLam, TrangThai } = formData;
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec`,
+      { MaTK, NgayLam, MaCaLam, TrangThai }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tạo lịch làm việc:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
