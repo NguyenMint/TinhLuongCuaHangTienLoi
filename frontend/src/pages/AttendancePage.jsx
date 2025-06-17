@@ -117,7 +117,7 @@ export function AttendancePage() {
     try {
       const records = [
         ...(dataUpdate.violations || []).map((violation) => ({
-          NgayApDung: dataUpdate.NgayLam,
+          MaLLV: dataUpdate.MaLLV,
           ThuongPhat: 0, // Vi phạm
           LyDo: violation.LyDo,
           MucThuongPhat: violation.MucThuongPhat,
@@ -125,7 +125,7 @@ export function AttendancePage() {
           MaTK: dataUpdate.MaTK,
         })),
         ...(dataUpdate.rewards || []).map((reward) => ({
-          NgayApDung: dataUpdate.NgayLam,
+          MaLLV: dataUpdate.MaLLV,
           ThuongPhat: 1, // Khen thưởng
           LyDo: reward.LyDo,
           MucThuongPhat: reward.MucThuongPhat,
@@ -267,7 +267,6 @@ export function AttendancePage() {
       </div>
       {isModalOpen && selectedShift && (
         <ShiftModal
-          isLoadingForLuong={isLoadingForLuong}
           shift={selectedShift}
           onClose={handleCloseModal}
           onSave={handleSaveShift}

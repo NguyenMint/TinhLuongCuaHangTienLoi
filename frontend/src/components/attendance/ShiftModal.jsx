@@ -14,8 +14,6 @@ const ShiftModal = ({
   onDelete,
   setDataUpdate,
   dataUpdate,
-  luongTheoGio,
-  isLoadingForLuong,
 }) => {
   const [activeTab, setActiveTab] = useState("checkin");
   const [formData, setFormData] = useState({
@@ -73,13 +71,11 @@ const ShiftModal = ({
 
   // Calculate violations when luongTheoGio is loaded
   useEffect(() => {
-    
     // Only calculate violations if luongTheoGio is loaded (not 0) and not currently loading
     const existsData = formData.khen_thuong_ky_luats.filter(
       (item) => item.LyDo === "Đi muộn" || item.LyDo === "Về sớm"
     );
     if (existsData.length > 0) return;
-    if (!luongTheoGio || luongTheoGio === 0 || isLoadingForLuong) return;
 
     const chamCong = formData.cham_congs?.[0];
     if (!chamCong) return;
@@ -99,8 +95,14 @@ const ShiftModal = ({
           LyDo: reason,
           MucThuongPhat:
             type === "late"
-              ? calculatePhat(minutes, luongTheoGio)
-              : calculatePhat(minutes, luongTheoGio),
+              ? calculatePhat(
+                  minutes,
+                  formData.MaTK_tai_khoan.LuongTheoGioHienTai
+                )
+              : calculatePhat(
+                  minutes,
+                  formData.MaTK_tai_khoan.LuongTheoGioHienTai
+                ),
           DuocMienThue: true,
           isAuto: true,
         });
@@ -133,7 +135,7 @@ const ShiftModal = ({
     if (hasChanged) {
       handleInputChange("violations", newViolations);
     }
-  }, [luongTheoGio, isLoadingForLuong, formData.cham_congs]); // Added isLoadingForLuong to dependencies
+  }, [formData.cham_congs]); // Added isLoadingForLuong to dependencies
 
   const tabs = [
     {
@@ -220,14 +222,6 @@ const ShiftModal = ({
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold">Chấm công</h2>
-            {/* Add loading indicator for luongTheoGio */}
-            {(isLoadingForLuong || luongTheoGio === 0) && (
-              <span className="text-sm text-gray-500">
-                {isLoadingForLuong
-                  ? "(Đang tải lương...)"
-                  : "(Chưa có dữ liệu lương)"}
-              </span>
-            )}
           </div>
           <button
             onClick={onClose}
@@ -340,9 +334,8 @@ const ShiftModal = ({
           <button
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
             onClick={handleSave}
-            disabled={isLoadingForLuong || luongTheoGio === 0} // Disable button while loading or no wage data
           >
-            {isLoadingForLuong ? "Đang tải..." : "Duyệt"}
+            Duyệt
           </button>
           <button
             className="px-4 py-2 border rounded-md hover:bg-gray-50"
