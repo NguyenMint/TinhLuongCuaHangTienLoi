@@ -2,7 +2,7 @@ import React from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { vi } from "date-fns/locale";
 import { PlusIcon } from "lucide-react";
-const WeeklyShiftTable = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
+const WeeklyShiftTable = ({ currentDate, onShiftClick, lichLamViecs, shifts }) => {
   const startDate = startOfWeek(currentDate, {
     weekStartsOn: 1,
   });
@@ -17,8 +17,8 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
   const getShiftsByShiftIdAndDay = (shiftId, date) => {
     const dateKey = format(date, "yyyy-MM-dd");
 
-    return dangKyCas.filter(
-      (s) => s.MaCaLam === shiftId && s.NgayDangKy === dateKey
+    return lichLamViecs.filter(
+      (s) => s.MaCaLam === shiftId && s.NgayLam === dateKey
     );
   };
   const getShiftBgColor = (shift) => {

@@ -56,17 +56,17 @@ const ApproveModal = ({
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <CircleUserRound />
-              <span>{formData.MaNS_tai_khoan.HoTen}</span>
+              <span>{formData.MaTK_tai_khoan.HoTen}</span>
             </div>
             <div className="flex items-center gap-2">
               <IdCard />
-              <span>{formData.MaNS}</span>
+              <span>{formData.MaTK_tai_khoan.MaNhanVien}</span>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <div className="text-sm text-gray-500">Thời gian</div>
-              <div className="font-medium">{formData.NgayDangKy}</div>
+              <div className="font-medium">{formData.NgayLam}</div>
             </div>
             <div>
               <div className="text-sm text-gray-500">Ca làm việc</div>

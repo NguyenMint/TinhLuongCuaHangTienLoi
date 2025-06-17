@@ -33,7 +33,7 @@ export function ShiftRequests() {
     DiTre: 0,
     RaSom: 0,
     MaDKC: "",
-    NgayDangKy: "",
+    NgayLam: "",
     violations: [],
     rewards: [],
   });

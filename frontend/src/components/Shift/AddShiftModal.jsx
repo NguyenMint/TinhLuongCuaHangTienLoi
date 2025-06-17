@@ -3,6 +3,7 @@ import { XIcon, PlusIcon } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import Shift from "./Shift";
+import { createLLV } from "../../api/apiLichLamViec";
 export const AddShiftModal = ({
   isOpen,
   onClose,
@@ -25,7 +26,7 @@ export const AddShiftModal = ({
         (schedule) =>
           schedule.MaNS === employee.MaTK &&
           format(date, "yyyy-MM-dd") ===
-            format(new Date(schedule.NgayDangKy), "yyyy-MM-dd")
+            format(new Date(schedule.NgayLam), "yyyy-MM-dd")
       );
       const scheduledShiftIds = employeeSchedules.map((s) => s.MaCaLam);
 
@@ -55,22 +56,15 @@ export const AddShiftModal = ({
         return;
       }
 
-      const requests = selectedShiftIds.map((MaCaLam) =>
-        fetch(process.env.REACT_APP_BACKEND_URL + "/dangkyca", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            MaNS: employee.MaTK,
-            NgayDangKy: format(date, "yyyy-MM-dd"),
-            MaCaLam: MaCaLam,
-            TrangThai: "Đã đăng ký",
-            // repeatWeekly,
-            // applyToOthers,
-          }),
-        })
-      );
+      const requests = selectedShiftIds.map((MaCaLam) => {
+        const formData = {
+          MaTK: employee.MaTK,
+          NgayLam: format(date, "yyyy-MM-dd"),
+          MaCaLam: MaCaLam,
+          TrangThai: "Đã đăng ký",
+        };
+        createLLV(formData);
+      });
       await Promise.all(requests);
       onClose();
       if (onSuccess) onSuccess();

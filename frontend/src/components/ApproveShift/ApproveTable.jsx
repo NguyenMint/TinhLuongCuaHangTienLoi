@@ -18,7 +18,7 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
     const dateKey = format(date, "yyyy-MM-dd");
 
     return dangKyCas.filter(
-      (s) => s.MaCaLam === shiftId && s.NgayDangKy === dateKey
+      (s) => s.MaCaLam === shiftId && s.NgayLam === dateKey
     );
   };
 
@@ -34,6 +34,7 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
   const renderShift = (shift, date) => {
     const dayShifts = getShiftsByShiftIdAndDay(shift.MaCa, date);
     // console.log(dayShifts);
+    console.log(dayShifts);
 
     return (
       <div>
@@ -47,7 +48,7 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
                   onClick={() => onShiftClick(dayShift)}
                 >
                   <div className="font-medium text-center text-sm">
-                    {dayShift.MaNS_tai_khoan.HoTen}
+                    {dayShift.MaTK_tai_khoan.HoTen}
                   </div>
                 </div>
               );

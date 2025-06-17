@@ -11,7 +11,7 @@ class LichLamViecController {
           {
             model: db.TaiKhoan,
             as: "MaTK_tai_khoan",
-            attributes: ["MaTK", "HoTen", "MaCN"],
+            attributes: ["MaTK", "HoTen", "MaCN", "MaNhanVien"],
             include: [
               {
                 model: db.KhenThuongKyLuat,
@@ -92,7 +92,6 @@ class LichLamViecController {
 
   async create(req, res) {
     try {
-      console.log("Creating Lịch làm việc with data: ", req.body);
       const response = await LichLamViec.create(req.body);
       res.status(201).json(response);
     } catch (error) {
@@ -103,8 +102,8 @@ class LichLamViecController {
 
   async update(req, res) {
     try {
-      const { MaDKC, status } = req.body;
-      const lichLamViec = await LichLamViec.findByPk(MaDKC);
+      const { MaLLV, status } = req.body;
+      const lichLamViec = await LichLamViec.findByPk(MaLLV);
 
       if (!lichLamViec) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
@@ -130,9 +129,7 @@ class LichLamViecController {
         ],
       });
       if (!lichLamViec) {
-        return res
-          .status(404)
-          .json({ message: "Lịch làm việc không tồn tại" });
+        return res.status(404).json({ message: "Lịch làm việc không tồn tại" });
       }
       if (lichLamViec.cham_congs.length > 0) {
         return res.status(400).json({

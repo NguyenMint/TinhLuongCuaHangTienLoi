@@ -11,6 +11,7 @@ var _KhenThuongKyLuat = require("./khenThuongKyLuat");
 var _LichLamViec = require("./lichLamViec");
 var _LichSuTangLuong = require("./lichSuTangLuong");
 var _NgayNghiPhep = require("./ngayNghiPhep");
+var _NghiThaiSan = require("./nghiThaiSan");
 var _NguoiPhuThuoc = require("./nguoiPhuThuoc");
 var _PhuCap = require("./phuCap");
 var _TaiKhoan = require("./taiKhoan");
@@ -30,6 +31,7 @@ function initModels(sequelize) {
   var LichLamViec = _LichLamViec(sequelize, DataTypes);
   var LichSuTangLuong = _LichSuTangLuong(sequelize, DataTypes);
   var NgayNghiPhep = _NgayNghiPhep(sequelize, DataTypes);
+  var NghiThaiSan = _NghiThaiSan(sequelize, DataTypes);
   var NguoiPhuThuoc = _NguoiPhuThuoc(sequelize, DataTypes);
   var PhuCap = _PhuCap(sequelize, DataTypes);
   var TaiKhoan = _TaiKhoan(sequelize, DataTypes);
@@ -64,6 +66,8 @@ function initModels(sequelize) {
   TaiKhoan.hasMany(NgayNghiPhep, { as: "ngay_nghi_pheps", foreignKey: "MaTK"});
   NgayNghiPhep.belongsTo(TaiKhoan, { as: "NguoiDuyet_tai_khoan", foreignKey: "NguoiDuyet"});
   TaiKhoan.hasMany(NgayNghiPhep, { as: "NguoiDuyet_ngay_nghi_pheps", foreignKey: "NguoiDuyet"});
+  NghiThaiSan.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
+  TaiKhoan.hasMany(NghiThaiSan, { as: "nghi_thai_sans", foreignKey: "MaTK"});
   NguoiPhuThuoc.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(NguoiPhuThuoc, { as: "nguoi_phu_thuocs", foreignKey: "MaTK"});
   PhuCap.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
@@ -88,6 +92,7 @@ function initModels(sequelize) {
     LichLamViec,
     LichSuTangLuong,
     NgayNghiPhep,
+    NghiThaiSan,
     NguoiPhuThuoc,
     PhuCap,
     TaiKhoan,
