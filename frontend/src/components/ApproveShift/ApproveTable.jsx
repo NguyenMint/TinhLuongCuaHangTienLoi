@@ -33,9 +33,6 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
 
   const renderShift = (shift, date) => {
     const dayShifts = getShiftsByShiftIdAndDay(shift.MaCa, date);
-    // console.log(dayShifts);
-    console.log(dayShifts);
-
     return (
       <div>
         {dayShifts.length > 0

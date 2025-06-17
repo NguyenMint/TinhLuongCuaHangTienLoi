@@ -42,13 +42,13 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, lichLamViecs, shifts }) =
 
               return (
                 <div
-                  key={dayShift.MaCaLam + dayShift.MaNS + date}
+                  key={dayShift.MaCaLam + dayShift.MaTK + date}
                   className={`p-3 m-1 rounded cursor-pointer 
                     ${getShiftBgColor(dayShift)}`}
                   onClick={() => onShiftClick(dayShift)}
                 >
                   <div className="font-medium text-sm">
-                    {dayShift.MaNS_tai_khoan.HoTen}
+                    {dayShift.MaTK_tai_khoan.HoTen}
                   </div>
 
                   {dayShift.cham_congs[0]?.GioVao ? (

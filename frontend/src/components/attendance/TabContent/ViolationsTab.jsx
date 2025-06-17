@@ -25,7 +25,8 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
 
   const handleAddViolation = () => {
     if (!newViolation.LyDo || newViolation.MucThuongPhat < 0) return;
-
+    console.log(newViolation.MucThuongPhat);
+    
     const newItem = {
       ...newViolation,
       MaKTKL: `temp_${Date.now()}`, // Temporary ID for new items
@@ -74,8 +75,8 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
 
   useEffect(() => {
     // Separate database violations from current violations
-    const databaseViolations = formData.MaNS_tai_khoan.khen_thuong_ky_luats
-      .filter((item) => item.ThuongPhat === false)
+    const databaseViolations = formData.khen_thuong_ky_luats
+      ?.filter((item) => item.ThuongPhat === false)
       .filter((item) => !deletedDatabaseIds.has(item.MaKTKL));
 
     setShowViolations([...databaseViolations, ...currentViolations]);
@@ -98,7 +99,7 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
               showViolations.map((v, index) => {
                 const isFromDatabase =
                   !v.MaKTKL?.toString().startsWith("temp_") &&
-                  formData.MaNS_tai_khoan.khen_thuong_ky_luats.some(
+                  formData.khen_thuong_ky_luats?.some(
                     (item) => item.MaKTKL === v.MaKTKL
                   );
                 const isBeingDeleted = isDeleting === v.MaKTKL;
@@ -111,7 +112,7 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
                     }`}
                   >
                     <td className="p-3">{v.LyDo}</td>
-                    <td className="p-3">{v.MucThuongPhat}</td>
+                    <td className="p-3">{v.MucThuongPhat ?? 0}</td>
                     <td className="p-3">{v.DuocMienThue ? "Có" : "Không"}</td>
                     <td className="p-3 text-center">
                       <button

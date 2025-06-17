@@ -1,12 +1,12 @@
 import axios from "axios";
-export const chamCongVao = async (NgayChamCong, GioVao, MaDKC, NgayLe) => {
+export const chamCongVao = async (NgayChamCong, GioVao, MaLLV, NgayLe) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
       {
         NgayChamCong,
         GioVao,
-        MaDKC,
+        MaLLV,
         NgayLe,
       }
     );
@@ -19,14 +19,14 @@ export const chamCongVao = async (NgayChamCong, GioVao, MaDKC, NgayLe) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const chamCongRa = async (NgayChamCong, GioRa, MaDKC, NgayLe) => {
+export const chamCongRa = async (NgayChamCong, GioRa, MaLLV, NgayLe) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
       {
         NgayChamCong,
         GioRa,
-        MaDKC,
+        MaLLV,
         NgayLe,
       }
     );
@@ -39,15 +39,17 @@ export const chamCongRa = async (NgayChamCong, GioRa, MaDKC, NgayLe) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const chamCong = async (NgayChamCong, GioVao, GioRa, MaDKC, NgayLe) => {
+export const chamCong = async (NgayChamCong, GioVao, GioRa, MaLLV, NgayLe) => {
   try {
+    console.log(NgayChamCong, GioVao, GioRa, MaLLV, NgayLe);
+
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
       {
         NgayChamCong,
         GioRa,
         GioVao,
-        MaDKC,
+        MaLLV,
         NgayLe,
       }
     );

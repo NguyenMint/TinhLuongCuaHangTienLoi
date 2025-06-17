@@ -63,9 +63,9 @@ const ShiftModal = ({
       MaChamCong: formData.cham_congs[0]?.MaChamCong,
       DiTre: formData.cham_congs[0]?.DiTre || calcLateMinutes(),
       VeSom: formData.cham_congs[0]?.VeSom || calcEarlyMinutes(),
-      MaDKC: formData.MaDKC,
-      NgayDangKy: formData.NgayDangKy,
-      MaTK: formData.MaNS_tai_khoan.MaTK,
+      MaLLV: formData.MaLLV,
+      NgayLam: formData.NgayLam,
+      MaTK: formData.MaTK_tai_khoan.MaTK,
       violations: formData.violations || [],
       rewards: formData.rewards || [],
     });
@@ -73,8 +73,9 @@ const ShiftModal = ({
 
   // Calculate violations when luongTheoGio is loaded
   useEffect(() => {
+    
     // Only calculate violations if luongTheoGio is loaded (not 0) and not currently loading
-    const existsData = formData.MaNS_tai_khoan.khen_thuong_ky_luats.filter(
+    const existsData = formData.khen_thuong_ky_luats.filter(
       (item) => item.LyDo === "Đi muộn" || item.LyDo === "Về sớm"
     );
     if (existsData.length > 0) return;
@@ -252,18 +253,18 @@ const ShiftModal = ({
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <CircleUserRound />
-              <span>{formData.MaNS_tai_khoan.HoTen}</span>
+              <span>{formData.MaTK_tai_khoan.HoTen}</span>
             </div>
             <div className="flex items-center gap-2">
               <IdCard />
-              <span>{formData.MaNS}</span>
+              <span>{formData.MaTK}</span>
             </div>
             {getStatusBadge()}
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <div className="text-sm text-gray-500">Thời gian</div>
-              <div className="font-medium">{formData.NgayDangKy}</div>
+              <div className="font-medium">{formData.NgayLam}</div>
             </div>
             <div>
               <div className="text-sm text-gray-500">Ca làm việc</div>
