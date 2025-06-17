@@ -165,7 +165,7 @@ exports.getByNhanVienAndNgay = async (req, res) => {
               model: LichLamViec,
               as: "MaLLV_lich_lam_viec",
               where: {
-                MaNS: MaTK,
+               MaTK,
               },
               include: [
                 {

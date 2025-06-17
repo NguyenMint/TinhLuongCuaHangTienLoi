@@ -231,7 +231,7 @@ export function EmployeeProfilePage() {
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2">
                           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                            {chamCong.MaDKC_dang_ky_ca.MaCaLam_ca_lam.TenCa}
+                            {chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.TenCa}
                           </span>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${

@@ -10,10 +10,10 @@ export const fetchLichLamViec = async () => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const fetchLLVByNhanVien = async (MaNV, NgayDangKy) => {
+export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getCaLamByNhanVien/${MaNV}?NgayDangKy=${NgayDangKy}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getCaLamByNhanVien/${MaNV}?NgayLam=${NgayLam}`
     );
     return response.data;
   } catch (error) {
