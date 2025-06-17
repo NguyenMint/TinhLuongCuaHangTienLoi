@@ -27,6 +27,7 @@ export function UpdateEmployeeModal({
     STK: employee.STK,
     BacLuong: employee.BacLuong,
     LuongCoBanHienTai: employee.LuongCoBanHienTai,
+    LuongTheoGioHienTai: employee.LuongTheoGioHienTai,
     SoNgayNghiPhep: employee.SoNgayNghiPhep,
     MaVaiTro: employee.MaVaiTro,
     MaCN: employee.MaCN,
@@ -38,11 +39,12 @@ export function UpdateEmployeeModal({
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
-      const { BacLuong, LuongCoBanHienTai } = JSON.parse(value);
+      const { BacLuong, LuongCoBanHienTai,LuongTheoGioHienTai } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
         BacLuong,
         LuongCoBanHienTai,
+        LuongTheoGioHienTai
       }));
       return;
     }
@@ -50,7 +52,8 @@ export function UpdateEmployeeModal({
       const { LuongTheoGio } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
-        LuongCoBanHienTai:LuongTheoGio
+        LuongCoBanHienTai:0,
+        LuongTheoGioHienTai: LuongTheoGio
       }));
       return;
     }
@@ -103,6 +106,7 @@ export function UpdateEmployeeModal({
     try {
       const response = await getAllThangLuongFullTime();
       setThangLuong(response);
+      console.log(response);
     } catch (error) {
       console.error("Lỗi khi lấy Tháng lương:", error);
     }
@@ -110,7 +114,6 @@ export function UpdateEmployeeModal({
   const fetchAllThangLuongPartTime = async () => {
     try {
       const response = await getAllThangLuongPartTime();
-      console.log(response);
       setMauLuong(response);
     } catch (error) {
       console.error("Lỗi khi lấy Tháng lương:", error);
@@ -304,6 +307,7 @@ export function UpdateEmployeeModal({
                       value={JSON.stringify({
                         BacLuong: thangluong.BacLuong,
                         LuongCoBanHienTai: thangluong.LuongCoBan,
+                        LuongTheoGioHienTai: thangluong.LuongTheoGio
                       })}
                     >
                       Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}

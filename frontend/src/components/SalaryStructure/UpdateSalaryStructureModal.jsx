@@ -6,7 +6,6 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
     LuongCoBan: salaryStructure.LuongCoBan ,
     LuongTheoGio: salaryStructure.LuongTheoGio ,
     BacLuong: salaryStructure.BacLuong ,
-    SoNgayPhep: salaryStructure.SoNgayPhep ,
     LoaiNV: salaryStructure.LoaiNV ,
     MaVaiTro: salaryStructure.MaVaiTro ,
     MaThangLuong: salaryStructure.MaThangLuong,
@@ -33,16 +32,12 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
     if (form.LoaiNV === "FullTime") {
       if (
         !form.LuongCoBan ||
-        !form.BacLuong ||
-        !form.SoNgayPhep
+        !form.BacLuong
       ) {
         alert("Vui lòng điền đầy đủ thông tin.");
         return;
       } else if (form.LuongCoBan < 0) {
           alert("Lương cơ bản không được âm");
-        return;
-      }else if(form.SoNgayPhep > 28){
-          alert("Số ngày phép không được vượt quá 28");
         return;
       }
     } else {
@@ -106,17 +101,6 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
                   type="number"
                   name="BacLuong"
                   value={form.BacLuong}
-                  onChange={handleChange}
-                  className="w-full border rounded px-3 py-2"
-                  min={1}
-                />
-              </div>
-              <div>
-                <label className="block mb-1 font-medium">Số ngày phép</label>
-                <input
-                  type="number"
-                  name="SoNgayPhep"
-                  value={form.SoNgayPhep}
                   onChange={handleChange}
                   className="w-full border rounded px-3 py-2"
                   min={1}

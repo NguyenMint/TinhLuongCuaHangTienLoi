@@ -92,8 +92,8 @@ class TaiKhoanController {
   async create(req, res) {
     try {
       console.log(req.body);
-
       const { CCCD, STK, Email, SoNgayNghiPhep, LoaiNV, MaVaiTro } = req.body;
+
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -147,8 +147,7 @@ class TaiKhoanController {
   }
   async update(req, res) {
     try {
-      const { MaTK } = req.params;
-      console.log(MaTK);
+      const { MaTK } = req.params;;
       const taikhoan = await TaiKhoan.findByPk(MaTK);
       if (!taikhoan) {
         return res.status(404).json({ message: "Không tồn tại tài khoản này" });

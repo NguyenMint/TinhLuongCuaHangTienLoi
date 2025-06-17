@@ -29,7 +29,7 @@ export function SalaryStructure() {
           return;
         }
         alert("Xóa thang lương thành công!");
-        getAllThangLuong();
+        fetchAllThangLuong();
       } catch (error) {
         console.error("Lỗi không xác định:", error);
         alert("Lỗi không xác định. Vui lòng thử lại.");
@@ -63,7 +63,7 @@ export function SalaryStructure() {
                 <th className="p-3 border text-center">Stt</th>
                 <th className="p-3 border text-center">Lương cơ bản</th>
                 <th className="p-3 border text-center">Bậc lương</th>
-                <th className="p-3 border text-center">Số ngày phép</th>
+                <th className="p-3 border text-center">Lương theo giờ</th>
                 <th className="p-3 border text-center">Chức vụ</th>
                 <th className="p-3 border text-center">Hoạt động</th>
               </tr>
@@ -79,7 +79,7 @@ export function SalaryStructure() {
                     {salary.BacLuong}
                   </td>
                   <td className="px-4 py-2 border text-center">
-                    {salary.SoNgayPhep}
+                    {formatCurrency(salary.LuongTheoGio)}
                   </td>
                   <td className="px-4 py-2 border text-center">
                     {salary.MaVaiTro === 2 ? "Nhân viên" : "Quản lý"}
@@ -162,13 +162,13 @@ export function SalaryStructure() {
       {showModalAdd && (
         <AddSalaryStructureForm
           setShowModalAdd={setShowModalAdd}
-          getAllThangLuong={getAllThangLuong}
+          getAllThangLuong={fetchAllThangLuong}
         ></AddSalaryStructureForm>
       )}
       {showModalUpdate && (
         <UpdateSalaryStructureForm
           setShowModalUpdate={setShowModalUpdate}
-          getAllThangLuong={getAllThangLuong}
+          getAllThangLuong={fetchAllThangLuong}
           salaryStructure={selectedSalaryStructure}
         ></UpdateSalaryStructureForm>
       )}
