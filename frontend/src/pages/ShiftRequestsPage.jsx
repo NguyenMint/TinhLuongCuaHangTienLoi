@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
 import ApproveTable from "../components/ApproveShift/ApproveTable";
-import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchCaLam } from "../api/apiCaLam";
 import { fetchDangKyCa, updateDKC } from "../api/apiDangKyCa";
 import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
-import { chamCong, update_chamcong } from "../api/apiChamCong";
-import { createKTKL } from "../api/apiKTKL";
-import { layLuongTheoGio } from "../api/apiTaiKhoan";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import ApproveModal from "../components/ApproveShift/ApproveModal.jsx";
