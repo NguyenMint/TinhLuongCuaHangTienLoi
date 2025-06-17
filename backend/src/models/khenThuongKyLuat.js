@@ -7,9 +7,13 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    NgayApDung: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+    MaLLV: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'lich_lam_viec',
+        key: 'MaLLV'
+      }
     },
     ThuongPhat: {
       type: DataTypes.BOOLEAN,
@@ -27,14 +31,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: 0
-    },
-    MaTK: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'tai_khoan',
-        key: 'MaTK'
-      }
     }
   }, {
     sequelize,
@@ -50,10 +46,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "MaNS",
+        name: "MaLLV",
         using: "BTREE",
         fields: [
-          { name: "MaTK" },
+          { name: "MaLLV" },
         ]
       },
     ]

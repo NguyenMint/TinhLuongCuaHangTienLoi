@@ -12,22 +12,11 @@ class LichLamViecController {
             model: db.TaiKhoan,
             as: "MaTK_tai_khoan",
             attributes: ["MaTK", "HoTen", "MaCN", "MaNhanVien"],
-            include: [
-              {
-                model: db.KhenThuongKyLuat,
-                as: "khen_thuong_ky_luats",
-                where: db.sequelize.where(
-                  db.sequelize.col(
-                    "MaTK_tai_khoan.khen_thuong_ky_luats.NgayApDung"
-                  ),
-                  "=",
-                  db.sequelize.col("LichLamViec.NgayLam")
-                ),
-
-                required: false,
-              },
-            ],
           },
+          {
+            model:db.KhenThuongKyLuat,
+            as:"khen_thuong_ky_luats"
+          }
         ],
       });
       res.status(200).json(LichLamViecs);

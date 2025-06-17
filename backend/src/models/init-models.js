@@ -48,6 +48,8 @@ function initModels(sequelize) {
   ChiTietBangLuong.hasMany(ChamCong, { as: "cham_congs", foreignKey: "MaCTBL"});
   ChamCong.belongsTo(LichLamViec, { as: "MaLLV_lich_lam_viec", foreignKey: "MaLLV"});
   LichLamViec.hasMany(ChamCong, { as: "cham_congs", foreignKey: "MaLLV"});
+  KhenThuongKyLuat.belongsTo(LichLamViec, { as: "MaLLV_lich_lam_viec", foreignKey: "MaLLV"});
+  LichLamViec.hasMany(KhenThuongKyLuat, { as: "khen_thuong_ky_luats", foreignKey: "MaLLV"});
   BangLuong.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(BangLuong, { as: "bang_luongs", foreignKey: "MaTK"});
   ChungChi.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
@@ -56,8 +58,6 @@ function initModels(sequelize) {
   TaiKhoan.hasMany(HeSoPhuCap, { as: "he_so_phu_caps", foreignKey: "MaTK"});
   HopDongLd.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(HopDongLd, { as: "hop_dong_lds", foreignKey: "MaTK"});
-  KhenThuongKyLuat.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
-  TaiKhoan.hasMany(KhenThuongKyLuat, { as: "khen_thuong_ky_luats", foreignKey: "MaTK"});
   LichLamViec.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(LichLamViec, { as: "lich_lam_viecs", foreignKey: "MaTK"});
   LichSuTangLuong.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
