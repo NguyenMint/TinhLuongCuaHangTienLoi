@@ -10,7 +10,11 @@ import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks } from "date-fns";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
-import { deleteLichLamViec, fetchLichLamViec } from "../api/apiLichLamViec.js";
+import {
+  deleteLichLamViec,
+  fetchLichLamViec,
+  createLLV,
+} from "../api/apiLichLamViec.js";
 import { fetchCaLam } from "../api/apiCaLam.js";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { Link } from "react-router-dom";
@@ -94,10 +98,54 @@ export const WorkSchedule = () => {
     setIsModalOpen(true);
   };
 
-  const handleModalClose = () => {
+  const handleModalClose = async () => {
     setIsModalOpen(false);
     setSelectedEmployee(null);
     setSelectedDate(null);
+  };
+
+  // Moved submit function to parent component
+  const handleSubmitShift = async (
+    selectedShifts,
+    repeatWeekly,
+    applyToOthers
+  ) => {
+    try {
+      const selectedShiftIds = Object.keys(selectedShifts).filter(
+        (key) => selectedShifts[key]
+      );
+
+      if (selectedShiftIds.length === 0) {
+        alert("Vui lòng chọn ít nhất một ca làm việc.");
+        return;
+      }
+
+      // Create requests with proper await
+      const requests = selectedShiftIds.map(async (MaCaLam) => {
+        const formData = {
+          MaTK: selectedEmployee.MaTK,
+          NgayLam: format(selectedDate, "yyyy-MM-dd"),
+          MaCaLam: MaCaLam,
+          TrangThai: "Đã Đăng Ký",
+        };
+        return await createLLV(formData);
+      });
+
+      const results = await Promise.all(requests);
+
+      const hasErrors = results.some((result) => result.message);
+      if (hasErrors) {
+        alert("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
+        return;
+      }
+
+      // Refresh data and close modal
+      await getAllLichLamViec();
+      handleModalClose();
+    } catch (error) {
+      console.error("Error submitting shift:", error);
+      alert("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
+    }
   };
 
   const handleSearch = async (query) => {
@@ -129,6 +177,7 @@ export const WorkSchedule = () => {
         (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
+
     setFilteredEmployees(filtered);
   }, [employees, selectedChiNhanh]);
 
@@ -138,12 +187,12 @@ export const WorkSchedule = () => {
         `Bạn có chắc muốn xoá ca "${shift.TenCa}" của ${employee.HoTen}?`
       )
     ) {
-      if (!shift || !shift.MaDKC) {
+      if (!shift || !shift.MaLLV) {
         alert("Không tìm thấy mã đăng ký ca hợp lệ để xoá.");
         return;
       }
       try {
-        const result = await deleteLichLamViec(shift.MaDKC);
+        const result = await deleteLichLamViec(shift.MaLLV);
         if (!result.success) {
           alert(result.message || "Xóa ca làm thất bại.");
           return;
@@ -190,12 +239,12 @@ export const WorkSchedule = () => {
             </div>
             <div className="relative">
               <select
-                value={selectedChiNhanh.TenCN || ""}
+                value={selectedChiNhanh.TenCN}
                 onChange={(e) => {
                   const selected = chinhanhs?.find(
                     (chinhanh) => chinhanh.TenChiNhanh === e.target.value
                   );
-                  setSelectedChiNhanh(selected || "");
+                  setSelectedChiNhanh(selected ?? "");
                 }}
                 className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               >
@@ -254,7 +303,7 @@ export const WorkSchedule = () => {
           onClose={handleModalClose}
           employee={selectedEmployee}
           date={selectedDate}
-          onSuccess={getAllLichLamViec}
+          onSubmit={handleSubmitShift}
         />
       )}
     </div>
