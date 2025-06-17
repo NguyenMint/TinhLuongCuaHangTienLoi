@@ -32,7 +32,7 @@ export function ShiftRequests() {
     MaChamCong: "",
     DiTre: 0,
     RaSom: 0,
-    MaDKC: "",
+    MaLLV: "",
     NgayLam: "",
     violations: [],
     rewards: [],
@@ -113,9 +113,9 @@ export function ShiftRequests() {
     setisLoadingForLuong(false);
   };
 
-  const handleSaveShift = async (MaDKC) => {
+  const handleSaveShift = async (MaLLV) => {
     try {
-      await updateLLV(MaDKC, "Đã Đăng Ký");
+      await updateLLV(MaLLV, "Đã Đăng Ký");
       await getAllDangKyCa();
       setIsModalOpen(false);
     } catch (error) {
@@ -126,9 +126,9 @@ export function ShiftRequests() {
     }
   };
 
-  const handleDeleteShift = async (MaDKC) => {
+  const handleDeleteShift = async (MaLLV) => {
     try {
-      await updateLLV(MaDKC, "Từ chối");
+      await updateLLV(MaLLV, "Từ chối");
       await getAllDangKyCa();
       setIsModalOpen(false);
     } catch (error) {

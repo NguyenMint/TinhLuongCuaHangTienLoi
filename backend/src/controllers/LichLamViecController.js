@@ -93,7 +93,7 @@ class LichLamViecController {
     try {
       const { MaLLV, status } = req.body;
       const lichLamViec = await LichLamViec.findByPk(MaLLV);
-
+      
       if (!lichLamViec) {
         return res.status(404).json({ message: "Ca làm không tồn tại" });
       }

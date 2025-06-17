@@ -7,7 +7,6 @@ import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import { chamCong, update_chamcong } from "../api/apiChamCong";
 import { createKTKL } from "../api/apiKTKL";
-import { layLuongTheoGio } from "../api/apiTaiKhoan";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 
@@ -15,7 +14,6 @@ export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [luongTheoGio, setLuongTheoGio] = useState(0);
   const [isLoadingForLuong, setisLoadingForLuong] = useState(false);
   // const [viewMode, setViewMode] = useState("Xem theo ca");
   // const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +34,7 @@ export function AttendancePage() {
     DiTre: 0,
     RaSom: 0,
     MaLLV: "",
-    NgayDangKy: "",
+    NgayLam: "",
     violations: [],
     rewards: [],
   });
@@ -52,21 +50,6 @@ export function AttendancePage() {
     }
   };
 
-  const fetchLuong = async (maTK, ngayDangKy) => {
-    if (!maTK || !ngayDangKy) return;
-
-    try {
-      setisLoadingForLuong(true);
-      setLuongTheoGio(0); // Reset to 0 while loading
-      const data = await layLuongTheoGio(maTK, ngayDangKy);
-      setLuongTheoGio(data);
-    } catch (error) {
-      console.error("Lỗi khi lấy lương:", error);
-      setLuongTheoGio(0);
-    } finally {
-      setisLoadingForLuong(false);
-    }
-  };
   const getAllLichLamViec = async () => {
     try {
       const data = await fetchLichLamViec();
@@ -102,14 +85,6 @@ export function AttendancePage() {
   const handleShiftClick = (shift) => {
     setSelectedShift(shift);
     setIsModalOpen(true);
-
-    // Fetch wage data for the selected shift immediately when modal opens
-    const maTK = shift.MaNS_tai_khoan?.MaTK;
-    const ngayDangKy = shift.NgayDangKy;
-
-    if (maTK && ngayDangKy) {
-      fetchLuong(maTK, ngayDangKy);
-    }
   };
 
   useEffect(() => {
@@ -118,7 +93,7 @@ export function AttendancePage() {
     // Lọc theo chi nhánh
     if (selectedChiNhanh) {
       filtered = filtered.filter(
-        (emp) => emp.MaNS_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
+        (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
 
@@ -126,7 +101,7 @@ export function AttendancePage() {
     if (searchQuery.trim() !== "") {
       const lowerSearch = searchQuery.toLowerCase();
       filtered = filtered.filter((emp) =>
-        emp.MaNS_tai_khoan?.HoTen?.toLowerCase().includes(lowerSearch)
+        emp.MaTK_tai_khoan?.HoTen?.toLowerCase().includes(lowerSearch)
       );
     }
 
@@ -135,7 +110,6 @@ export function AttendancePage() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setLuongTheoGio(0);
     setisLoadingForLuong(false);
   };
 
@@ -143,7 +117,7 @@ export function AttendancePage() {
     try {
       const records = [
         ...(dataUpdate.violations || []).map((violation) => ({
-          NgayApDung: dataUpdate.NgayDangKy,
+          NgayApDung: dataUpdate.NgayLam,
           ThuongPhat: 0, // Vi phạm
           LyDo: violation.LyDo,
           MucThuongPhat: violation.MucThuongPhat,
@@ -151,7 +125,7 @@ export function AttendancePage() {
           MaTK: dataUpdate.MaTK,
         })),
         ...(dataUpdate.rewards || []).map((reward) => ({
-          NgayApDung: dataUpdate.NgayDangKy,
+          NgayApDung: dataUpdate.NgayLam,
           ThuongPhat: 1, // Khen thưởng
           LyDo: reward.LyDo,
           MucThuongPhat: reward.MucThuongPhat,
@@ -172,7 +146,7 @@ export function AttendancePage() {
       } else {
         await chamCong(
           // nếu duyệt mà chưa có bản chấm công thì tự động tạo một bảng chấm công mới
-          dataUpdate.NgayDangKy,
+          dataUpdate.NgayLam,
           dataUpdate.GioVao,
           dataUpdate.GioRa,
           dataUpdate.MaLLV,
@@ -201,7 +175,6 @@ export function AttendancePage() {
 
       await getAllLichLamViec();
       setIsModalOpen(false);
-      setLuongTheoGio(0); // Reset wage after saving
     } catch (error) {
       console.error("Lỗi khi lưu dữ liệu:", error);
 
@@ -213,7 +186,6 @@ export function AttendancePage() {
   const handleDeleteShift = (shiftId) => {
     setShifts(shifts.filter((shift) => shift.id !== shiftId));
     setIsModalOpen(false);
-    setLuongTheoGio(0); // Reset wage after deleting
   };
 
   const weekNumber = Math.ceil(currentDate.getDate() / 7);
@@ -295,7 +267,6 @@ export function AttendancePage() {
       </div>
       {isModalOpen && selectedShift && (
         <ShiftModal
-          luongTheoGio={luongTheoGio}
           isLoadingForLuong={isLoadingForLuong}
           shift={selectedShift}
           onClose={handleCloseModal}

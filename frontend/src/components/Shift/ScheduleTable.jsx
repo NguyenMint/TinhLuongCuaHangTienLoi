@@ -23,7 +23,6 @@ export const ScheduleTable = ({
 
   const formatted = schedules?.reduce?.((acc, employee) => {
     const employeeKey = employee.MaTK;
-    console.log(employee);
 
     if (!acc[employeeKey]) {
       acc[employeeKey] = {};
@@ -49,8 +48,6 @@ export const ScheduleTable = ({
 
   const renderShift = (employee, date) => {
     const shift = getShiftForDay(employee.MaTK, date);
-    console.log(shift);
-
     return (
       <div className="group relative h-full min-h-[40px] flex items-center">
         {shift.length > 0 ? (

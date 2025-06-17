@@ -5,24 +5,23 @@ const ChamCong = db.ChamCong;
 class ChamCongController {
   async chamcong(req, res) {
     try {
-      const { GioVao, GioRa, MaDKC, NgayChamCong, NgayLe } = req.body;
+      const { GioVao, GioRa, MaLLV, NgayChamCong, NgayLe } = req.body;
 
-      const dangKyCa = await db.DangKyCa.findOne({
-        where: { MaDKC },
+      const lichLamViec = await db.LichLamViec.findOne({
+        where: { MaLLV },
         include: [
           { model: db.CaLam, as: "MaCaLam_ca_lam" },
           { model: db.ChamCong, as: "cham_congs" },
         ],
       });
 
-      if (!dangKyCa) {
+      if (!lichLamViec) {
         return res
           .status(404)
           .json({ message: "Không tồn tại lịch đăng ký ca này" });
       }
 
-      const { ThoiGianBatDau, ThoiGianKetThuc} =
-        dangKyCa.MaCaLam_ca_lam;
+      const { ThoiGianBatDau, ThoiGianKetThuc } = lichLamViec.MaCaLam_ca_lam;
       let DiTre = 0;
       let VeSom = 0;
       const [gioBatDau] = ThoiGianBatDau.split(":").map(Number);
@@ -52,7 +51,7 @@ class ChamCongController {
         let raThucTe = timeToMinutes(GioRa);
         if (isCaQuaNgay) {
           raChuan += 24 * 60;
-          if (isNextDay(NgayChamCong, dangKyCa.NgayDangKy)) {
+          if (isNextDay(NgayChamCong, lichLamViec.NgayLam)) {
             raThucTe += 24 * 60;
           }
         }
@@ -61,7 +60,7 @@ class ChamCongController {
         }
       }
 
-      const existing = await ChamCong.findOne({ where: { MaDKC } });
+      const existing = await ChamCong.findOne({ where: { MaLLV } });
 
       if (existing) {
         await existing.update({
@@ -70,17 +69,17 @@ class ChamCongController {
           DiTre,
           VeSom,
           NgayLe,
-          NgayChamCong:dangKyCa.NgayDangKy,
+          NgayChamCong: lichLamViec.NgayLam,
         });
         return res.status(200).json(existing);
       } else {
         const chamCong = await ChamCong.create({
-          MaDKC,
+          MaLLV,
           GioVao,
           GioRa,
           DiTre,
           VeSom,
-          NgayChamCong:dangKyCa.NgayDangKy,
+          NgayChamCong: lichLamViec.NgayLam,
           NgayLe,
           trangthai: "Chờ duyệt",
         });
@@ -100,13 +99,13 @@ class ChamCongController {
         where: { MaChamCong },
         include: [
           {
-            model: db.DangKyCa,
-            as: "MaDKC_dang_ky_ca",
+            model: db.LichLamViec,
+            as: "MaLLV_lich_lam_viec",
           },
         ],
       });
 
-      if (!chamCongRecord || !chamCongRecord.MaDKC_dang_ky_ca) {
+      if (!chamCongRecord || !chamCongRecord.MaLLV_lich_lam_viec) {
         return res
           .status(404)
           .json({ message: "Không tồn tại lịch đăng ký ca này" });
@@ -126,7 +125,7 @@ class ChamCongController {
       try {
         await ChiTietBangLuongController.create({
           Ngay: updated.NgayChamCong,
-          MaTK: chamCongRecord.MaDKC_dang_ky_ca.MaNS,
+          MaTK: chamCongRecord.MaLLV_lich_lam_viec.MaTK,
         });
       } catch (err) {
         console.warn("Không thể tạo bảng lương:", err.message);

@@ -38,6 +38,7 @@ exports.create = async (req, res) => {
         },
       ],
     });
+    
     const heSoPhuCapNgayLe = await HeSoPhuCap.findOne({
       where: {
         Ngay,
@@ -165,7 +166,7 @@ exports.getByNhanVienAndNgay = async (req, res) => {
               model: LichLamViec,
               as: "MaLLV_lich_lam_viec",
               where: {
-               MaTK,
+                MaTK,
               },
               include: [
                 {
@@ -178,12 +179,15 @@ exports.getByNhanVienAndNgay = async (req, res) => {
         },
       ],
     });
-    const khenThuongKyLuats = await KhenThuongKyLuat.findAll({
+
+    // Get LichLamViec records for the given date and employee
+    const lichLamViecs = await LichLamViec.findAll({
       where: {
         MaTK,
-        NgayApDung: Ngay,
+        NgayLam: Ngay,
       },
     });
+
     res.status(200).json({ chiTietBangLuong, khenThuongKyLuats });
   } catch (error) {
     console.log("ERROR: " + error);

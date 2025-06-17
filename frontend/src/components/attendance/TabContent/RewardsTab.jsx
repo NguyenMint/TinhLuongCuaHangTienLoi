@@ -69,13 +69,13 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
     setIsAdding(false);
   };
   useEffect(() => {
-    const databaseViolations = formData.MaNS_tai_khoan.khen_thuong_ky_luats
-      .filter((item) => item.ThuongPhat === true)
-      .filter((item) => !deletedDatabaseIds.has(item.MaKTKL));
+    const databaseViolations = formData?.khen_thuong_ky_luats
+      ?.filter((item) => item.ThuongPhat === true)
+      .filter((item) => !deletedDatabaseIds.has(item.MaKTKL)) || [];
 
     setShowRewards([...databaseViolations, ...currentRewards]);
   }, [currentRewards, formData, deletedDatabaseIds]);
-
+  
   return (
     <div>
       <div className="overflow-x-auto rounded-lg border border-gray-200 bg-blue-50">
@@ -93,7 +93,7 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
               showRewards.map((reward, index) => {
                 const isFromDatabase =
                   !reward.MaKTKL?.toString().startsWith("temp_") &&
-                  formData.MaNS_tai_khoan.khen_thuong_ky_luats.some(
+                  formData?.khen_thuong_ky_luats?.some(
                     (item) => item.MaKTKL === reward.MaKTKL
                   );
                 const isBeingDeleted = isDeleting === reward.MaKTKL;

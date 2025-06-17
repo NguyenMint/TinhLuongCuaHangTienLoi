@@ -112,26 +112,6 @@ export async function updateEmployee(formData) {
   }
 }
 
-export const layLuongTheoGio = async (MaTK, NgayDangKy) => {
-  try {
-    const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/luongTheoGio`,
-      {
-        MaTK,
-        NgayDangKy,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    if (error.response?.status === 404) {
-      return { success: false, message: "Email không tồn tại" };
-    } else if (error.response?.status === 401) {
-      return { success: false, message: "Mật khẩu không đúng" };
-    }
-    console.error("Lỗi đăng nhập:", error);
-    return { success: false, message: "Lỗi kết nối đến server" };
-  }
-};
 export const changePassword = async (MaTK, Password, NewPassword) => {
   try {
     await axios.put(

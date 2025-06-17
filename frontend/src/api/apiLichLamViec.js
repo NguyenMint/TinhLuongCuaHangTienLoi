@@ -21,10 +21,10 @@ export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const deleteLichLamViec = async (MaDKC) => {
+export const deleteLichLamViec = async (MaLLV) => {
   try {
     const response = await axios.delete(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/${MaDKC}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/${MaLLV}`
     );
     return { success: true, data: response.data.message };
   } catch (error) {
@@ -40,11 +40,11 @@ export const deleteLichLamViec = async (MaDKC) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const updateLLV = async (MaDKC, status) => {
+export const updateLLV = async (MaLLV, status) => {
   try {
     const response = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/lichlamviec`,
-      { MaDKC, status }
+      { MaLLV, status }
     );
     return response.data;
   } catch (error) {

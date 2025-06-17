@@ -82,7 +82,7 @@ const ApproveModal = ({
         <div className="p-4 flex justify-center gap-2">
           <button
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            onClick={() => onSave(formData.MaDKC)}
+            onClick={() => onSave(formData.MaLLV)}
           >
             Duyệt
           </button>
@@ -94,7 +94,7 @@ const ApproveModal = ({
           </button>
           <button
             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            onClick={() => onDelete(formData.MaDKC)}
+            onClick={() => onDelete(formData.MaLLV)}
           >
             Từ chối
           </button>
