@@ -11,7 +11,7 @@ class LichLamViecController {
           {
             model: db.TaiKhoan,
             as: "MaTK_tai_khoan",
-            attributes: ["MaTK", "HoTen", "MaCN", "MaNhanVien"],
+            attributes: ["MaTK", "HoTen", "MaCN", "MaNhanVien", "LuongTheoGioHienTai"],
           },
           {
             model:db.KhenThuongKyLuat,

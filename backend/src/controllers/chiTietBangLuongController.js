@@ -38,7 +38,7 @@ exports.create = async (req, res) => {
         },
       ],
     });
-    
+
     const heSoPhuCapNgayLe = await HeSoPhuCap.findOne({
       where: {
         Ngay,
@@ -153,6 +153,7 @@ exports.create = async (req, res) => {
 exports.getByNhanVienAndNgay = async (req, res) => {
   try {
     const { Ngay, MaTK } = req.query;
+
     const chiTietBangLuong = await ChiTietBangLuong.findOne({
       where: {
         Ngay,

@@ -31,7 +31,6 @@ const WeeklyShiftTable = ({ currentDate, onShiftClick, lichLamViecs, shifts }) =
 
   const renderShift = (shift, date) => {
     const dayShifts = getShiftsByShiftIdAndDay(shift.MaCa, date);
-    // console.log(dayShifts);
 
     return (
       <div>

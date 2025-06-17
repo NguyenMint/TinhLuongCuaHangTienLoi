@@ -18,9 +18,8 @@ class KhenThuongKyLuatController {
       console.log("Request body: ", req.body);
       const dup = await KhenThuongKyLuat.findAll({
         where: {
-          NgayApDung: req.body.NgayApDung,
+          MaLLV: req.body.MaLLV,
           LyDo: req.body.LyDo,
-          MaTK: req.body.MaTK,
         },
       });
       if (dup.length > 0) {
@@ -28,9 +27,8 @@ class KhenThuongKyLuatController {
           { MucThuongPhat: req.body.MucThuongPhat },
           {
             where: {
-              NgayApDung: req.body.NgayApDung,
+              MaLLV: req.body.MaLLV,
               LyDo: req.body.LyDo,
-              MaTK: req.body.MaTK,
             },
           }
         );
@@ -41,6 +39,8 @@ class KhenThuongKyLuatController {
       }
 
       const khenthuongkyluat = await KhenThuongKyLuat.create(req.body);
+      console.log(khenthuongkyluat);
+      
       res.status(201).json({ success: true, khenthuongkyluat });
     } catch (error) {
       res
