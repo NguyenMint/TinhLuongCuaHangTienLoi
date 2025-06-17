@@ -10,7 +10,7 @@ class LichLamViecController {
           { model: db.CaLam, as: "MaCaLam_ca_lam" },
           {
             model: db.TaiKhoan,
-            as: "MaNS_tai_khoan",
+            as: "MaTK_tai_khoan",
             attributes: ["MaTK", "HoTen", "MaCN"],
             include: [
               {
@@ -18,7 +18,7 @@ class LichLamViecController {
                 as: "khen_thuong_ky_luats",
                 where: db.sequelize.where(
                   db.sequelize.col(
-                    "MaNS_tai_khoan.khen_thuong_ky_luats.NgayApDung"
+                    "MaTK_tai_khoan.khen_thuong_ky_luats.NgayApDung"
                   ),
                   "=",
                   db.sequelize.col("LichLamViec.NgayLam")
