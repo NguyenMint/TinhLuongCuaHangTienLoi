@@ -5,7 +5,7 @@ const ChamCong = db.ChamCong;
 const TaiKhoan = db.TaiKhoan;
 const ThangLuong = db.ThangLuong;
 const KhenThuongKyLuat = db.KhenThuongKyLuat;
-const DangKyCa = db.DangKyCa;
+const LichLamViec = db.LichLamViec;
 const CaLam = db.CaLam;
 const HeSoPhuCap = db.HeSoPhuCap;
 const { Op, where } = require("sequelize");
@@ -26,8 +26,8 @@ exports.create = async (req, res) => {
       },
       include: [
         {
-          model: db.DangKyCa,
-          as: "MaDKC_dang_ky_ca",
+          model: db.LichLamViec,
+          as: "MaLLV_lich_lam_viec",
           where: { MaNS: MaTK },
           include: [
             {
@@ -69,17 +69,16 @@ exports.create = async (req, res) => {
     }
     chamCongList.forEach((record) => {
       const gioLam = tinhTongGioLamCaLam(
-        record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.ThoiGianBatDau,
-        record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.ThoiGianKetThuc
+        record.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianBatDau,
+        record.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianKetThuc
       );
       GioLamViecTrongNgay += gioLam;
       const tienLuongCa =
         gioLam *
         luongOneHour *
-        parseFloat(record.MaDKC_dang_ky_ca.MaCaLam_ca_lam.HeSoLuong) *
+        parseFloat(record.MaLLV_lich_lam_viec.MaCaLam_ca_lam.HeSoLuong) *
         heSoNgay;
       TienLuongNgay += tienLuongCa;
-      console.log(TienLuongNgay, tienLuongCa, heSoNgay);
     });
     const khenThuongs = await KhenThuongKyLuat.findAll({
       where: { MaTK, NgayApDung: Ngay, ThuongPhat: true },
@@ -104,8 +103,8 @@ exports.create = async (req, res) => {
       },
       include: [
         {
-          model: db.DangKyCa,
-          as: "MaDKC_dang_ky_ca",
+          model: db.LichLamViec,
+          as: "MaLLV_lich_lam_viec",
           where: {
             MaNS: MaTK,
           },
@@ -163,8 +162,8 @@ exports.getByNhanVienAndNgay = async (req, res) => {
           as: "cham_congs",
           include: [
             {
-              model: DangKyCa,
-              as: "MaDKC_dang_ky_ca",
+              model: LichLamViec,
+              as: "MaLLV_lich_lam_viec",
               where: {
                 MaNS: MaTK,
               },

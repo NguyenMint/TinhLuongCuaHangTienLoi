@@ -1,13 +1,13 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('DangKyCa', {
-    MaDKC: {
+  return sequelize.define('LichLamViec', {
+    MaLLV: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    MaNS: {
+    MaTK: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -28,13 +28,13 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: "Chờ Xác Nhận"
     },
-    NgayDangKy: {
+    NgayLam: {
       type: DataTypes.DATEONLY,
       allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'dang_ky_ca',
+    tableName: 'lich_lam_viec',
     timestamps: false,
     indexes: [
       {
@@ -42,14 +42,14 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "MaDKC" },
+          { name: "MaLLV" },
         ]
       },
       {
         name: "MaNS",
         using: "BTREE",
         fields: [
-          { name: "MaNS" },
+          { name: "MaTK" },
         ]
       },
       {

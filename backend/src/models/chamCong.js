@@ -27,12 +27,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    MaDKC: {
+    MaLLV: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'dang_ky_ca',
-        key: 'MaDKC'
+        model: 'lich_lam_viec',
+        key: 'MaLLV'
       }
     },
     NgayLe: {
@@ -68,7 +68,7 @@ module.exports = function(sequelize, DataTypes) {
         name: "fk_chamcong_dangkyca",
         using: "BTREE",
         fields: [
-          { name: "MaDKC" },
+          { name: "MaLLV" },
         ]
       },
       {

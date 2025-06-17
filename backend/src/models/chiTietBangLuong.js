@@ -11,6 +11,22 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.FLOAT,
       allowNull: false
     },
+    LuongMotGio: {
+      type: DataTypes.DECIMAL(15,2),
+      allowNull: false
+    },
+    HeSoLuong: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    },
+    isCuoiTuan: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
+    },
+    isNgayLe: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
+    },
     TienLuongNgay: {
       type: DataTypes.DECIMAL(15,2),
       allowNull: false
@@ -21,10 +37,6 @@ module.exports = function(sequelize, DataTypes) {
     },
     TienPhuCap: {
       type: DataTypes.DECIMAL(15,2),
-      allowNull: false
-    },
-    LoaiPhuCap: {
-      type: DataTypes.STRING(100),
       allowNull: false
     },
     tongtien: {

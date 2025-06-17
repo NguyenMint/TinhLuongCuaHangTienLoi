@@ -232,10 +232,6 @@ export const WorkSchedule = () => {
               </button>
               <span className="text-sm text-gray-600 ml-2">{weekLabel}</span>
             </div>
-            <button className="flex items-center px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
-              <FileIcon className="h-4 w-4 mr-2" />
-              Xuất file
-            </button>
           </div>
         </div>
       </div>

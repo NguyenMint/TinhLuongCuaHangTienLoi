@@ -23,10 +23,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('PartTime','FullTime'),
       allowNull: false
     },
-    SoNgayPhep: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     MaVaiTro: {
       type: DataTypes.INTEGER,
       allowNull: false,
