@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserIcon, AlertCircle } from "lucide-react";
-import { fetchDKCByNhanVien } from "../../api/apiDangKyCa";
+import { fetchLLVByNhanVien } from "../../api/apiLichLamViec";
 import { chamCongVao, chamCongRa } from "../../api/apiChamCong";
 import { formatDate, formatTime } from "../../utils/format";
 export function EmployeeHomePage() {
@@ -31,7 +31,7 @@ export function EmployeeHomePage() {
   }, []);
   const getDKCByNhanVien = async () => {
     const manv = user.MaTK;
-    const response = await fetchDKCByNhanVien(manv, ngay);
+    const response = await fetchLLVByNhanVien(manv, ngay);
     setShifts(response);
   };
   const ChamCongVao = async (MaDKC) => {
