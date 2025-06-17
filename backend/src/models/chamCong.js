@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'MaLLV'
       }
     },
-    NgayLe: {
+    isNgayLe: {
       type: DataTypes.BOOLEAN,
       allowNull: false
     },

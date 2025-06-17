@@ -19,6 +19,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM('Cuối tuần','Ngày lễ'),
       allowNull: false
     },
+    isCaDem: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
+    },
     MaTK: {
       type: DataTypes.INTEGER,
       allowNull: false,
