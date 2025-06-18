@@ -135,7 +135,7 @@ export function UpdateEmployeeModal({
     fetchAllQuanLyByChiNhanh();
   }, [form.MaCN]);
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <form
         className="bg-white p-6 rounded shadow-lg w-full max-w-4xl mx-auto relative z-10"
         onSubmit={handleSubmit}
