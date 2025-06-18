@@ -276,5 +276,81 @@ class bangLuongController {
       });
     }
   }
+
+  async getBL(req, res) {
+    try {
+      const payrolls = await BangLuong.findAll({
+        attributes: [
+          "KyLuong",
+          [sequelize.fn("SUM", sequelize.col("LuongThucNhan")), "TongLuong"],
+        ],
+        group: ["KyLuong"],
+        raw: true,
+      });
+      res.json(payrolls);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error);
+      res.status(500).json({ error: "Lỗi server" });
+    }
+  }
+  async getBLByKyLuong(req, res) {
+    const { kyLuong } = req.body;
+    console.log(kyLuong);
+
+    try {
+      const payrolls = await BangLuong.findAll({
+        where: { KyLuong: kyLuong },
+        include: [
+          {
+            model: TaiKhoan,
+            as: "MaTK_tai_khoan",
+            attributes: ["MaNhanVien", "HoTen"],
+          },
+          {
+            model: ChiTietBangLuong,
+            as: "chi_tiet_bang_luongs",
+            attributes: [
+              "Ngay",
+              "GioLamViecTrongNgay",
+              "LuongMotGio",
+              "TienLuongNgay",
+              "TienPhuCap",
+              "TienPhat",
+              "tongtien",
+            ],
+          },
+        ],
+      });
+
+      const response = {
+        KyLuong: kyLuong,
+        employees: payrolls.map((payroll) => ({
+          MaBangLuong: payroll.MaBangLuong,
+          MaNhanVien: payroll.MaTK_tai_khoan.MaNhanVien,
+          HoTen: payroll.MaTK_tai_khoan.HoTen,
+          TongLuong: payroll.TongLuong,
+          TongPhuCap: payroll.TongPhuCap,
+          TongThuong: payroll.TongThuong,
+          TongPhat: payroll.TongPhat,
+          ThuePhaiDong: payroll.ThuePhaiDong,
+          LuongThucNhan: payroll.LuongThucNhan,
+          details: payroll.chi_tiet_bang_luongs.map((detail) => ({
+            Ngay: detail.Ngay,
+            GioLamViecTrongNgay: detail.GioLamViecTrongNgay,
+            LuongMotGio: detail.LuongMotGio,
+            TienLuongNgay: detail.TienLuongNgay,
+            TienPhuCap: detail.TienPhuCap,
+            TienPhat: detail.TienPhat,
+            tongtien: detail.tongtien,
+          })),
+        })),
+      };
+
+      res.json(response);
+    } catch (error) {
+      console.error("Error fetching payroll details:", error);
+      res.status(500).json({ error: "Lỗi server" });
+    }
+  }
 }
 module.exports = new bangLuongController();

@@ -7,6 +7,7 @@ import { payrolls } from "../utils/mockData";
 import {
   createBangLuong,
   getAllBangLuong,
+  getBL,
   getKyLuong,
 } from "../api/apiBangLuong";
 import { getChiNhanh } from "../api/apiChiNhanh";
@@ -28,6 +29,7 @@ export function PayrollPage() {
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [kyLuongs, setKyLuongs] = useState([]);
   const [selectedKyLuong, setSelectedKyLuong] = useState();
+  const [bangLuongs, setBangLuongs] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const payrollInPage = 5;
@@ -78,11 +80,20 @@ export function PayrollPage() {
       console.error("Lỗi khi lấy Nhân viên:", error);
     }
   };
+    const fetchBL = async () => {
+    try {
+      const data = await getBL();
+      setBangLuongs(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Nhân viên:", error);
+    }
+  };
   useEffect(() => {
     fetchAllBangLuong();
     fetchChiNhanh();
     getAllNhanVien();
     fetKyLuong();
+    fetchBL()
   }, []);
 
   // Handle search

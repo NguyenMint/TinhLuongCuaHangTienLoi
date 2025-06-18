@@ -85,7 +85,7 @@ export function PayrollTable({
                     onChange={() => handleSelectRow(payroll.MaBangLuong)}
                   />
                 </td>
-                <td className="px-4 py-3">{payroll.MaTK_tai_khoan.HoTen}</td>
+                {/* <td className="px-4 py-3">{payroll.MaTK_tai_khoan.HoTen}</td> */}
                 <td className="px-4 py-3">{payroll.KyLuong}</td>
                 <td className="px-4 py-3 text-right">{formatCurrency(payroll.TongLuong)}</td>
                 <td className="px-4 py-3">Admin</td>
