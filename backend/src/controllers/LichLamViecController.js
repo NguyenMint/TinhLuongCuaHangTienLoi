@@ -1,6 +1,7 @@
 const db = require("../models");
 const LichLamViec = db.LichLamViec;
 const { Op, where } = require("sequelize");
+const {getSoNgayTrongThang} = require('../util/util')
 class LichLamViecController {
   async getAll(req, res) {
     try {
@@ -84,7 +85,62 @@ class LichLamViecController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async getAllCaLamMonthlyByNhanVien(req, res) {
+    try {
+      const { MaTK, Ngay } = req.query;
+      const [Nam, Thang] = Ngay.split("-");
+      const startDate = `${Nam}-${Thang}-01`;
+      const sumDayOnMonth = getSoNgayTrongThang(Ngay);
+      const endDate = `${Nam}-${Thang}-${sumDayOnMonth}`;
+      const lichlamviec = await LichLamViec.findAll({
+        where: {
+          MaTK,
+          NgayLam: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+        include: [
+          { model: db.CaLam, as: "MaCaLam_ca_lam" }
+        ],
+      });
 
+      res.status(200).json(lichlamviec);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async dangKyCa (req,res){
+    try {
+      const {MaTK,MaCaLam,NgayLam} = req.body;
+      const dangKyCa = LichLamViec.create({
+        MaTK,
+        MaCaLam,
+        TrangThai:"Chờ Xác Nhận",
+        NgayLam
+      });
+      res.status(200).json(dangKyCa);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async huyDangKy (req,res){
+    try {
+      const lichLamViec = await LichLamViec.findByPk(req.params.MaLLV);
+      if(!lichLamViec){
+        return res.status(404).json({message:"Không tồn tại đăng ký ca này"});
+      }
+      if(lichLamViec.TrangThai!=="Chờ Xác Nhận"){
+        return res.status(400).json({message:"Chỉ hủy khi trạng thái còn chờ xác nhận"});
+      }
+      lichLamViec.destroy();
+      res.status(200).json({message:"Hủy đăng ký ca thành công"});
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
   async create(req, res) {
     try {
       const response = await LichLamViec.create(req.body);

@@ -1,10 +1,11 @@
-import { MenuIcon,XIcon, CalendarIcon, UserIcon, LayersIcon, LogOutIcon } from "lucide-react";
+import { MenuIcon, CalendarIcon, UserIcon, LayersIcon, LogOutIcon, CalendarCheck } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { href, Link, useLocation, useNavigate } from "react-router-dom";
 
 const links = [
   { name: "Chấm công", href: "/employee-home", icon: CalendarIcon },
   { name: "Thông tin cá nhân", href: "/employee-profile", icon: UserIcon },
+  {name:"Đăng ký ca làm",href:"/employee-shift-registration",icon: CalendarCheck},
   { name: "Tiện ích", href: "/employee-utility", icon: LayersIcon },
 ];
 
