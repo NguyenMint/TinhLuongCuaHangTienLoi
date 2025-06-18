@@ -9,6 +9,7 @@ import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx";
 import { UpdateEmployeeModal } from "../components/Employee/UpdateEmployeeModal.jsx";
 import { Pagination } from "../components/Pagination.jsx";
+
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -26,6 +27,7 @@ export function HomePage() {
   // 3 useState đóng mở thêm sửa nhân viên
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
+
   // Tính toán phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const nhanVienInPage = 5;
@@ -33,9 +35,11 @@ export function HomePage() {
   const indexFirst = indexLast - nhanVienInPage;
   const employeeCurrent = filteredEmployees.slice(indexFirst, indexLast);
   const totalPage = Math.ceil(filteredEmployees.length / nhanVienInPage);
+
   const handlePageChange = (pagenumber) => {
     setCurrentPage(pagenumber);
   };
+
   const getAllNhanVien = async () => {
     try {
       const data = await fetchAllNhanVien();
@@ -50,7 +54,7 @@ export function HomePage() {
       const data = await getChiNhanh();
       setChiNhanhs(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Chi nhánh:", error);
     }
   };
 
@@ -96,15 +100,19 @@ export function HomePage() {
       console.error("Lỗi khi làm mới dữ liệu nhân viên:", error);
     }
   };
+
   const handleAddEmployee = () => {
     console.log("Add employee clicked");
   };
+
   const handleImportFile = () => {
     console.log("Import file clicked");
   };
+
   const handleExportFile = () => {
     console.log("Export file clicked");
   };
+
   const handleSearch = async (query) => {
     try {
       if (!query.trim()) {
@@ -117,6 +125,7 @@ export function HomePage() {
       console.error("Lỗi khi tìm kiếm:", error);
     }
   };
+
   return (
     <div className="flex">
       <div className="md:flex flex-1">
@@ -133,6 +142,7 @@ export function HomePage() {
           position={position}
           setPosition={setPosition}
         />
+
         <div className="flex-1 px-6 md:p-6">
           <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
             <Search
@@ -140,7 +150,8 @@ export function HomePage() {
               onSearch={handleSearch}
               setQuery={setSearchQuery}
             />
-            {/* <Create Nhan Vien /> */}
+
+            {/* Create Nhan Vien */}
             <div className="">
               <button
                 onClick={() => setShowModalAdd(true)}
@@ -162,6 +173,7 @@ export function HomePage() {
               </button>
             </div>
           </div>
+
           <div className="mt-6">
             <EmployeeTable
               employees={employeeCurrent}
@@ -170,6 +182,7 @@ export function HomePage() {
               setShowDetail={setShowDetail}
             />
           </div>
+
           {Array.isArray(employeeCurrent) && employeeCurrent.length > 0 && (
             <Pagination
               currentPage={currentPage}
@@ -177,19 +190,9 @@ export function HomePage() {
               onPageChange={handlePageChange}
             />
           )}
-
-          {showDetail && (
-            <div className="mt-4 bg-white rounded-lg shadow">
-              <EmployeeDetail
-                employee={selectedEmployee}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                onEmployeeStatusChange={refreshEmployeeData}
-                setShowModalUpdate={setShowModalUpdate}
-              />
-            </div>
-          )}
         </div>
+
+        {/* Modals */}
         {showModalAdd && (
           <AddEmployeeModal
             setShowModalAdd={setShowModalAdd}
@@ -197,12 +200,28 @@ export function HomePage() {
             chiNhanhs={chinhanhs}
           />
         )}
-        {showModalUpdate && <UpdateEmployeeModal
-        setShowModalUpdate={setShowModalUpdate}
-        refreshEmployeeData={refreshEmployeeData}
-        chiNhanhs={chinhanhs}
-        employee={selectedEmployee}
-        ></UpdateEmployeeModal>}
+
+        {showModalUpdate && (
+          <UpdateEmployeeModal
+            setShowModalUpdate={setShowModalUpdate}
+            refreshEmployeeData={refreshEmployeeData}
+            chiNhanhs={chinhanhs}
+            employee={selectedEmployee}
+          />
+        )}
+
+        {/* Employee Detail Modal */}
+        {selectedEmployee && (
+          <EmployeeDetail
+            employee={selectedEmployee}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onEmployeeStatusChange={refreshEmployeeData}
+            setShowModalUpdate={setShowModalUpdate}
+            showDetail={showDetail}
+            setShowDetail={setShowDetail}
+          />
+        )}
       </div>
     </div>
   );

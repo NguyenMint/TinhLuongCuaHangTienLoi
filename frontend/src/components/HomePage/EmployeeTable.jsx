@@ -163,6 +163,7 @@ export const EmployeeTable = ({
                       {employee.MaVaiTro === 1 ? "Quản lý" : "Nhân viên"}
                     </td>
                   </tr>
+                  
                 </React.Fragment>
               ))
             ) : (
