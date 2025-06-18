@@ -1,16 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { FileIcon, TrashIcon } from "lucide-react";
+import { FileIcon, TrashIcon, X } from "lucide-react";
 import { formatCurrency } from "../../utils/format";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
-export function PayrollDetail({ payroll, onCancel }) {
+import { PhieuLuongsTab } from "./PhieuLuongTab";
+export function PayrollDetail({
+  payroll,
+  onCancel,
+  closeDetailModal,
+  phieuLuongs,
+}) {
   const [activeTab, setActiveTab] = useState("information");
+  // console.log(payroll);
+  const phieuLuong = phieuLuongs.employees;
+
   const exportData = [
     { "Mã bảng lương": payroll.MaBangLuong },
-    { "Tên nhân viên": payroll.MaTK_tai_khoan.HoTen },
+    // { "Tên nhân viên": payroll.MaTK_tai_khoan.HoTen },
     { "Kỳ lương": payroll.KyLuong },
     { "Ngày tạo": payroll.NgayTao },
-    { "Chi nhánh": payroll.MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh },
+    // { "Chi nhánh": payroll.MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh },
     { "Lương thực nhận": formatCurrency(payroll.LuongThucNhan) },
     { "Tổng lương": formatCurrency(payroll.TongLuong) },
     { "Thu nhập miễn thuế": formatCurrency(payroll.ThuNhapMienThue) },
@@ -25,18 +34,19 @@ export function PayrollDetail({ payroll, onCancel }) {
         : "Chưa thanh toán",
     },
   ];
+
   const handleExport = async () => {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Bảng lương");
       worksheet.mergeCells("A1:N1");
       const titleRow = worksheet.getRow(1);
-      titleRow.height = 30; 
+      titleRow.height = 30;
       titleRow.getCell(1).value = "DANH SÁCH BẢNG LƯƠNG";
       titleRow.getCell(1).font = { bold: true, size: 16, name: "Arial" };
       titleRow.getCell(1).alignment = {
         horizontal: "center",
-        vertical: "middle", 
+        vertical: "middle",
       };
       const headers = exportData.map((item) => Object.keys(item)[0]);
       const headerRow = worksheet.addRow(headers);
@@ -75,15 +85,19 @@ export function PayrollDetail({ payroll, onCancel }) {
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-      saveAs(blob, `Bang_luong_${payroll.MaTK_tai_khoan.HoTen}_${payroll.KyLuong}.xlsx`);
+      saveAs(
+        blob,
+        `Bang_luong_${payroll.MaTK_tai_khoan.HoTen}_${payroll.KyLuong}.xlsx`
+      );
     } catch (error) {
       console.error("Lỗi khi export file Excel:", error);
     }
   };
+
   return (
     <div className="bg-white rounded shadow mt-4 overflow-hidden">
       {/* Tabs */}
-      <div className="flex border-b">
+      <div className="flex border-b items-center">
         <button
           className={`px-6 py-3 font-medium ${
             activeTab === "information"
@@ -114,22 +128,19 @@ export function PayrollDetail({ payroll, onCancel }) {
         >
           Lịch sử thanh toán
         </button>
+        <div className="flex-1" />
+        <button
+          onClick={closeDetailModal}
+          className="text-gray-500 hover:text-gray-700 p-1"
+        >
+          <X className="h-6 w-6 mr-6" />
+        </button>
       </div>
       {/* Tab Content */}
       <div className="p-4">
         {activeTab === "information" && (
           <div className="grid grid-cols-2 gap-8">
             <div className="space-y-4">
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Mã bảng lương:</div>
-                <div className="w-2/3 font-medium">{payroll.MaBangLuong}</div>
-              </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Tên nhân viên:</div>
-                <div className="w-2/3 font-medium">
-                  {payroll.MaTK_tai_khoan.HoTen}
-                </div>
-              </div>
               <div className="flex">
                 <div className="w-1/3 text-gray-600">Kỳ lương:</div>
                 <div className="w-2/3">{payroll.KyLuong}</div>
@@ -139,76 +150,40 @@ export function PayrollDetail({ payroll, onCancel }) {
                 <div className="w-2/3">{payroll.NgayTao}</div>
               </div>
               <div className="flex">
-                <div className="w-1/3 text-gray-600">Số người phụ thuộc: </div>
-                <div className="w-2/3 font-medium">{payroll.SoNguoiPhuThuoc}</div>
+                <div className="w-1/3 text-gray-600">Tổng số nhân viên: </div>
+                <div className="w-2/3">{payroll.SoLuong}</div>
               </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Chi nhánh:</div>
-                <div className="w-2/3">
-                  {payroll.MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh}
+              {payroll.MaCN && (
+                <div className="flex">
+                  <div className="w-1/3 text-gray-600">Chi nhánh:</div>
+                  <div className="w-2/3">{payroll.TenChiNhanh}</div>
                 </div>
-              </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Lương thực nhận:</div>
-                <div className="w-2/3">
-                  {formatCurrency(payroll.LuongThucNhan)}
-                </div>
-              </div>
+              )}
             </div>
             <div className="space-y-4">
               <div className="flex">
                 <div className="w-1/3 text-gray-600">Tổng lương:</div>
                 <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.TongLuong)}
+                  {formatCurrency(payroll.TongLuongThucNhan)}
                 </div>
               </div>
               <div className="flex">
-                <div className="w-1/3 text-gray-600">Mức giảm trừ gia cảnh</div>
+                <div className="w-1/3 text-gray-600">Đã trả nhân viên:</div>
                 <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.MucGiamTruGiaCanh)}
+                  {formatCurrency(payroll.LuongDaTra)}
                 </div>
               </div>
               <div className="flex">
-                <div className="w-1/3 text-gray-600">Thu nhập miễn thuế:</div>
+                <div className="w-1/3 text-gray-600">Còn cần trả:</div>
                 <div className="w-1/3 text-right ">
-                  {formatCurrency(payroll.ThuNhapMienThue)}
-                </div>
-              </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Thu nhập chịu thuế:</div>
-                <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.ThuNhapChiuThue)}
-                </div>
-              </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Thuế phải đóng:</div>
-                <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.ThuePhaiDong)}
-                </div>
-              </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Tổng phạt:</div>
-                <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.TongPhat)}
-                </div>
-              </div>
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Tổng phụ cấp:</div>
-                <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.TongPhuCap)}
-                </div>
-              </div>{" "}
-              <div className="flex">
-                <div className="w-1/3 text-gray-600">Tổng thưởng:</div>
-                <div className="w-1/3 text-right">
-                  {formatCurrency(payroll.TongThuong)}
+                  {formatCurrency(payroll.LuongChuaTra)}
                 </div>
               </div>
             </div>
           </div>
         )}
         {activeTab === "payslip" && (
-          <div className="p-4 text-center text-gray-500">Phiếu lương</div>
+          <PhieuLuongsTab phieuLuong={phieuLuong}></PhieuLuongsTab>
         )}
         {activeTab === "history" && (
           <div className="p-4 text-center text-gray-500">
