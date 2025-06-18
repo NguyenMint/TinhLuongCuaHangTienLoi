@@ -38,3 +38,26 @@ export const getKyLuong = async () => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const getBL = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/bangluong/getbl`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Bảng lương:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+export const getBLByKyLuong = async (kyLuong) => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/bangluong/getbl`,
+      kyLuong
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Bảng lương:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
