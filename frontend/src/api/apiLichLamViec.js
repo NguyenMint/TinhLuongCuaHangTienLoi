@@ -21,6 +21,45 @@ export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+
+export const getAllLLVMonthlyByNhanVien = async (MaTK,Ngay) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllCaLamMonthlyByNhanVien?MaTK=${MaTK}&Ngay=${Ngay}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy lịch làm việc theo nhân viên:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+}
+
+export const dangKyCa = async (formData)=>{
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/dangKyCa`,
+      formData
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Lỗi xóa ĐK Ca:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+}
+export const huyDangKyCa = async (MaLLV) => {
+  try {
+    const response = await axios.delete(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/huyDangKy/${MaLLV}`
+    );
+    return { success: true, data: response.data.message };
+  } catch (error) {
+    if (error.response.status === 404 || error.response.status === 400) {
+      return { success: false, message: error.response.data.message };
+    } 
+    console.error("Lỗi xóa ĐK Ca:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
 export const deleteLichLamViec = async (MaLLV) => {
   try {
     const response = await axios.delete(

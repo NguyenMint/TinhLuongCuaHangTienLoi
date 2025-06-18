@@ -18,6 +18,7 @@ import { SidebarEmployee } from "./components/SidebarEmployee";
 import { AttendancePage } from "./pages/AttendancePage";
 import { EmployeeProfilePage } from "./pages/EmployeeLayout/EmployeeProfilePage";
 import { EmployeeUtilitiesPage } from "./pages/EmployeeLayout/EmployeeUtilitiesPage";
+import { EmployeeShiftRegistrationPage } from "./pages/EmployeeLayout/EmployeeShiftRegistrationPage";
 import { PayrollPage } from "./pages/PayrollPage";
 import { ShiftRequests } from "./pages/ShiftRequestsPage";
 
@@ -156,6 +157,19 @@ function App() {
                 <SidebarEmployee />
                 <div className="flex-1 md:ml-52 lg:ml-64">
                   <EmployeeUtilitiesPage />
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/employee-shift-registration"
+          element={
+            <ProtectedRoute allowedRoles={[2]}>
+              <div className="flex min-h-screen">
+                <SidebarEmployee />
+                <div className="flex-1 md:ml-52 lg:ml-64">
+                 <EmployeeShiftRegistrationPage/>
                 </div>
               </div>
             </ProtectedRoute>

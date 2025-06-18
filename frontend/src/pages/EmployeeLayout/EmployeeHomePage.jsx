@@ -50,7 +50,6 @@ export function EmployeeHomePage() {
     if (!response.success) {
       alert(response.message || "Chấm công thất bại");
     }
-    console.log(ngay);
     getDKCByNhanVien();
   };
   if (shifts === null) {
