@@ -3,11 +3,13 @@ import { FilterSidebar } from "../components/Payroll/FilterSidebar";
 import { PayrollTable } from "../components/Payroll/PayrollTable";
 import { PayrollDetail } from "../components/Payroll/PayrollDetail";
 import { Header } from "../components/Payroll/Header";
-import { payrolls } from "../utils/mockData";
 import {
   createBangLuong,
   getAllBangLuong,
   getBL,
+  getBLByCN,
+  getBLByKyLuong,
+  getBLTotal,
   getKyLuong,
 } from "../api/apiBangLuong";
 import { getChiNhanh } from "../api/apiChiNhanh";
@@ -15,32 +17,34 @@ import { EmployeeDetail } from "../components/HomePage/EmployeeDetail";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
 import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 import { Pagination } from "../components/Pagination";
-export function PayrollPage() {
-  const [payrolls, setPayrolls] = useState([]);
-  const [filteredPayrolls, setfilteredPayrolls] = useState([]);
 
+export function PayrollPage() {
+  // State variables
+  const [payrolls, setPayrolls] = useState([]);
+  const [filteredPayrolls, setFilteredPayrolls] = useState([]);
   const [selectedPayroll, setSelectedPayroll] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDetail, setShowDetail] = useState(false);
   const [chinhanhs, setChiNhanhs] = useState([]);
-  const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
+  const [selectedChiNhanh, setSelectedChiNhanh] = useState("Tổng hợp");
   const [showCreatePayroll, setShowCreatePayroll] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [kyLuongs, setKyLuongs] = useState([]);
-  const [selectedKyLuong, setSelectedKyLuong] = useState();
+  const [selectedKyLuong, setSelectedKyLuong] = useState("");
   const [bangLuongs, setBangLuongs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [phieuLuongs, setPhieuLuongs] = useState([]);
 
+  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const payrollInPage = 5;
   const indexLast = currentPage * payrollInPage;
   const indexFirst = indexLast - payrollInPage;
   const payrollCurrent = filteredPayrolls.slice(indexFirst, indexLast);
   const totalPage = Math.ceil(filteredPayrolls.length / payrollInPage);
-  const handlePageChange = (pagenumber) => {
-    setCurrentPage(pagenumber);
-  };
 
+  // Status filters
   const [statusFilters, setStatusFilters] = useState({
     creating: false,
     draft: false,
@@ -48,145 +52,248 @@ export function PayrollPage() {
     cancelled: false,
   });
 
+  // API Functions
   const getAllNhanVien = async () => {
     try {
+      setLoading(true);
       const data = await fetchAllNhanVien();
-      setEmployees(data);
+      setEmployees(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);
+      setEmployees([]);
+    } finally {
+      setLoading(false);
     }
   };
-  const fetKyLuong = async () => {
+
+  const fetchKyLuong = async () => {
     try {
       const data = await getKyLuong();
-      setKyLuongs(data);
+      setKyLuongs(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Kỳ lương:", error);
+      setKyLuongs([]);
     }
   };
+
   const fetchAllBangLuong = async () => {
     try {
       const data = await getAllBangLuong();
-      setPayrolls(data);
+      setPayrolls(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Lỗi khi lấy Bảng lương:", error);
+      setPayrolls([]);
     }
   };
+
   const fetchChiNhanh = async () => {
     try {
       const data = await getChiNhanh();
-      setChiNhanhs(data);
+      setChiNhanhs(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Chi nhánh:", error);
+      setChiNhanhs([]);
     }
   };
-    const fetchBL = async () => {
+  const fetchPhieuLuongs = async (kyLuong) => {
     try {
-      const data = await getBL();
-      setBangLuongs(data);
+      const data = await getBLByKyLuong(kyLuong);
+
+      setPhieuLuongs(Array.isArray(data.employees) ? data : []);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Bảng Lương:", error);
+      setPhieuLuongs([]);
     }
   };
+  const fetchBL = async (chiNhanh = selectedChiNhanh) => {
+    try {
+      let data = [];
+      if (chiNhanh === "Tổng hợp") {
+        data = await getBLTotal();
+      } else {
+        data = await getBLByCN(chiNhanh.MaCN);
+      }
+      setBangLuongs(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Lỗi khi lấy BL:", error);
+      setBangLuongs([]);
+    }
+  };
+
+  // Initial data fetch
   useEffect(() => {
-    fetchAllBangLuong();
-    fetchChiNhanh();
-    getAllNhanVien();
-    fetKyLuong();
-    fetchBL()
+    const initializeData = async () => {
+      await Promise.all([
+        fetchAllBangLuong(),
+        fetchChiNhanh(),
+        getAllNhanVien(),
+        fetchKyLuong(),
+        fetchBL(),
+      ]);
+    };
+
+    initializeData();
   }, []);
 
-  // Handle search
-  // useEffect(() => {
-  //   const filtered = payrolls.filter((payroll) =>
-  //     payroll.name.toLowerCase().includes(searchTerm.toLowerCase())
-  //   );
-  //   setFilteredPayrolls(filtered);
-  // }, [searchTerm]);
-  // Handle status filter
-  // useEffect(() => {
-  //   const filtered = payrolls.filter((payroll) => {
-  //     if (payroll.status === "Đã chốt lương" && statusFilters.finalized)
-  //       return true;
-  //     if (payroll.status === "Tạm tính" && statusFilters.draft) return true;
-  //     if (payroll.status === "Đang tạo" && statusFilters.creating) return true;
-  //     if (payroll.status === "Đã hủy" && statusFilters.cancelled) return true;
-  //     return false;
-  //   });
-  //   setFilteredPayrolls(filtered);
-  // }, [statusFilters]);
+  // Fetch BL when selected chi nhánh changes
+  useEffect(() => {
+    if (selectedChiNhanh !== undefined) {
+      fetchBL(selectedChiNhanh);
+    }
+  }, [selectedChiNhanh]);
 
   useEffect(() => {
-    let filtered = Array.isArray(payrolls) ? [...payrolls] : [];
-    // console.log(selectedChiNhanh);
+    if (selectedPayroll) {
+      fetchPhieuLuongs(selectedPayroll.KyLuong);
+    }
+  }, [selectedPayroll]);
 
-    if (selectedChiNhanh) {
+  // Filter
+  useEffect(() => {
+    let filtered = Array.isArray(bangLuongs) ? [...bangLuongs] : [];
+
+    // Filter by kỳ lương
+    if (selectedKyLuong) {
+      filtered = filtered.filter((emp) => emp?.KyLuong === selectedKyLuong);
+    }
+
+    // Filter by search term
+    if (searchTerm.trim()) {
       filtered = filtered.filter(
-        (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
+        (emp) =>
+          emp?.MaTK_tai_khoan?.HoTen?.toLowerCase()?.includes(
+            searchTerm.toLowerCase()
+          ) || emp?.MaTK_tai_khoan?.MaTK?.toString()?.includes(searchTerm)
       );
     }
 
-    // Lọc theo chi nhánh
-    if (selectedKyLuong) {
-      filtered = filtered.filter((emp) => emp.KyLuong === selectedKyLuong);
+    // Filter by status
+    const activeStatuses = Object.keys(statusFilters).filter(
+      (key) => statusFilters[key]
+    );
+    if (activeStatuses.length > 0) {
+      filtered = filtered.filter((emp) => {
+        const status = emp?.TrangThai?.toLowerCase();
+        return activeStatuses.some((filterStatus) => {
+          switch (filterStatus) {
+            case "creating":
+              return status === "đang tạo";
+            case "draft":
+              return status === "tạm tính";
+            case "finalized":
+              return status === "đã chốt lương";
+            case "cancelled":
+              return status === "đã hủy";
+            default:
+              return false;
+          }
+        });
+      });
     }
-    // // Lọc theo trạng thái
-    // if (statusFilter === "working") {
-    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đang làm");
-    // } else if (statusFilter === "resigned") {
-    //   filtered = filtered.filter((emp) => emp.TrangThai === "Đã nghỉ");
-    // }
-    setfilteredPayrolls(filtered);
-  }, [employees, selectedChiNhanh, selectedKyLuong, payrolls]);
+
+    setFilteredPayrolls(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [
+    bangLuongs,
+    selectedChiNhanh,
+    selectedKyLuong,
+    searchTerm,
+    statusFilters,
+  ]);
+
+  // Event handlers
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleRowClick = (payroll) => {
     setSelectedPayroll(payroll);
   };
+
   const handleExport = () => {
-    alert("Export functionality will be implemented here");
+    if (filteredPayrolls.length === 0) {
+      alert("Không có dữ liệu để xuất");
+      return;
+    }
+    alert("Chức năng xuất dữ liệu sẽ được triển khai ở đây");
   };
+
   const handleCancel = () => {
-    if (window.confirm("Are you sure you want to cancel this payroll?")) {
-      alert("Payroll cancelled");
+    if (window.confirm("Bạn có chắc chắn muốn hủy bảng lương này?")) {
+      alert("Bảng lương đã được hủy");
+      setShowDetail(false);
     }
   };
+
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
+
   const handleStatusFilterChange = (status, checked) => {
     setStatusFilters((prev) => ({
       ...prev,
       [status]: checked,
     }));
   };
-  const handleCreatePayrollModal = async (form) => {
-    try {
-      const records = Array.isArray(form?.MaTK)
-        ? form.MaTK.map((matk) => ({
-            MaTK: matk,
-            Thang: form.Thang,
-            Nam: form.Nam,
-          }))
-        : [];
 
-      if (records.length === 0) {
-        alert("Chưa chọn nhân viên hoặc dữ liệu không hợp lệ.");
-        return;
-      }
+  const handleCreatePayrollModal = async (form) => {
+    if (!form?.MaTK || !Array.isArray(form.MaTK) || form.MaTK.length === 0) {
+      alert("Chưa chọn nhân viên hoặc dữ liệu không hợp lệ.");
+      return;
+    }
+
+    if (!form.Thang || !form.Nam) {
+      alert("Vui lòng nhập đầy đủ tháng và năm.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const records = form.MaTK.map((matk) => ({
+        MaTK: matk,
+        Thang: parseInt(form.Thang),
+        Nam: parseInt(form.Nam),
+      }));
 
       const results = await Promise.all(
-        records.map((record) => createBangLuong(record))
+        records.map(async (record) => {
+          try {
+            const result = await createBangLuong(record);
+            return { success: true, result };
+          } catch (error) {
+            console.error(`Lỗi tạo bảng lương cho MaTK ${record.MaTK}:`, error);
+            return { success: false, error };
+          }
+        })
       );
+
       const successCount = results.filter((res) => res.success).length;
       const failCount = results.length - successCount;
 
-      alert(`Thành công: ${successCount} nhân viên\nThất bại: ${failCount}`);
-      fetchAllBangLuong();
+      if (successCount > 0) {
+        alert(
+          `Tạo bảng lương thành công cho ${successCount} nhân viên${
+            failCount > 0 ? `, thất bại: ${failCount}` : ""
+          }`
+        );
+        await fetchAllBangLuong();
+        await fetchBL();
+      } else {
+        alert("Không thể tạo bảng lương cho bất kỳ nhân viên nào!");
+      }
+
       setShowCreatePayroll(false);
+      setSelectedEmployees([]);
     } catch (error) {
       alert("Có lỗi xảy ra khi tạo bảng lương!");
-      console.error(error);
+      console.error("Error creating payroll:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+  const closeDetailModal = () => {
+    setShowDetail(false);
+    setSelectedPayroll(null);
   };
   return (
     <div className="flex h-screen bg-gray-50">
@@ -199,50 +306,66 @@ export function PayrollPage() {
         setSelectedKyLuong={setSelectedKyLuong}
         setSelectedChiNhanh={setSelectedChiNhanh}
       />
+
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header
           onSearch={handleSearch}
           onExport={handleExport}
           setShowCreatePayroll={setShowCreatePayroll}
+          loading={loading}
         />
+
         <div className="flex-1 overflow-auto p-4">
-          <PayrollTable
-            // payrolls={filteredPayrolls}
-            payrolls={payrollCurrent}
-            onRowClick={handleRowClick}
-            selectedPayroll={selectedPayroll}
-            setSelectedPayroll={setSelectedPayroll}
-            setShowDetail={setShowDetail}
-          />
-
-          {Array.isArray(payrollCurrent) &&
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPage}
-                onPageChange={handlePageChange}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="text-lg">Đang tải dữ liệu...</div>
+            </div>
+          ) : (
+            <>
+              <PayrollTable
+                payrolls={payrollCurrent}
+                onRowClick={handleRowClick}
+                selectedPayroll={selectedPayroll}
+                setSelectedPayroll={setSelectedPayroll}
+                setShowDetail={setShowDetail}
               />
-            }
 
+              {filteredPayrolls.length > payrollInPage && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPage}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
+          )}
 
           {showCreatePayroll && (
-            <div className="mt-4 bg-white rounded-lg shadow">
-              <CreatePayrollModal
-                setShowCreatePayroll={setShowCreatePayroll}
-                employees={employees}
-                setSelectedEmployees={setSelectedEmployees}
-                onSave={handleCreatePayrollModal}
-                selectedEmployees1={selectedEmployees}
-                // employee={selectedEmployee}
-                // activeTab={activeTab}
-                // setActiveTab={setActiveTab}
-              />
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-auto">
+                <CreatePayrollModal
+                  setShowCreatePayroll={setShowCreatePayroll}
+                  employees={employees}
+                  setSelectedEmployees={setSelectedEmployees}
+                  onSave={handleCreatePayrollModal}
+                  selectedEmployees1={selectedEmployees}
+                  loading={loading}
+                />
+              </div>
             </div>
           )}
-          {showDetail && (
-            <PayrollDetail
-              payroll={selectedPayroll}
-              onCancel={handleCancel}
-            />
+
+          {showDetail && selectedPayroll && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-auto">
+                <PayrollDetail
+                  phieuLuongs={phieuLuongs}
+                  payroll={selectedPayroll}
+                  onCancel={handleCancel}
+                  closeDetailModal={closeDetailModal}
+                />
+              </div>
+            </div>
           )}
         </div>
       </div>

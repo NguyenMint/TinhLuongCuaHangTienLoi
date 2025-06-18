@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDownIcon, XIcon } from "lucide-react";
 export function FilterSidebar({
+  setIsTotal,
   chinhanhs,
   statusFilters,
   onStatusFilterChange,
@@ -25,10 +26,10 @@ export function FilterSidebar({
               const selected = chinhanhs?.find(
                 (chinhanh) => chinhanh.TenChiNhanh === e.target.value
               );
-              setSelectedChiNhanh(selected ?? "");
+              setSelectedChiNhanh(selected ?? "Tổng hợp");
             }}
           >
-            <option value="">Chọn chi nhánh...</option>
+            <option value="">Tổng hợp</option>
             {chinhanhs.map?.((chinhanh) => (
               <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
                 {chinhanh.TenChiNhanh}

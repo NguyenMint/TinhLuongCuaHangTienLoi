@@ -16,7 +16,7 @@ export function PayrollTable({
     const newSelectedRows = {};
     if (newSelectAll) {
       payrolls.forEach((payroll) => {
-        newSelectedRows[payroll.MaBangLuong] = true;
+        newSelectedRows[`${payroll.KyLuong}-${payroll.MaCN}`] = true;
       });
     }
     setSelectedRows(newSelectedRows);
@@ -29,15 +29,19 @@ export function PayrollTable({
     setSelectedRows(newSelectedRows);
     // Check if all rows are selected
     const allSelected = payrolls.every(
-      (payroll) => newSelectedRows[payroll.MaBangLuong]
+      (payroll) => newSelectedRows[payroll.KyLuong]
     );
     setSelectAll(allSelected);
   };
 
   const handleDetail = (payrollId) => {
-    const payroll = payrolls.find((pay) => pay.MaBangLuong === payrollId);
-
-    if (selectedPayroll && selectedPayroll.MaBangLuong === payrollId) {
+    const payroll = payrolls.find(
+      (pay) => `${pay.KyLuong}-${pay.MaCN}` === payrollId
+    );
+    if (
+      selectedPayroll &&
+      `${selectedPayroll.KyLuong}-${selectedPayroll.MaCN}` === payrollId
+    ) {
       setSelectedPayroll(null);
       setShowDetail(false);
     } else if (payroll) {
@@ -58,7 +62,6 @@ export function PayrollTable({
                 className="h-4 w-4 text-blue-600 border-gray-300 rounded"
               />
             </th>
-            <th className="px-4 py-3 text-left">Tên</th>
             <th className="px-4 py-3 text-left">Kỳ lương</th>
             <th className="px-4 py-3 text-left">Tổng lương</th>
             <th className="px-4 py-3 text-left">Người lập bảng</th>
@@ -70,27 +73,37 @@ export function PayrollTable({
           {payrolls && payrolls.length > 0 ? (
             payrolls.map((payroll) => (
               <tr
-                key={payroll.MaBangLuong}
+                key={`${payroll.KyLuong}-${payroll.MaCN}`}
                 className={`border-b hover:bg-gray-50 cursor-pointer ${
-                  selectedPayroll?.MaBangLuong === payroll.MaBangLuong
+                  `${selectedPayroll?.KyLuong}-${selectedPayroll?.MaCN}` ===
+                  `${payroll.KyLuong}-${payroll.MaCN}`
                     ? "bg-blue-50"
                     : ""
                 }`}
-                onClick={() => handleDetail(payroll.MaBangLuong)}
+                onClick={() =>
+                  handleDetail(`${payroll.KyLuong}-${payroll.MaCN}`)
+                }
               >
                 <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                   <input
                     type="checkbox"
-                    checked={!!selectedRows[payroll.MaBangLuong]}
-                    onChange={() => handleSelectRow(payroll.MaBangLuong)}
+                    checked={
+                      !!selectedRows[`${payroll.KyLuong}-${payroll.MaCN}`]
+                    }
+                    onChange={() =>
+                      handleSelectRow(`${payroll.KyLuong}-${payroll.MaCN}`)
+                    }
                   />
                 </td>
-                {/* <td className="px-4 py-3">{payroll.MaTK_tai_khoan.HoTen}</td> */}
                 <td className="px-4 py-3">{payroll.KyLuong}</td>
-                <td className="px-4 py-3 text-right">{formatCurrency(payroll.TongLuong)}</td>
+                <td className="px-4 py-3 text-right">
+                  {formatCurrency(payroll.TongLuongThucNhan)}
+                </td>
                 <td className="px-4 py-3">Admin</td>
                 <td className="px-4 py-3">{payroll.NgayTao}</td>
-                <td className="px-4 py-3">{payroll.NgayThanhToan?? "Chưa thanh toán"}</td>
+                <td className="px-4 py-3">
+                  {payroll.NgayThanhToan ?? "Chưa thanh toán"}
+                </td>
               </tr>
             ))
           ) : (

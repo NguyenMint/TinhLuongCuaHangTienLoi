@@ -277,25 +277,109 @@ class bangLuongController {
     }
   }
 
-  async getBL(req, res) {
+  async getBLByCN(req, res) {
+    try {
+      const { macn } = req.params;
+
+      const payrolls = await BangLuong.findAll({
+        attributes: [
+          "KyLuong",
+          "NgayTao",
+          [sequelize.fn("SUM", sequelize.col("LuongThucNhan")), "TongLuong"],
+          [sequelize.fn("COUNT", sequelize.col("BangLuong.MaTK")), "SoLuong"],
+          [
+            sequelize.literal(
+              "SUM(CASE WHEN NgayThanhToan IS NULL THEN 1 ELSE 0 END)"
+            ),
+            "ChuaTra",
+          ],
+        ],
+        include: [
+          {
+            where: { MaCN: macn },
+            model: TaiKhoan,
+            as: "MaTK_tai_khoan",
+            attributes: ["MaCN"],
+            include: [
+              {
+                model: db.ChiNhanh,
+                as: "MaCN_chi_nhanh",
+                attributes: ["TenChiNhanh"],
+              },
+            ],
+          },
+        ],
+        group: ["KyLuong", "MaTK_tai_khoan.MaCN", "TenChiNhanh"],
+        raw: true,
+      });
+
+      const formattedPayrolls = payrolls.map((payroll) => ({
+        KyLuong: payroll.KyLuong,
+        NgayTao: payroll.NgayTao,
+        MaCN: payroll["MaTK_tai_khoan.MaCN"],
+        TongLuong: Number(payroll.TongLuong),
+        SoLuong: Number(payroll.SoLuong),
+        ChuaTra: Number(payroll.ChuaTra),
+        TenChiNhanh: payroll["MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh"],
+      }));
+
+      res.json(formattedPayrolls);
+    } catch (error) {
+      console.error("Error fetching payrolls:", error.message, error.stack);
+      res
+        .status(500)
+        .json({ error: "Lỗi server khi lấy danh sách bảng lương" });
+    }
+  }
+  async getBLTotal(req, res) {
     try {
       const payrolls = await BangLuong.findAll({
         attributes: [
           "KyLuong",
-          [sequelize.fn("SUM", sequelize.col("LuongThucNhan")), "TongLuong"],
+          "NgayTao",
+
+          [
+            sequelize.fn("SUM", sequelize.col("TongLuong")),
+            "TongLuongThucNhan",
+          ],
+          [sequelize.fn("COUNT", sequelize.col("BangLuong.MaTK")), "SoLuong"],
+          [
+            sequelize.literal(
+              "SUM(CASE WHEN NgayThanhToan IS NULL THEN 1 ELSE 0 END)"
+            ),
+            "ChuaTra",
+          ],
+          [
+            sequelize.literal(
+              "SUM(CASE WHEN NgayThanhToan IS NOT NULL THEN TongLuong ELSE 0 END)"
+            ),
+            "LuongDaTra",
+          ],
         ],
         group: ["KyLuong"],
         raw: true,
       });
-      res.json(payrolls);
+
+      const formattedPayrolls = payrolls.map((payroll) => ({
+        KyLuong: payroll.KyLuong,
+        NgayTao: payroll.NgayTao,
+        TongLuongThucNhan: Number(payroll.TongLuongThucNhan),
+        SoLuong: Number(payroll.SoLuong),
+        ChuaTra: Number(payroll.ChuaTra),
+        LuongDaTra: Number(payroll.LuongDaTra),
+        LuongChuaTra: Number(payroll.TongLuongThucNhan - payroll.LuongDaTra),
+      }));
+
+      res.json(formattedPayrolls);
     } catch (error) {
-      console.error("Error fetching payrolls:", error);
-      res.status(500).json({ error: "Lỗi server" });
+      console.error("Error fetching payrolls:", error.message, error.stack);
+      res
+        .status(500)
+        .json({ error: "Lỗi server khi lấy danh sách bảng lương" });
     }
   }
   async getBLByKyLuong(req, res) {
     const { kyLuong } = req.body;
-    console.log(kyLuong);
 
     try {
       const payrolls = await BangLuong.findAll({
