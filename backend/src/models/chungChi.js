@@ -24,6 +24,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
+    NgayHetHan: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
+    },
     GhiChu: {
       type: DataTypes.TEXT,
       allowNull: false
