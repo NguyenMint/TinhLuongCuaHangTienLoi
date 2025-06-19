@@ -7,8 +7,9 @@ const PhuCap = db.PhuCap;
 const ChamCong = db.ChamCong;
 const LichLamViec = db.LichLamViec;
 const { Op, where } = require("sequelize");
-const { formatDate } = require("../util/util");
+const { formatDate,tinhThueTNCN } = require("../util/util");
 const sequelize = require("../config/connectionDB");
+const taiKhoan = require("../models/taiKhoan");
 
 // Create a new salary sheet
 class bangLuongController {
@@ -18,17 +19,7 @@ class bangLuongController {
       const startOfMonth = new Date(Nam, Thang - 1, 1);
       const endOfMonth = new Date(Nam, Thang, 0);
       const KyLuong = formatDate(startOfMonth) + " - " + formatDate(endOfMonth);
-      const bangLuongExist = await BangLuong.findOne({
-        where: {
-          MaTK,
-          KyLuong,
-        },
-      });
-      if (bangLuongExist) {
-        return res.status(409).json({
-          message: "Bảng lương của nhân viên ở kỳ lương này đã có rồi",
-        });
-      }
+      
       const phuCaps = await PhuCap.findAll({
         where: {
           MaTK,
@@ -37,7 +28,7 @@ class bangLuongController {
       });
       let TongPhuCap = 0;
       phuCaps.forEach((phucap) => {
-        TongPhuCap += phucap.GiaTriPhuCap;
+        TongPhuCap += parseFloat(phucap.GiaTriPhuCap);
       });
       const chiTietBangLuongs = await ChiTietBangLuong.findAll({
         where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
@@ -51,14 +42,13 @@ class bangLuongController {
                 model: LichLamViec,
                 as: "MaLLV_lich_lam_viec",
                 where: {
-                  MaNS: MaTK,
+                   MaTK,
                 },
               },
             ],
           },
         ],
       });
-
       let TongThuong = 0,
         TongPhat = 0,
         TongGioLamViec = 0,
@@ -68,9 +58,46 @@ class bangLuongController {
         TongThuong += parseFloat(chitietBL.TienPhuCap);
         TongPhat += parseFloat(chitietBL.TienPhat);
         TongLuong += parseFloat(chitietBL.tongtien);
-        TongGioLamViec += parseInt(chitietBL.GioLamViecTrongNgay);
-        LuongThang += parseFloat(chitietBL.TienLuongNgay);
+        TongGioLamViec += parseInt(chitietBL.GioLamViec);
+        LuongThang += parseFloat(chitietBL.TienLuongCa);
       });
+      TongLuong += TongPhuCap;
+      const taiKhoan = await TaiKhoan.findByPk(MaTK);
+      if(taiKhoan){
+        if(TongGioLamViec>=(24*8)) LuongThang = taiKhoan.LuongCoBanHienTai;
+      }
+      const phuCapTinhThue = await PhuCap.findAll({
+        where: {
+          MaTK,
+          TrangThai: 1,
+          DuocMienThue: 0,
+        },
+      });
+      const thuongPhuCapNgayTinhThue = await db.KhenThuongKyLuat.findAll({
+        where: {
+          ThuongPhat: 1,
+          DuocMienThue: 0,
+        },
+        include: [
+          {
+            model: LichLamViec,
+            as: "MaLLV_lich_lam_viec",
+            required: true,
+            where: {
+              MaTK,
+            },
+          },
+        ],
+      });
+      let tongPhuCapTinhThue = 0,
+        tongThuongPhuCapNgayTinhThue = 0;
+      phuCapTinhThue.forEach((phucap) => {
+        tongPhuCapTinhThue += parseFloat(phucap.GiaTriPhuCap);
+      });
+      thuongPhuCapNgayTinhThue.forEach((phucap) => {
+        tongThuongPhuCapNgayTinhThue += parseFloat(phucap.MucThuongPhat);
+      });
+      const ThuNhapTruocThue = LuongThang + tongPhuCapTinhThue + tongThuongPhuCapNgayTinhThue;
       const SoNguoiPhuThuoc = await NguoiPhuThuoc.count({
         where: {
           MaTK,
@@ -81,42 +108,49 @@ class bangLuongController {
         MucGiamTruGiaCanh += SoNguoiPhuThuoc * 4400000;
       }
       let ThuNhapChiuThue = 0;
-      if (LuongThang > MucGiamTruGiaCanh) {
-        ThuNhapChiuThue = LuongThang - MucGiamTruGiaCanh;
+      if (ThuNhapTruocThue > MucGiamTruGiaCanh) {
+        ThuNhapChiuThue = ThuNhapTruocThue - MucGiamTruGiaCanh;
       }
-      const ThuNhapMienThue = TongLuong - ThuNhapChiuThue;
-      let ThueSuat = 0,
-        ThuePhaiDong = 0;
-      if (ThuNhapChiuThue > 0) {
-        if (ThuNhapChiuThue <= 5000000) {
-          ThueSuat = 5;
-        } else if (ThuNhapChiuThue <= 10000000) {
-          ThueSuat = 10;
-        } else if (ThuNhapChiuThue <= 18000000) {
-          ThueSuat = 15;
-        } else if (ThuNhapChiuThue <= 32000000) {
-          ThueSuat = 20;
-        } else if (ThuNhapChiuThue <= 52000000) {
-          ThueSuat = 25;
-        } else if (ThuNhapChiuThue <= 80000000) {
-          ThueSuat = 30;
-        } else {
-          ThueSuat = 35;
-        }
-        ThuePhaiDong = ThuNhapChiuThue * (ThueSuat / 100);
-      }
+      const ThuePhaiDong = tinhThueTNCN(ThuNhapChiuThue);
       const LuongThucNhan = TongLuong - ThuePhaiDong;
-      const bangLuong = await BangLuong.create({
+      const bangLuongExist = await BangLuong.findOne({
+        where: {
+          MaTK,
+          KyLuong,
+        },
+      });
+      if (bangLuongExist) {
+        await bangLuongExist.update({
+          LuongThang,
+          TongPhuCap,
+          TongThuong,
+          TongPhat,
+          TongGioLamViec,
+          SoNguoiPhuThuoc,
+          TongLuong,
+          ThuNhapTruocThue,
+          ThuNhapChiuThue,
+          MucGiamTruGiaCanh,
+          ThuePhaiDong,
+          NgayTao: new Date(),
+          NgayThanhToan: null,
+          LuongThucNhan,
+          KyLuong,
+          MaTK,
+        });
+        return res.status(200).json({success:true,bangLuongExist});
+      }
+       const bangLuong = await BangLuong.create({
+        LuongThang,
         TongPhuCap,
         TongThuong,
         TongPhat,
         TongGioLamViec,
         SoNguoiPhuThuoc,
         TongLuong,
-        ThuNhapMienThue,
+        ThuNhapTruocThue,
         ThuNhapChiuThue,
         MucGiamTruGiaCanh,
-        ThueSuat,
         ThuePhaiDong,
         NgayTao: new Date(),
         NgayThanhToan: null,
@@ -129,11 +163,12 @@ class bangLuongController {
           MaBangLuong: bangLuong.MaBangLuong,
         });
       }
-      res.status(200).json({ success: true, bangLuong });
+      res.status(201).json({ success: true, bangLuong });
     } catch (error) {
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });
+        console.log("error: "+error);
     }
   }
 

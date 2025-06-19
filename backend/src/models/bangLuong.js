@@ -7,6 +7,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    LuongThang: {
+      type: DataTypes.DECIMAL(15,2),
+      allowNull: false
+    },
     TongPhuCap: {
       type: DataTypes.DECIMAL(15,2),
       allowNull: false
@@ -31,7 +35,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DECIMAL(15,2),
       allowNull: false
     },
-    ThuNhapMienThue: {
+    ThuNhapTruocThue: {
       type: DataTypes.DECIMAL(15,2),
       allowNull: false
     },
@@ -41,10 +45,6 @@ module.exports = function(sequelize, DataTypes) {
     },
     MucGiamTruGiaCanh: {
       type: DataTypes.DECIMAL(15,2),
-      allowNull: false
-    },
-    ThueSuat: {
-      type: DataTypes.INTEGER,
       allowNull: false
     },
     ThuePhaiDong: {
