@@ -57,7 +57,10 @@ class TaiKhoanController {
     try {
       const taikhoans = await TaiKhoan.findAll({
         where: { MaVaiTro: { [Op.in]: [2, 1] } },
-        include: [{ model: db.VaiTro, as: "MaVaiTro_vai_tro" }],
+        include: [
+          { model: db.VaiTro, as: "MaVaiTro_vai_tro" },
+          { model: db.ChiNhanh, as: "MaCN_chi_nhanh" },
+        ],
       });
       res.status(200).json(taikhoans);
     } catch (error) {
@@ -147,7 +150,7 @@ class TaiKhoanController {
   }
   async update(req, res) {
     try {
-      const { MaTK } = req.params;;
+      const { MaTK } = req.params;
       const taikhoan = await TaiKhoan.findByPk(MaTK);
       if (!taikhoan) {
         return res.status(404).json({ message: "Không tồn tại tài khoản này" });
@@ -337,12 +340,10 @@ class TaiKhoanController {
   }
   async changePass(req, res) {
     try {
-      const {Password,NewPassword} = req.body;
+      const { Password, NewPassword } = req.body;
       const taiKhoan = await TaiKhoan.findByPk(req.params.MaTK);
       if (!taiKhoan) {
-        return res
-          .status(404)
-          .json({ messeage: "Tai khoản không tồn tại" });
+        return res.status(404).json({ messeage: "Tai khoản không tồn tại" });
       }
       const isMatch = await bcrypt.compare(Password, taiKhoan.Password);
       if (!isMatch) {
