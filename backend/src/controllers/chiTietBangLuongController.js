@@ -87,7 +87,7 @@ exports.create = async (req, res) => {
     }
     let GioLamViec = 0,
       LuongMotGio = 0,
-      TienLuongNgay = 0,
+      TienLuongCa = 0,
       HeSoLuong = 1.0;
     if (heSoPhuCapNgayLe) {
       HeSoLuong = heSoPhuCapNgayLe.HeSoLuong;
@@ -106,7 +106,7 @@ exports.create = async (req, res) => {
       chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianKetThuc
     );
     LuongMotGio = taiKhoan.LuongTheoGioHienTai;
-    TienLuongNgay = LuongMotGio * GioLamViec * HeSoLuong;
+    TienLuongCa = LuongMotGio * GioLamViec * HeSoLuong;
     const khenThuongs = await KhenThuongKyLuat.findAll({
       where: { MaLLV: chamCong.MaLLV, ThuongPhat: true },
     });
@@ -122,12 +122,12 @@ exports.create = async (req, res) => {
       TienPhat += khen.MucThuongPhat;
     });
     const tongtien =
-      parseFloat(TienLuongNgay) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
+      parseFloat(TienLuongCa) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
     let chiTietBangLuong = [];
     if (chamCong.MaCTBL === null) {
       chiTietBangLuong = await ChiTietBangLuong.create({
         GioLamViec,
-        TienLuongNgay,
+        TienLuongCa,
         LuongMotGio,
         HeSoLuong,
         isCuoiTuan,
@@ -145,7 +145,7 @@ exports.create = async (req, res) => {
       chiTietBangLuong = await ChiTietBangLuong.findByPk(chamCong.MaCTBL);
       chiTietBangLuong.update({
         GioLamViec,
-        TienLuongNgay,
+        TienLuongCa,
         LuongMotGio,
         HeSoLuong,
         isCuoiTuan,
@@ -237,7 +237,7 @@ exports.createSalaryDetail = async ({ MaChamCong }) => {
     }
     let GioLamViec = 0,
       LuongMotGio = 0,
-      TienLuongNgay = 0,
+      TienLuongCa = 0,
       HeSoLuong = 1.0;
     if (heSoPhuCapNgayLe) {
       HeSoLuong = heSoPhuCapNgayLe.HeSoLuong;
@@ -256,7 +256,7 @@ exports.createSalaryDetail = async ({ MaChamCong }) => {
       chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianKetThuc
     );
     LuongMotGio = taiKhoan.LuongTheoGioHienTai;
-    TienLuongNgay = LuongMotGio * GioLamViec * HeSoLuong;
+    TienLuongCa = LuongMotGio * GioLamViec * HeSoLuong;
     const khenThuongs = await KhenThuongKyLuat.findAll({
       where: { MaLLV: chamCong.MaLLV, ThuongPhat: true },
     });
@@ -272,12 +272,12 @@ exports.createSalaryDetail = async ({ MaChamCong }) => {
       TienPhat += khen.MucThuongPhat;
     });
     const tongtien =
-      parseFloat(TienLuongNgay) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
+      parseFloat(TienLuongCa) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
     let chiTietBangLuong = [];
     if (chamCong.MaCTBL === null) {
       chiTietBangLuong = await ChiTietBangLuong.create({
         GioLamViec,
-        TienLuongNgay,
+        TienLuongCa,
         LuongMotGio,
         HeSoLuong,
         isCuoiTuan,
@@ -295,7 +295,7 @@ exports.createSalaryDetail = async ({ MaChamCong }) => {
       chiTietBangLuong = await ChiTietBangLuong.findByPk(chamCong.MaCTBL);
       chiTietBangLuong.update({
         GioLamViec,
-        TienLuongNgay,
+        TienLuongCa,
         LuongMotGio,
         HeSoLuong,
         isCuoiTuan,

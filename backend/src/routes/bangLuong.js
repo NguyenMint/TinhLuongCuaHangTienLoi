@@ -9,9 +9,11 @@ router.get("/", bangLuongController.getAll);
 router.post("/getbl", bangLuongController.getBLByKyLuong);
 router.get("/getbl/:macn", bangLuongController.getBLByCN);
 router.get("/getbltotal", bangLuongController.getBLTotal);
+router.post("/createAll", bangLuongController.createAll);
 
 router.get("/:id", bangLuongController.findOne);
 router.put("/:id", bangLuongController.update);
+router.delete("/deleteKyLuong", bangLuongController.deleteBL);
 router.delete("/:id", bangLuongController.delete);
 
 module.exports = router;

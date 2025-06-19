@@ -6,7 +6,7 @@ import ExcelJS from "exceljs";
 import { PhieuLuongsTab } from "./PhieuLuongTab";
 export function PayrollDetail({
   payroll,
-  onCancel,
+  onDelete,
   closeDetailModal,
   phieuLuongs,
 }) {
@@ -206,7 +206,7 @@ export function PayrollDetail({
           </button>
           <button
             className="bg-red-500 text-white px-4 py-2 rounded flex items-center"
-            onClick={onCancel}
+            onClick={() => onDelete(payroll.KyLuong)}
           >
             <TrashIcon size={18} className="mr-1" />
             <span>Hủy bỏ</span>
