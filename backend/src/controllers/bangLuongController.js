@@ -7,140 +7,123 @@ const PhuCap = db.PhuCap;
 const ChamCong = db.ChamCong;
 const LichLamViec = db.LichLamViec;
 const { Op, where } = require("sequelize");
-const { formatDate,tinhThueTNCN } = require("../util/util");
+const { formatDate, tinhThueTNCN } = require("../util/util");
 const sequelize = require("../config/connectionDB");
 const taiKhoan = require("../models/taiKhoan");
 
-// Create a new salary sheet
-class bangLuongController {
-  async create(req, res) {
-    try {
-      const { MaTK, Thang, Nam } = req.body;
-      const startOfMonth = new Date(Nam, Thang - 1, 1);
-      const endOfMonth = new Date(Nam, Thang, 0);
-      const KyLuong = formatDate(startOfMonth) + " - " + formatDate(endOfMonth);
-      
-      const phuCaps = await PhuCap.findAll({
-        where: {
-          MaTK,
-          TrangThai: true,
-        },
-      });
-      let TongPhuCap = 0;
-      phuCaps.forEach((phucap) => {
-        TongPhuCap += parseFloat(phucap.GiaTriPhuCap);
-      });
-      const chiTietBangLuongs = await ChiTietBangLuong.findAll({
-        where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
-        include: [
-          {
-            model: ChamCong,
-            as: "cham_congs",
-            required: true,
-            include: [
-              {
-                model: LichLamViec,
-                as: "MaLLV_lich_lam_viec",
-                where: {
-                   MaTK,
-                },
+async function createBL(MaTK, Thang, Nam) {
+  try {
+    const startOfMonth = new Date(Nam, Thang - 1, 1);
+    const endOfMonth = new Date(Nam, Thang, 0);
+    const KyLuong = formatDate(startOfMonth) + " - " + formatDate(endOfMonth);
+
+    const phuCaps = await PhuCap.findAll({
+      where: {
+        MaTK,
+        TrangThai: true,
+      },
+    });
+
+    let TongPhuCap = 0;
+    phuCaps.forEach((phucap) => {
+      TongPhuCap += parseFloat(phucap.GiaTriPhuCap);
+    });
+    const chiTietBangLuongs = await ChiTietBangLuong.findAll({
+      where: { Ngay: { [Op.between]: [startOfMonth, endOfMonth] } },
+      include: [
+        {
+          model: ChamCong,
+          as: "cham_congs",
+          required: true,
+          include: [
+            {
+              model: LichLamViec,
+              as: "MaLLV_lich_lam_viec",
+              where: {
+                MaTK,
               },
-            ],
-          },
-        ],
-      });
-      let TongThuong = 0,
-        TongPhat = 0,
-        TongGioLamViec = 0,
-        TongLuong = 0,
-        LuongThang = 0;
-      chiTietBangLuongs.forEach((chitietBL) => {
-        TongThuong += parseFloat(chitietBL.TienPhuCap);
-        TongPhat += parseFloat(chitietBL.TienPhat);
-        TongLuong += parseFloat(chitietBL.tongtien);
-        TongGioLamViec += parseInt(chitietBL.GioLamViec);
-        LuongThang += parseFloat(chitietBL.TienLuongCa);
-      });
-      TongLuong += TongPhuCap;
-      const taiKhoan = await TaiKhoan.findByPk(MaTK);
-      if(taiKhoan){
-        if(TongGioLamViec>=(24*8)) LuongThang = taiKhoan.LuongCoBanHienTai;
-      }
-      const phuCapTinhThue = await PhuCap.findAll({
-        where: {
-          MaTK,
-          TrangThai: 1,
-          DuocMienThue: 0,
-        },
-      });
-      const thuongPhuCapNgayTinhThue = await db.KhenThuongKyLuat.findAll({
-        where: {
-          ThuongPhat: 1,
-          DuocMienThue: 0,
-        },
-        include: [
-          {
-            model: LichLamViec,
-            as: "MaLLV_lich_lam_viec",
-            required: true,
-            where: {
-              MaTK,
             },
+          ],
+        },
+      ],
+    });
+    let TongThuong = 0,
+      TongPhat = 0,
+      TongGioLamViec = 0,
+      TongLuong = 0,
+      LuongThang = 0;
+    chiTietBangLuongs.forEach((chitietBL) => {
+      TongThuong += parseFloat(chitietBL.TienPhuCap);
+      TongPhat += parseFloat(chitietBL.TienPhat);
+      TongLuong += parseFloat(chitietBL.tongtien);
+      TongGioLamViec += parseInt(chitietBL.GioLamViec);
+      LuongThang += parseFloat(chitietBL.TienLuongCa);
+    });
+    TongLuong += TongPhuCap;
+    const taiKhoan = await TaiKhoan.findByPk(MaTK);
+    if (taiKhoan) {
+      if (TongGioLamViec >= 24 * 8) LuongThang = taiKhoan.LuongCoBanHienTai;
+    }
+    const phuCapTinhThue = await PhuCap.findAll({
+      where: {
+        MaTK,
+        TrangThai: 1,
+        DuocMienThue: 0,
+      },
+    });
+    const thuongPhuCapNgayTinhThue = await db.KhenThuongKyLuat.findAll({
+      where: {
+        ThuongPhat: 1,
+        DuocMienThue: 0,
+      },
+      include: [
+        {
+          model: LichLamViec,
+          as: "MaLLV_lich_lam_viec",
+          required: true,
+          where: {
+            MaTK,
           },
-        ],
-      });
-      let tongPhuCapTinhThue = 0,
-        tongThuongPhuCapNgayTinhThue = 0;
-      phuCapTinhThue.forEach((phucap) => {
-        tongPhuCapTinhThue += parseFloat(phucap.GiaTriPhuCap);
-      });
-      thuongPhuCapNgayTinhThue.forEach((phucap) => {
-        tongThuongPhuCapNgayTinhThue += parseFloat(phucap.MucThuongPhat);
-      });
-      const ThuNhapTruocThue = LuongThang + tongPhuCapTinhThue + tongThuongPhuCapNgayTinhThue;
-      const SoNguoiPhuThuoc = await NguoiPhuThuoc.count({
-        where: {
-          MaTK,
         },
-      });
-      let MucGiamTruGiaCanh = 11000000;
-      if (SoNguoiPhuThuoc > 0) {
-        MucGiamTruGiaCanh += SoNguoiPhuThuoc * 4400000;
-      }
-      let ThuNhapChiuThue = 0;
-      if (ThuNhapTruocThue > MucGiamTruGiaCanh) {
-        ThuNhapChiuThue = ThuNhapTruocThue - MucGiamTruGiaCanh;
-      }
-      const ThuePhaiDong = tinhThueTNCN(ThuNhapChiuThue);
-      const LuongThucNhan = TongLuong - ThuePhaiDong;
-      const bangLuongExist = await BangLuong.findOne({
-        where: {
-          MaTK,
-          KyLuong,
-        },
-      });
-      if (bangLuongExist) {
-        await bangLuongExist.update({
-          LuongThang,
-          TongPhuCap,
-          TongThuong,
-          TongPhat,
-          TongGioLamViec,
-          SoNguoiPhuThuoc,
-          TongLuong,
-          ThuNhapTruocThue,
-          ThuNhapChiuThue,
-          MucGiamTruGiaCanh,
-          ThuePhaiDong,
-          NgayTao: new Date(),
-          NgayThanhToan: null,
-          LuongThucNhan,
-          KyLuong,
-          MaTK,
-        });
-        return res.status(200).json({success:true,bangLuongExist});
-      }
-       const bangLuong = await BangLuong.create({
+      ],
+    });
+    let tongPhuCapTinhThue = 0,
+      tongThuongPhuCapNgayTinhThue = 0;
+    phuCapTinhThue.forEach((phucap) => {
+      tongPhuCapTinhThue += parseFloat(phucap.GiaTriPhuCap);
+    });
+    thuongPhuCapNgayTinhThue.forEach((phucap) => {
+      tongThuongPhuCapNgayTinhThue += parseFloat(phucap.MucThuongPhat);
+    });
+    const ThuNhapTruocThue =
+      LuongThang + tongPhuCapTinhThue + tongThuongPhuCapNgayTinhThue;
+    const SoNguoiPhuThuoc = await NguoiPhuThuoc.count({
+      where: {
+        MaTK,
+      },
+    });
+    let MucGiamTruGiaCanh = 11000000;
+    if (SoNguoiPhuThuoc > 0) {
+      MucGiamTruGiaCanh += SoNguoiPhuThuoc * 4400000;
+    }
+    let ThuNhapChiuThue = 0;
+    if (ThuNhapTruocThue > MucGiamTruGiaCanh) {
+      ThuNhapChiuThue = ThuNhapTruocThue - MucGiamTruGiaCanh;
+    }
+
+    const ThuePhaiDong = tinhThueTNCN(ThuNhapChiuThue);
+    const LuongThucNhan = TongLuong - ThuePhaiDong;
+
+    const bangLuongExist = await BangLuong.findOne({
+      where: {
+        MaTK,
+        KyLuong,
+      },
+    });
+    let bangLuong = null;
+
+    if (bangLuongExist) {
+      bangLuong = await bangLuongExist.update({
         LuongThang,
         TongPhuCap,
         TongThuong,
@@ -158,20 +141,77 @@ class bangLuongController {
         KyLuong,
         MaTK,
       });
-      for (const ct of chiTietBangLuongs) {
-        await ct.update({
-          MaBangLuong: bangLuong.MaBangLuong,
-        });
-      }
+    } else {
+      bangLuong = await BangLuong.create({
+        LuongThang,
+        TongPhuCap,
+        TongThuong,
+        TongPhat,
+        TongGioLamViec,
+        SoNguoiPhuThuoc,
+        TongLuong,
+        ThuNhapTruocThue,
+        ThuNhapChiuThue,
+        MucGiamTruGiaCanh,
+        ThuePhaiDong,
+        NgayTao: new Date(),
+        NgayThanhToan: null,
+        LuongThucNhan,
+        KyLuong,
+        MaTK,
+      });
+    }
+
+    for (const ct of chiTietBangLuongs) {
+      await ct.update({
+        MaBangLuong: bangLuong.MaBangLuong,
+      });
+    }
+
+    return bangLuongExist;
+  } catch (error) {
+    return error;
+  }
+}
+// Create a new salary sheet
+class bangLuongController {
+  async create(req, res) {
+    try {
+      const { MaTK, Thang, Nam } = req.body;
+      const bangLuong = await createBL(MaTK, Thang, Nam);
+
       res.status(201).json({ success: true, bangLuong });
     } catch (error) {
       res
         .status(500)
         .json({ success: false, message: "Internal server error" });
-        console.log("error: "+error);
+      console.log("error: " + error);
     }
   }
 
+  // Create salary sheets for all employees for a given month and year
+  async createAll(req, res) {
+    try {
+      const { Thang, Nam } = req.body;
+
+      const allAccounts = await TaiKhoan.findAll({
+        attributes: ["MaTK"],
+        where: { [Op.not]: { MaVaiTro: 3 } },
+        raw: true,
+      });
+
+      const results = await Promise.all(
+        allAccounts.map((account) => createBL(account.MaTK, Thang, Nam))
+      );
+      res.status(201).json({ success: true, results });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  }
   // Get all salary sheets
   async getAll(req, res) {
     try {
@@ -289,6 +329,44 @@ class bangLuongController {
       res.status(500).json({
         success: false,
         message: "Error deleting salary sheet",
+        error: error.message,
+      });
+    }
+  }
+  async deleteBL(req, res) {
+    try {
+      const { KyLuong } = req.body;
+      const bangLuong = await BangLuong.findAll({
+        where: { KyLuong: KyLuong },
+        attributes: ["MaBangLuong"],
+        raw: true,
+      });
+      await bangLuong.map(async (mbl) => {
+        await ChiTietBangLuong.update(
+          { MaBangLuong: null },
+          {
+            where: { MaBangLuong: mbl.MaBangLuong },
+          }
+        );
+      });
+
+      if (!bangLuong) {
+        return res.status(404).json({
+          success: false,
+          message: "Salary sheet not found",
+        });
+      }
+      for (const bl of bangLuong) {
+        await db.BangLuong.destroy({ where: { MaBangLuong: bl.MaBangLuong } });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Salary sheet deleted successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error deleting sa1lary sheet",
         error: error.message,
       });
     }
@@ -430,9 +508,9 @@ class bangLuongController {
             as: "chi_tiet_bang_luongs",
             attributes: [
               "Ngay",
-              "GioLamViecTrongNgay",
+              "GioLamViec",
               "LuongMotGio",
-              "TienLuongNgay",
+              "TienLuongCa",
               "TienPhuCap",
               "TienPhat",
               "tongtien",
@@ -455,9 +533,9 @@ class bangLuongController {
           LuongThucNhan: payroll.LuongThucNhan,
           details: payroll.chi_tiet_bang_luongs.map((detail) => ({
             Ngay: detail.Ngay,
-            GioLamViecTrongNgay: detail.GioLamViecTrongNgay,
+            GioLamViec: detail.GioLamViec,
             LuongMotGio: detail.LuongMotGio,
-            TienLuongNgay: detail.TienLuongNgay,
+            TienLuongCa: detail.TienLuongCa,
             TienPhuCap: detail.TienPhuCap,
             TienPhat: detail.TienPhat,
             tongtien: detail.tongtien,

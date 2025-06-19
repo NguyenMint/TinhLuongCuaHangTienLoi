@@ -5,15 +5,14 @@ import { PayrollDetail } from "../components/Payroll/PayrollDetail";
 import { Header } from "../components/Payroll/Header";
 import {
   createBangLuong,
+  deleteBangLuong,
   getAllBangLuong,
-  getBL,
   getBLByCN,
   getBLByKyLuong,
   getBLTotal,
   getKyLuong,
 } from "../api/apiBangLuong";
 import { getChiNhanh } from "../api/apiChiNhanh";
-import { EmployeeDetail } from "../components/HomePage/EmployeeDetail";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
 import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 import { Pagination } from "../components/Pagination";
@@ -105,7 +104,7 @@ export function PayrollPage() {
       setPhieuLuongs([]);
     }
   };
-  const fetchBL = async (chiNhanh = selectedChiNhanh) => {
+  const fetchBLByCN = async (chiNhanh = selectedChiNhanh) => {
     try {
       let data = [];
       if (chiNhanh === "Tổng hợp") {
@@ -128,7 +127,7 @@ export function PayrollPage() {
         fetchChiNhanh(),
         getAllNhanVien(),
         fetchKyLuong(),
-        fetchBL(),
+        fetchBLByCN(),
       ]);
     };
 
@@ -138,7 +137,7 @@ export function PayrollPage() {
   // Fetch BL when selected chi nhánh changes
   useEffect(() => {
     if (selectedChiNhanh !== undefined) {
-      fetchBL(selectedChiNhanh);
+      fetchBLByCN(selectedChiNhanh);
     }
   }, [selectedChiNhanh]);
 
@@ -218,9 +217,12 @@ export function PayrollPage() {
     alert("Chức năng xuất dữ liệu sẽ được triển khai ở đây");
   };
 
-  const handleCancel = () => {
+  const handleDelete = async (KyLuong) => {
     if (window.confirm("Bạn có chắc chắn muốn hủy bảng lương này?")) {
+      await deleteBangLuong(KyLuong);
       alert("Bảng lương đã được hủy");
+      await fetchAllBangLuong();
+      await fetchBLByCN();
       setShowDetail(false);
     }
   };
@@ -237,51 +239,17 @@ export function PayrollPage() {
   };
 
   const handleCreatePayrollModal = async (form) => {
-    if (!form?.MaTK || !Array.isArray(form.MaTK) || form.MaTK.length === 0) {
-      alert("Chưa chọn nhân viên hoặc dữ liệu không hợp lệ.");
-      return;
-    }
-
     if (!form.Thang || !form.Nam) {
       alert("Vui lòng nhập đầy đủ tháng và năm.");
       return;
     }
-
     try {
       setLoading(true);
-      const records = form.MaTK.map((matk) => ({
-        MaTK: matk,
-        Thang: parseInt(form.Thang),
-        Nam: parseInt(form.Nam),
-      }));
-
-      const results = await Promise.all(
-        records.map(async (record) => {
-          try {
-            const result = await createBangLuong(record);
-            return { success: true, result };
-          } catch (error) {
-            console.error(`Lỗi tạo bảng lương cho MaTK ${record.MaTK}:`, error);
-            return { success: false, error };
-          }
-        })
-      );
-
-      const successCount = results.filter((res) => res.success).length;
-      const failCount = results.length - successCount;
-
-      if (successCount > 0) {
-        alert(
-          `Tạo bảng lương thành công cho ${successCount} nhân viên${
-            failCount > 0 ? `, thất bại: ${failCount}` : ""
-          }`
-        );
+      const result = await createBangLuong(form);
+      if (result) {
         await fetchAllBangLuong();
-        await fetchBL();
-      } else {
-        alert("Không thể tạo bảng lương cho bất kỳ nhân viên nào!");
+        await fetchBLByCN();
       }
-
       setShowCreatePayroll(false);
       setSelectedEmployees([]);
     } catch (error) {
@@ -344,12 +312,8 @@ export function PayrollPage() {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-auto">
                 <CreatePayrollModal
-                  setShowCreatePayroll={setShowCreatePayroll}
-                  employees={employees}
-                  setSelectedEmployees={setSelectedEmployees}
                   onSave={handleCreatePayrollModal}
-                  selectedEmployees1={selectedEmployees}
-                  loading={loading}
+                  setShowCreatePayroll={setShowCreatePayroll}
                 />
               </div>
             </div>
@@ -361,7 +325,7 @@ export function PayrollPage() {
                 <PayrollDetail
                   phieuLuongs={phieuLuongs}
                   payroll={selectedPayroll}
-                  onCancel={handleCancel}
+                  onDelete={handleDelete}
                   closeDetailModal={closeDetailModal}
                 />
               </div>
