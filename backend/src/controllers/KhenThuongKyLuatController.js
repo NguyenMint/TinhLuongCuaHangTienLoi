@@ -15,7 +15,6 @@ class KhenThuongKyLuatController {
   }
   async create(req, res) {
     try {
-      console.log("Request body: ", req.body);
       const dup = await KhenThuongKyLuat.findAll({
         where: {
           MaLLV: req.body.MaLLV,

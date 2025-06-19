@@ -1,6 +1,6 @@
 const { where } = require("sequelize");
 const db = require("../models");
-const ChiTietBangLuongController = require("./chiTietBangLuongController");
+const {createSalaryDetail} = require("./chiTietBangLuongController");
 const ChamCong = db.ChamCong;
 class ChamCongController {
   async chamcong(req, res) {
@@ -150,9 +150,8 @@ class ChamCongController {
       }
 
       try {
-        await ChiTietBangLuongController.create({
-          Ngay: updatedRecord.NgayChamCong,
-          MaTK: chamCongRecord.MaLLV_lich_lam_viec.MaTK,
+        await createSalaryDetail({
+          MaChamCong: chamCongRecord.MaChamCong,
         });
       } catch (err) {
         console.warn("Không thể tạo bảng lương:", err.message);
