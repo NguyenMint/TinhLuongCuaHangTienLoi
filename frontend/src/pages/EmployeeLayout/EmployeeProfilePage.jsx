@@ -29,7 +29,7 @@ export function EmployeeProfilePage() {
       (acc, item) => {
         return {
           tongGioLam: acc.tongGioLam + item.GioLamViec,
-          tongLuong: acc.tongLuong + parseFloat(item.TienLuongNgay),
+          tongLuong: acc.tongLuong + parseFloat(item.TienLuongCa),
           tongPhuCap: acc.tongPhuCap + parseFloat(item.TienPhuCap),
           tongPhat: acc.tongPhat + parseFloat(item.TienPhat),
           tongThu: acc.tongThu + parseFloat(item.tongtien),

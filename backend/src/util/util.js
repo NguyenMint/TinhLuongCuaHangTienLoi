@@ -23,10 +23,34 @@ function isWeekend(dateStr) {
   const day = date.getDay();
   return day === 0;
 }
-
+function tinhThueTNCN(thuNhapChiuThue) {
+  let thue = 0;
+  const bacThue = [
+    { max: 5000000, rate: 0.05 },
+    { max: 10000000, rate: 0.10 },
+    { max: 18000000, rate: 0.15 },
+    { max: 32000000, rate: 0.20 },
+    { max: 52000000, rate: 0.25 },
+    { max: 80000000, rate: 0.30 },
+    { max: Infinity, rate: 0.35 },
+  ];
+  let start = 0;
+  for (let i = 0; i < bacThue.length; i++) {
+    const { max, rate } = bacThue[i];
+    if (thuNhapChiuThue > start) {
+      const taxable = Math.min(thuNhapChiuThue, max) - start;
+      thue += taxable * rate;
+      start = max;
+    } else {
+      break;
+    }
+  }
+  return thue;
+}
 module.exports = {
   getSoNgayTrongThang,
   tinhTongGioLamCaLam,
   formatDate,
   isWeekend,
+  tinhThueTNCN
 };
