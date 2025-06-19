@@ -7,17 +7,24 @@ export function AddShiftForm({ setShowModalAdd, getDataShift }) {
     ThoiGianBatDau: "",
     ThoiGianKetThuc: "",
     MoTa: "",
-    HeSoLuong: 1,
+    isCaDem: 0,
   });
   const hours = Array.from({ length: 24 }, (_, i) =>
     i < 10 ? `0${i}` : `${i}`
   );
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "isCaDem") {
+      setForm((prev) => ({
+        ...prev,
+        [name]: e.target.checked ? 1 : 0,
+      }));
+    } else {
     setForm((prev) => ({
       ...prev,
-      [name]: name === "HeSoLuong" ? parseFloat(value) : value,
-    }));
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -27,14 +34,14 @@ export function AddShiftForm({ setShowModalAdd, getDataShift }) {
       !form.TenCa ||
       !form.ThoiGianBatDau ||
       !form.ThoiGianKetThuc ||
-      !form.MoTa ||
-      form.HeSoLuong < 1
+      !form.MoTa
     ) {
-      alert("Vui lòng điền đầy đủ thông tin và hệ số >= 1.");
+      alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
     try {
+      
       const result = await createCaLam(form);
       if (!result.success) {
         alert(result.message || "Thêm ca làm thất bại.");
@@ -58,29 +65,28 @@ export function AddShiftForm({ setShowModalAdd, getDataShift }) {
         <h2 className="text-xl font-bold mb-4 text-center">Thêm ca làm việc</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 font-medium">Tên ca</label>
-            <input
-              type="text"
-              name="TenCa"
-              value={form.TenCa}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
+          <div className="col-span-2 flex items-end gap-4">
+            <div className="flex-1">
+              <label className="block mb-1 font-medium">Tên ca</label>
+              <input
+                type="text"
+                name="TenCa"
+                value={form.TenCa}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                name="isCaDem"
+                checked={form.isCaDem}
+                onChange={handleChange}
+                className="w-5 h-5 accent-blue-600"
+              />
+              <label className="ml-2 font-medium">Ca đêm</label>
+            </div>
           </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Hệ số lương</label>
-            <input
-              type="number"
-              step="0.1"
-              name="HeSoLuong"
-              value={form.HeSoLuong}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            />
-          </div>
-
           <div>
             <label className="block mb-1 font-medium">Thời gian bắt đầu</label>
             <select

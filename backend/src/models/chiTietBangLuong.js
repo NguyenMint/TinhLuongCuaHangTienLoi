@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    GioLamViecTrongNgay: {
+    GioLamViec: {
       type: DataTypes.FLOAT,
       allowNull: false
     },
@@ -24,6 +24,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     isNgayLe: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
+    },
+    isCaDem: {
       type: DataTypes.BOOLEAN,
       allowNull: false
     },

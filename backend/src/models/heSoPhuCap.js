@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     LoaiNgay: {
-      type: DataTypes.ENUM('Cuối tuần','Ngày lễ'),
+      type: DataTypes.ENUM('Cuối tuần','Ngày lễ','Ngày thường'),
       allowNull: false
     },
     isCaDem: {

@@ -64,6 +64,7 @@ export function AllowanceCoefficientPage() {
                     <th className="p-3 border text-center">Ngày</th>
                     <th className="p-3 border text-center">Hệ số lương</th>
                     <th className="p-3 border text-center">Loại ngày</th>
+                    <th className="p-3 border text-center">Loại ca</th>
                     <th className="p-3 border text-center">Hoạt động</th>
                   </tr>
                 </thead>
@@ -82,7 +83,10 @@ export function AllowanceCoefficientPage() {
                       <td className="px-4 py-2 border text-center">
                         {coefficient.LoaiNgay}
                       </td>
-                      <td className="p-3 border flex items-center justify-center gap-4">
+                      <td className="px-4 py-2 border text-center">
+                        {coefficient.isCaDem ? "Ca đêm" : "Ca thường"}
+                      </td>
+                      <td className="p-3 border flex items-center justify-center gap-4">  
                         <Pencil
                           className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500"
                           onClick={() => {

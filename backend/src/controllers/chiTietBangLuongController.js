@@ -14,21 +14,17 @@ const {
   tinhTongGioLamCaLam,
   isWeekend,
 } = require("../util/util");
+const chiTietBangLuong = require("../models/chiTietBangLuong");
 // Create a new salary detail
 exports.create = async (req, res) => {
   try {
-    const { Ngay, MaTK } = req;
+    const { MaChamCong } = req.body;
 
-    const chamCongList = await ChamCong.findAll({
-      where: {
-        NgayChamCong: Ngay,
-        TrangThai: "Hoàn thành",
-      },
+    const chamCong = await ChamCong.findByPk(MaChamCong, {
       include: [
         {
           model: db.LichLamViec,
           as: "MaLLV_lich_lam_viec",
-          where: { MaNS: MaTK },
           include: [
             {
               model: db.CaLam,
@@ -38,58 +34,87 @@ exports.create = async (req, res) => {
         },
       ],
     });
-
-    const heSoPhuCapNgayLe = await HeSoPhuCap.findOne({
-      where: {
-        Ngay,
-      },
-    });
-    const heSoPhuCapCuoiTuan = await HeSoPhuCap.findOne({
-      where: {
-        LoaiNgay: "Cuối tuần",
-      },
-    });
-    const taiKhoan = await TaiKhoan.findByPk(MaTK);
-    const thangluong = await ThangLuong.findOne({
-      where: {
-        BacLuong: taiKhoan.BacLuong,
-        LuongCoBan: taiKhoan.LuongCoBanHienTai,
-        LoaiNV: "FullTime",
-      },
-    });
-    const soNgayPhep = thangluong ? thangluong.SoNgayPhep : 0;
-    const luongOneHour =
-      taiKhoan.LuongCoBanHienTai / (getSoNgayTrongThang(Ngay) - soNgayPhep) / 8;
-    let GioLamViecTrongNgay = 0,
-      TienLuongNgay = 0,
-      heSoNgay = 1.0;
-    if (heSoPhuCapNgayLe) {
-      heSoNgay = parseFloat(heSoPhuCapNgayLe.HeSoLuong);
-    } else if (heSoPhuCapCuoiTuan && isWeekend(Ngay)) {
-      heSoNgay = parseFloat(heSoPhuCapCuoiTuan.HeSoLuong);
+    if (!chamCong) {
+      return res.status(404).json({ message: "Mã chấm công không tồn tại" });
     }
-    chamCongList.forEach((record) => {
-      const gioLam = tinhTongGioLamCaLam(
-        record.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianBatDau,
-        record.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianKetThuc
-      );
-      GioLamViecTrongNgay += gioLam;
-      const tienLuongCa =
-        gioLam *
-        luongOneHour *
-        parseFloat(record.MaLLV_lich_lam_viec.MaCaLam_ca_lam.HeSoLuong) *
-        heSoNgay;
-      TienLuongNgay += tienLuongCa;
-    });
+    let isNgayLe = false,
+      isCuoiTuan = false,
+      isCaDem = false;
+    if (chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.isCaDem) {
+      isCaDem = true;
+    }
+    let heSoPhuCapNgayLe =null, heSoPhuCapCuoiTuan =null, heSoNgayThuongCaDem = null;
+    if (isCaDem) {
+      heSoPhuCapNgayLe = await HeSoPhuCap.findOne({
+        where: {
+          Ngay: chamCong.NgayChamCong,
+          isCaDem: 1,
+          LoaiNgay: "Ngày lễ",
+        },
+      });
+      heSoPhuCapCuoiTuan = await HeSoPhuCap.findOne({
+        where: {
+          isCaDem: 1,
+          LoaiNgay: "Cuối tuần",
+        },
+      });
+      heSoNgayThuongCaDem = await HeSoPhuCap.findOne({
+        where:{
+          isCaDem:1,
+          LoaiNgay:"Ngày thường"
+        }
+      });
+    } else {
+      heSoPhuCapNgayLe = await HeSoPhuCap.findOne({
+        where: {
+          Ngay: chamCong.NgayChamCong,
+          isCaDem: 0,
+          LoaiNgay: "Ngày lễ",
+        },
+      });
+      heSoPhuCapCuoiTuan = await HeSoPhuCap.findOne({
+        where: {
+          isCaDem: 0,
+          LoaiNgay: "Cuối tuần",
+        },
+      });
+    }
+    const taiKhoan = await TaiKhoan.findByPk(chamCong.MaLLV_lich_lam_viec.MaTK);
+    if (!taiKhoan) {
+      return res.status(404).json({ message: "Tài khoản không tồn tại" });
+    }
+    let GioLamViec = 0,
+      LuongMotGio = 0,
+      TienLuongNgay = 0,
+      HeSoLuong = 1.0;
+    if (heSoPhuCapNgayLe) {
+      HeSoLuong = heSoPhuCapNgayLe.HeSoLuong;
+      isNgayLe = true;
+      if (isWeekend(chamCong.NgayChamCong)) {
+        isCuoiTuan = true;
+      }
+    } else if (heSoPhuCapCuoiTuan && isWeekend(chamCong.NgayChamCong)) {
+      isCuoiTuan = true;
+      HeSoLuong = heSoPhuCapCuoiTuan.HeSoLuong;
+    }
+    else if(isCaDem){
+      HeSoLuong = heSoNgayThuongCaDem.HeSoLuong;
+    }
+    GioLamViec = tinhTongGioLamCaLam(
+      chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianBatDau,
+      chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.ThoiGianKetThuc
+    );
+    LuongMotGio = taiKhoan.LuongTheoGioHienTai;
+    TienLuongNgay = LuongMotGio * GioLamViec * HeSoLuong;
     const khenThuongs = await KhenThuongKyLuat.findAll({
-      where: { MaTK, NgayApDung: Ngay, ThuongPhat: true },
+      where: { MaLLV: chamCong.MaLLV, ThuongPhat: true },
     });
     let TienPhuCap = 0;
     khenThuongs.forEach((khen) => {
       TienPhuCap += khen.MucThuongPhat;
     });
     const kyLuats = await KhenThuongKyLuat.findAll({
-      where: { MaTK, NgayApDung: Ngay, ThuongPhat: false },
+      where: {MaLLV: chamCong.MaLLV, ThuongPhat: false },
     });
     let TienPhat = 0;
     kyLuats.forEach((khen) => {
@@ -97,51 +122,43 @@ exports.create = async (req, res) => {
     });
     const tongtien =
       parseFloat(TienLuongNgay) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
-    const chamCongDaCoChiTietBL = await ChamCong.findOne({
-      where: {
-        NgayChamCong: Ngay,
-        MaCTBL: { [Op.ne]: null },
-      },
-      include: [
-        {
-          model: db.LichLamViec,
-          as: "MaLLV_lich_lam_viec",
-          where: {
-            MaNS: MaTK,
-          },
-        },
-      ],
-    });
-    if (chamCongDaCoChiTietBL) {
-      const chiTietBangLuong = await ChiTietBangLuong.findByPk(
-        chamCongDaCoChiTietBL.MaCTBL
-      );
-      await chiTietBangLuong.update({
-        GioLamViecTrongNgay,
+    let chiTietBangLuong = [];
+    if (chamCong.MaCTBL === null) {
+      chiTietBangLuong = await ChiTietBangLuong.create({
+        GioLamViec,
         TienLuongNgay,
+        LuongMotGio,
+        HeSoLuong,
+        isCuoiTuan,
+        isNgayLe,
+        isCaDem,
         TienPhat,
         TienPhuCap,
+        LoaiPhuCap: "",
         tongtien,
+        Ngay: chamCong.NgayChamCong,
+        MaBangLuong: null,
       });
-      for (const chamCong of chamCongList) {
-        await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
-      }
-      return chiTietBangLuong;
-    }
-    const chiTietBangLuong = await ChiTietBangLuong.create({
-      GioLamViecTrongNgay,
-      TienLuongNgay,
-      TienPhat,
-      TienPhuCap,
-      LoaiPhuCap: "",
-      tongtien,
-      Ngay,
-      MaBangLuong: null,
-    });
-    for (const chamCong of chamCongList) {
       await chamCong.update({ MaCTBL: chiTietBangLuong.MaCTBL });
+    } else {
+      chiTietBangLuong = await ChiTietBangLuong.findByPk(chamCong.MaCTBL);
+      chiTietBangLuong.update({
+        GioLamViec,
+        TienLuongNgay,
+        LuongMotGio,
+        HeSoLuong,
+        isCuoiTuan,
+        isNgayLe,
+        isCaDem,
+        TienPhat,
+        TienPhuCap,
+        LoaiPhuCap: "",
+        tongtien,
+        Ngay: chamCong.NgayChamCong,
+        MaBangLuong: null,
+      });
     }
-    return chiTietBangLuong;
+    return res.status(200).json(chiTietBangLuong);
   } catch (error) {
     res.status(500).json({
       success: false,
