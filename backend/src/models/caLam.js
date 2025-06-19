@@ -24,8 +24,8 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false
     },
-    HeSoLuong: {
-      type: DataTypes.FLOAT,
+    isCaDem: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: 1
     }

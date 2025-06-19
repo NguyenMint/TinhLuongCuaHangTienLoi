@@ -52,13 +52,6 @@ module.exports = function(sequelize, DataTypes) {
           { name: "MaLLV" },
         ]
       },
-      {
-        name: "MaLLV",
-        using: "BTREE",
-        fields: [
-          { name: "MaLLV" },
-        ]
-      },
     ]
   });
 };

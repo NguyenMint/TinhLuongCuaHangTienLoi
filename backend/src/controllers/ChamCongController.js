@@ -5,7 +5,7 @@ const ChamCong = db.ChamCong;
 class ChamCongController {
   async chamcong(req, res) {
     try {
-      const { GioVao, GioRa, MaLLV, NgayChamCong, NgayLe } = req.body;
+      const { GioVao, GioRa, MaLLV, NgayChamCong } = req.body;
 
       const lichLamViec = await db.LichLamViec.findOne({
         where: { MaLLV },
@@ -68,7 +68,6 @@ class ChamCongController {
           GioRa: GioRa || existing.GioRa,
           DiTre,
           VeSom,
-          NgayLe,
           NgayChamCong: lichLamViec.NgayLam,
         });
         return res.status(200).json(existing);
@@ -80,7 +79,6 @@ class ChamCongController {
           DiTre,
           VeSom,
           NgayChamCong: lichLamViec.NgayLam,
-          NgayLe,
           trangthai: "Chờ duyệt",
         });
         return res.status(201).json(chamCong);
@@ -93,38 +91,64 @@ class ChamCongController {
 
   async update_chamcong(req, res) {
     try {
-      const { GioVao, DiTre, GioRa, VeSom, MaChamCong } = req.body;
+      const { GioVao, DiTre, GioRa, VeSom, MaChamCong, NgayChamCong, MaLLV } =
+        req.body;
 
-      const chamCongRecord = await db.ChamCong.findOne({
-        where: { MaChamCong },
-        include: [
-          {
-            model: db.LichLamViec,
-            as: "MaLLV_lich_lam_viec",
-          },
-        ],
-      });
+      let updatedRecord = null;
+      let chamCongRecord = null;
 
-      if (!chamCongRecord || !chamCongRecord.MaLLV_lich_lam_viec) {
-        return res
-          .status(404)
-          .json({ message: "Không tồn tại lịch đăng ký ca này" });
-      }
+      if (MaChamCong) {
+        chamCongRecord = await db.ChamCong.findOne({
+          where: { MaChamCong },
+          include: [
+            {
+              model: db.LichLamViec,
+              as: "MaLLV_lich_lam_viec",
+            },
+          ],
+        });
 
-      await db.ChamCong.update(
-        { GioVao, DiTre, GioRa, VeSom, trangthai: "Hoàn thành" },
-        { where: { MaChamCong } }
-      );
+        if (!chamCongRecord || !chamCongRecord.MaLLV_lich_lam_viec) {
+          return res
+            .status(404)
+            .json({ message: "Không tìm thấy bản ghi chấm công" });
+        }
 
-      const updated = await db.ChamCong.findOne({ where: { MaChamCong } });
+        await db.ChamCong.update(
+          { GioVao, DiTre, GioRa, VeSom, trangthai: "Hoàn thành" },
+          { where: { MaChamCong } }
+        );
+        updatedRecord = await db.ChamCong.findOne({ where: { MaChamCong } });
 
-      if (!updated) {
-        return res.status(404).json({ message: "Cập nhật không thành công" });
+        if (!updatedRecord) {
+          return res.status(404).json({ message: "Cập nhật không thành công" });
+        }
+      } else {
+        updatedRecord = await ChamCong.create({
+          MaLLV,
+          GioVao,
+          GioRa,
+          DiTre,
+          VeSom,
+          NgayChamCong,
+          trangthai: "Hoàn thành",
+        });
+        if (!updatedRecord)
+          return res.status(500).json("Tạo chấm công mới thất bại");
+        chamCongRecord = await db.ChamCong.findOne({
+          where: { MaChamCong },
+          include: [
+            {
+              model: db.LichLamViec,
+              as: "MaLLV_lich_lam_viec",
+            },
+          ],
+        });
       }
 
       try {
         await ChiTietBangLuongController.create({
-          Ngay: updated.NgayChamCong,
+          Ngay: updatedRecord.NgayChamCong,
           MaTK: chamCongRecord.MaLLV_lich_lam_viec.MaTK,
         });
       } catch (err) {

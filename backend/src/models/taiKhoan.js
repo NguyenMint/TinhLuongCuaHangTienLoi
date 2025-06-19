@@ -56,7 +56,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: "STK"
     },
     TrangThai: {
-      type: DataTypes.ENUM('Đang làm','Đã nghĩ','Thai sản'),
+      type: DataTypes.ENUM('Đang làm','Ngừng làm việc','Thai sản'),
       allowNull: false
     },
     Email: {

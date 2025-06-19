@@ -35,10 +35,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'MaLLV'
       }
     },
-    isNgayLe: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false
-    },
     trangthai: {
       type: DataTypes.ENUM('Chờ duyệt','Hoàn thành','Từ chối'),
       allowNull: false
