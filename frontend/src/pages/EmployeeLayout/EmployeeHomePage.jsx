@@ -34,19 +34,19 @@ export function EmployeeHomePage() {
     const response = await fetchLLVByNhanVien(manv, ngay);
     setShifts(response);
   };
-  const ChamCongVao = async (MaDKC) => {
+  const ChamCongVao = async (MaLLV) => {
     //const gioVao = gioHienTai;
-    const gioVao = "06:05:00";
-    const response = await chamCongVao(ngay, gioVao, MaDKC, false);
+    const gioVao = "14:05:00";
+    const response = await chamCongVao(ngay, gioVao, MaLLV, false);
     if (!response.success) {
       alert(response.message || "Chấm công thất bại");
     }
     getDKCByNhanVien();
   };
-  const ChamCongRa = async (MaDKC) => {
+  const ChamCongRa = async (MaLLV) => {
     //const gioRa = gioHienTai;
-    const gioRa = "14:09:00";
-    const response = await chamCongRa(ngay, gioRa, MaDKC, false);
+    const gioRa = "22:09:00";
+    const response = await chamCongRa(ngay, gioRa, MaLLV, false);
     if (!response.success) {
       alert(response.message || "Chấm công thất bại");
     }
@@ -149,7 +149,7 @@ export function EmployeeHomePage() {
                       <button
                         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-semibold"
                         onClick={() => {
-                          ChamCongVao(shift.MaDKC);
+                          ChamCongVao(shift.MaLLV);
                         }}
                       >
                         Chấm công vào ca
@@ -190,7 +190,7 @@ export function EmployeeHomePage() {
                           <button
                             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-semibold"
                             onClick={() => {
-                              ChamCongRa(shift.MaDKC);
+                              ChamCongRa(shift.MaLLV);
                             }}
                           >
                             Chấm công ra ca

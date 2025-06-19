@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
 import { formatCurrency, formatDate, formatTime } from "../../utils/format";
+
 export function EmployeeProfilePage() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [selectedDate, setSelectedDate] = useState(
@@ -9,6 +10,7 @@ export function EmployeeProfilePage() {
   );
   const [salaryData, setSalaryData] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const fetchSalaryData = async (date) => {
     setLoading(true);
     try {
@@ -21,6 +23,28 @@ export function EmployeeProfilePage() {
     }
     setLoading(false);
   };
+
+  const calculateDailySummary = (chiTietBangLuong) => {
+    return chiTietBangLuong.reduce(
+      (acc, item) => {
+        return {
+          tongGioLam: acc.tongGioLam + item.GioLamViec,
+          tongLuong: acc.tongLuong + parseFloat(item.TienLuongNgay),
+          tongPhuCap: acc.tongPhuCap + parseFloat(item.TienPhuCap),
+          tongPhat: acc.tongPhat + parseFloat(item.TienPhat),
+          tongThu: acc.tongThu + parseFloat(item.tongtien),
+        };
+      },
+      {
+        tongGioLam: 0,
+        tongLuong: 0,
+        tongPhuCap: 0,
+        tongPhat: 0,
+        tongThu: 0,
+      }
+    );
+  };
+
   useEffect(() => {
     fetchSalaryData(selectedDate);
   }, []);
@@ -84,7 +108,7 @@ export function EmployeeProfilePage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
             <DollarSign className="w-6 h-6 text-green-600" />
             Thông tin lương theo ngày
@@ -109,7 +133,7 @@ export function EmployeeProfilePage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             <span className="ml-2 text-gray-600">Đang tải dữ liệu...</span>
           </div>
-        ) : salaryData ? (
+        ) : salaryData?.chiTietBangLuong?.length > 0 ? (
           <div>
             <div className="bg-blue-50 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-lg text-blue-800 mb-2">
@@ -118,23 +142,148 @@ export function EmployeeProfilePage() {
               <div className="text-sm text-blue-600">
                 Tổng giờ làm việc:{" "}
                 <span className="font-medium">
-                  {salaryData.chiTietBangLuong?.GioLamViecTrongNgay || 0} giờ
+                  {
+                    calculateDailySummary(salaryData.chiTietBangLuong)
+                      .tongGioLam
+                  }{" "}
+                  giờ
                 </span>
               </div>
             </div>
+            {/* Chi tiết từng ca làm */}
+            <div className="space-y-4">
+              {salaryData.chiTietBangLuong.map((chiTiet, index) => (
+                <div
+                  key={chiTiet.MaCTBL}
+                  className="bg-white rounded-lg shadow p-4"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold text-lg">
+                      {
+                        chiTiet.cham_congs[0].MaLLV_lich_lam_viec.MaCaLam_ca_lam
+                          .TenCa
+                      }
+                    </h4>
+                    <div className="flex gap-2">
+                      {chiTiet.isCaDem && (
+                        <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+                          Ca đêm
+                        </span>
+                      )}
+                      {chiTiet.isCuoiTuan && (
+                        <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full">
+                          Cuối tuần
+                        </span>
+                      )}
+                      {chiTiet.isNgayLe && (
+                        <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                          Ngày lễ
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div>
+                      <span className="text-gray-600 text-sm">Giờ làm:</span>
+                      <p className="font-medium">{chiTiet.GioLamViec} giờ</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 text-sm">
+                        Hệ số lương:
+                      </span>
+                      <p className="font-medium">{chiTiet.HeSoLuong}x</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 text-sm">Lương/giờ:</span>
+                      <p className="font-medium">
+                        {formatCurrency(parseFloat(chiTiet.LuongMotGio))}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 text-sm">Thành tiền:</span>
+                      <p className="font-medium text-green-600">
+                        {formatCurrency(parseFloat(chiTiet.TienLuongNgay))}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <div className="grid grid-cols-4 gap-4">
+                      <div>
+                        <span className="text-gray-600 text-sm">Giờ vào:</span>
+                        <p className="font-medium">
+                          {formatTime(chiTiet.cham_congs[0].GioVao)}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 text-sm">Đi trễ:</span>
+                        <p className="font-medium text-red-600">
+                          {chiTiet.cham_congs[0].DiTre} phút
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 text-sm">Giờ ra:</span>
+                        <p className="font-medium">
+                          {formatTime(chiTiet.cham_congs[0].GioRa)}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 text-sm">Về sớm:</span>
+                        <p className="font-medium text-red-600">
+                          {chiTiet.cham_congs[0].VeSom} phút
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {(parseFloat(chiTiet.TienPhuCap) > 0 ||
+                    parseFloat(chiTiet.TienPhat) > 0) && (
+                    <div className="border-t mt-4 pt-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        {parseFloat(chiTiet.TienPhuCap) > 0 && (
+                          <div>
+                            <span className="text-gray-600 text-sm">
+                              Phụ cấp:
+                            </span>
+                            <p className="font-medium text-blue-600">
+                              +{formatCurrency(parseFloat(chiTiet.TienPhuCap))}
+                            </p>
+                          </div>
+                        )}
+                        {parseFloat(chiTiet.TienPhat) > 0 && (
+                          <div>
+                            <span className="text-gray-600 text-sm">Phạt:</span>
+                            <p className="font-medium text-red-600">
+                              -{formatCurrency(parseFloat(chiTiet.TienPhat))}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div className="border-t mt-4 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Tổng thu:</span>
+                      <span className="font-bold text-green-600">
+                        {formatCurrency(parseFloat(chiTiet.tongtien))}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-4">
               <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-green-600 font-medium">
-                      Lương ngày
+                      Tổng lương ngày
                     </p>
                     <p className="text-lg font-bold text-green-800">
                       {formatCurrency(
-                        parseFloat(
-                          salaryData.chiTietBangLuong?.TienLuongNgay || 0
-                        )
+                        calculateDailySummary(salaryData.chiTietBangLuong)
+                          .tongLuong
                       )}
                     </p>
                   </div>
@@ -145,10 +294,13 @@ export function EmployeeProfilePage() {
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">Thưởng Phụ cấp</p>
+                    <p className="text-sm text-blue-600 font-medium">
+                      Tổng phụ cấp
+                    </p>
                     <p className="text-lg font-bold text-blue-800">
                       {formatCurrency(
-                        parseFloat(salaryData.chiTietBangLuong?.TienPhuCap || 0)
+                        calculateDailySummary(salaryData.chiTietBangLuong)
+                          .tongPhuCap
                       )}
                     </p>
                   </div>
@@ -160,11 +312,12 @@ export function EmployeeProfilePage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-red-600 font-medium">
-                      Tiền phạt
+                      Tổng phạt
                     </p>
                     <p className="text-lg font-bold text-red-800">
                       {formatCurrency(
-                        parseFloat(salaryData.chiTietBangLuong?.TienPhat || 0)
+                        calculateDailySummary(salaryData.chiTietBangLuong)
+                          .tongPhat
                       )}
                     </p>
                   </div>
@@ -172,167 +325,17 @@ export function EmployeeProfilePage() {
                 </div>
               </div>
             </div>
-
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-gray-800 mb-3">
-                Chi tiết lương
-              </h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Lương ngày:</span>
-                  <span className="font-medium">
-                    {formatCurrency(
-                      parseFloat(
-                        salaryData.chiTietBangLuong?.TienLuongNgay || 0
-                      )
-                    )}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Thưởng Phụ cấp:</span>
-                  <span className="font-medium text-blue-600">
-                    +
-                    {formatCurrency(
-                      parseFloat(salaryData.chiTietBangLuong?.TienPhuCap || 0)
-                    )}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tiền phạt:</span>
-                  <span className="font-medium text-red-600">
-                    -
-                    {formatCurrency(
-                      parseFloat(salaryData.chiTietBangLuong?.TienPhat || 0)
-                    )}
-                  </span>
-                </div>
-                <hr className="my-2" />
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Tổng thu nhập:</span>
-                  <span className="text-green-600">
-                    {formatCurrency(
-                      parseFloat(salaryData.chiTietBangLuong?.tongtien || 0)
-                    )}
-                  </span>
-                </div>
+            {/* Tổng cộng cuối ngày */}
+            <div className="mt-6 bg-gray-50 rounded-lg p-4">
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>Tổng thu nhập trong ngày:</span>
+                <span className="text-green-600">
+                  {formatCurrency(
+                    calculateDailySummary(salaryData.chiTietBangLuong).tongThu
+                  )}
+                </span>
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h4 className="font-semibold text-gray-800 mb-3">
-                Thông tin chấm công
-              </h4>
-              <div className="space-y-4">
-                {salaryData.chiTietBangLuong?.cham_congs?.map(
-                  (chamCong, index) => (
-                    <div
-                      key={chamCong.MaChamCong}
-                      className="bg-white rounded-lg p-4 border"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                            {chamCong.MaLLV_lich_lam_viec.MaCaLam_ca_lam.TenCa}
-                          </span>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              chamCong.trangthai === "Hoàn thành"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                          >
-                            {chamCong.trangthai}
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {chamCong.NgayLe && (
-                            <span className="text-red-500">Ngày lễ</span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-600">Giờ vào:</span>
-                          <div className="font-medium">
-                            {formatTime(chamCong.GioVao)}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Giờ ra:</span>
-                          <div className="font-medium">
-                            {formatTime(chamCong.GioRa)}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Đi trễ:</span>
-                          <div className="font-medium text-red-600">
-                            {chamCong.DiTre} phút
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Về sớm:</span>
-                          <div className="font-medium text-red-600">
-                            {chamCong.VeSom} phút
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-            {salaryData.khenThuongKyLuats &&
-              salaryData.khenThuongKyLuats.length > 0 && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-3">
-                    Khen thưởng - Kỷ luật
-                  </h4>
-                  <div className="space-y-3">
-                    {salaryData.khenThuongKyLuats.map((item, index) => (
-                      <div
-                        key={item.MaKTKL}
-                        className={`p-3 rounded-lg border-l-4 ${
-                          item.ThuongPhat
-                            ? "bg-green-50 border-green-400"
-                            : "bg-red-50 border-red-400"
-                        }`}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div
-                              className={`font-medium ${
-                                item.ThuongPhat
-                                  ? "text-green-800"
-                                  : "text-red-800"
-                              }`}
-                            >
-                              {item.ThuongPhat ? "Khen thưởng" : "Kỷ luật"}
-                            </div>
-                            <div className="text-sm text-gray-600 mt-1">
-                              Lý do: {item.LyDo}
-                            </div>
-                            {item.DuocMienThue && (
-                              <div className="text-xs text-blue-600 mt-1">
-                                Được miễn thuế
-                              </div>
-                            )}
-                          </div>
-                          <div
-                            className={`font-bold ${
-                              item.ThuongPhat
-                                ? "text-green-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {item.ThuongPhat ? "+" : "-"}
-                            {formatCurrency(parseFloat(item.MucThuongPhat))}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
           </div>
         ) : (
           <div className="text-center py-12">
