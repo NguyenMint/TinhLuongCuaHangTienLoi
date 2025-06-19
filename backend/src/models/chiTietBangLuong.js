@@ -31,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false
     },
-    TienLuongNgay: {
+    TienLuongCa: {
       type: DataTypes.DECIMAL(15,2),
       allowNull: false
     },

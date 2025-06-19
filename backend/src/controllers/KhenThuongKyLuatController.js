@@ -39,8 +39,7 @@ class KhenThuongKyLuatController {
       }
 
       const khenthuongkyluat = await KhenThuongKyLuat.create(req.body);
-      console.log(khenthuongkyluat);
-      
+
       res.status(201).json({ success: true, khenthuongkyluat });
     } catch (error) {
       res
