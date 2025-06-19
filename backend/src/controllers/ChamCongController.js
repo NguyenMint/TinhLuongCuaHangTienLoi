@@ -97,7 +97,7 @@ class ChamCongController {
       let updatedRecord = null;
       let chamCongRecord = null;
 
-      if (MaChamCong) {
+      if (!!MaChamCong) {
         chamCongRecord = await db.ChamCong.findOne({
           where: { MaChamCong },
           include: [
@@ -133,10 +133,13 @@ class ChamCongController {
           NgayChamCong,
           trangthai: "Hoàn thành",
         });
-        if (!updatedRecord)
-          return res.status(500).json("Tạo chấm công mới thất bại");
+        if (!updatedRecord) {
+          return res
+            .status(500)
+            .json({ message: "Tạo bản ghi chấm công mới thất bại" });
+        }
         chamCongRecord = await db.ChamCong.findOne({
-          where: { MaChamCong },
+          where: { MaChamCong: updatedRecord.MaChamCong },
           include: [
             {
               model: db.LichLamViec,
@@ -155,7 +158,7 @@ class ChamCongController {
         console.warn("Không thể tạo bảng lương:", err.message);
       }
 
-      return res.status(201).json(updated);
+      return res.status(201).json(updatedRecord);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
