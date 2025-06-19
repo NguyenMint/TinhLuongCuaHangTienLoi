@@ -5,15 +5,22 @@ export function UpdateAllowanceCoefficientForm({ setShowModalUpdate, getData,all
     Ngay: allowanceCoefficient.Ngay,
     LoaiNgay: allowanceCoefficient.LoaiNgay,
     HeSoLuong: allowanceCoefficient.HeSoLuong,
+    isCaDem: allowanceCoefficient.isCaDem,
     MaHSN: allowanceCoefficient.MaHSN
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+    if (name === "isCaDem") {
+      setForm((prev) => ({
+        ...prev,
+        [name]: e.target.checked ? 1 : 0,
+      }));
+    } else {
     setForm((prev) => ({
       ...prev,
       [name]: value,
     }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -68,6 +75,16 @@ export function UpdateAllowanceCoefficientForm({ setShowModalUpdate, getData,all
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
               min={1}
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Ca đêm</label>
+            <input
+              type="checkbox"
+              name="isCaDem"
+              checked={form.isCaDem}
+              onChange={handleChange}
+              className="w-5 h-5 accent-blue-600"
             />
           </div>
           {form.LoaiNgay === "Ngày lễ" && (

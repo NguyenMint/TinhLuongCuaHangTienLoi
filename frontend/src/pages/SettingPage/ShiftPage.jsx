@@ -58,7 +58,7 @@ export function ShiftPage() {
               <th className="p-3 border text-center">Ca làm việc</th>
               <th className="p-3 border text-center">Thời gian</th>
               <th className="p-3 border text-center">Mô tả</th>
-              <th className="p-3 border text-center">Hệ số lương</th>
+              <th className="p-3 border text-center">Loại ca</th>
               <th className="p-3 border text-center">Hoạt động</th>
             </tr>
           </thead>
@@ -72,7 +72,7 @@ export function ShiftPage() {
                 </td>
                 <td className="px-4 py-2 border text-center">{shift.MoTa}</td>
                 <td className="px-4 py-2 border text-center">
-                  {shift.HeSoLuong}
+                  {shift.isCaDem? "Ca đêm" : "Ca thường"}
                 </td>
                 <td className="p-3 border flex items-center justify-center gap-4">
                   <Pencil className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500" 
