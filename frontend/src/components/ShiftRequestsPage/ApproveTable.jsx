@@ -39,7 +39,7 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
           ? dayShifts.map((dayShift) => {
               return (
                 <div
-                  key={dayShift.MaCaLam + dayShift.MaNS + date}
+                  key={dayShift.MaCaLam + dayShift.MaTK + dayShift.MaLLV}
                   className={`p-3 m-1 rounded-2xl cursor-pointer 
                     ${getShiftBgColor(dayShift)}`}
                   onClick={() => onShiftClick(dayShift)}
