@@ -3,8 +3,9 @@ import CheckInTab from "./TabContent/CheckInTab";
 import HistoryTab from "./TabContent/HistoryTab";
 import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
-import { CircleUserRound, IdCard } from "lucide-react";
+import { CircleUserRound, IdCard, X } from "lucide-react";
 import { calculatePhat } from "../../utils/TreSom";
+import { formatDate } from "../../utils/format.js";
 
 const ShiftModal = ({
   shift,
@@ -227,20 +228,7 @@ const ShiftModal = ({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
+            <X />
           </button>
         </div>
         <div className="p-4 border-b">
@@ -251,14 +239,14 @@ const ShiftModal = ({
             </div>
             <div className="flex items-center gap-2">
               <IdCard />
-              <span>{formData.MaTK}</span>
+              <span>{formData.MaTK_tai_khoan.MaNhanVien}</span>
             </div>
             {getStatusBadge()}
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <div className="text-sm text-gray-500">Thời gian</div>
-              <div className="font-medium">{formData.NgayLam}</div>
+              <div className="font-medium">{formatDate(formData.NgayLam)}</div>
             </div>
             <div>
               <div className="text-sm text-gray-500">Ca làm việc</div>

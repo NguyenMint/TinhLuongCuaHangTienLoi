@@ -70,11 +70,16 @@ class ChungChiController {
       }
 
       let updateData = { ...req.body };
-
+      console.log(chungChi.FileCC);
+      
       if (req.file) {
         // Delete old file if exists
         if (chungChi.FileCC) {
-          const oldFilePath = path.join(__dirname, "../../", chungChi.FileCC);
+          const oldFilePath = path.join(
+            __dirname,
+            "../../uploads/chungchi",
+            chungChi.FileCC
+          );
           if (fs.existsSync(oldFilePath)) {
             fs.unlinkSync(oldFilePath);
           }

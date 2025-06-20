@@ -33,10 +33,9 @@ export async function createChungChi(formData) {
 }
 export const deleteChungChi = async (MaCC) => {
   try {
-    const response = await fetch(
+    const response = await axios.delete(
       `${process.env.REACT_APP_BACKEND_URL}/chungchi/${MaCC}`,
       {
-        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           // 'Authorization': `Bearer ${token}`,
@@ -44,15 +43,7 @@ export const deleteChungChi = async (MaCC) => {
       }
     );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
-    }
-
-    const result = await response.json();
-    return result;
+    return response.data;
   } catch (error) {
     console.error("Error deleting ChungChi:", error);
     throw error;

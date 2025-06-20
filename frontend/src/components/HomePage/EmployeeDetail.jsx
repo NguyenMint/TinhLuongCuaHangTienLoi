@@ -6,6 +6,7 @@ import {
 } from "../../api/apiTaiKhoan";
 import { CertificatesTab } from "./CertTab/CertificatesTab";
 import { InfoTab } from "./CertTab/InfoTab";
+import { PhuCapTab } from "./PhuCapTab";
 
 export const EmployeeDetail = ({
   selectedEmployee,
@@ -16,7 +17,8 @@ export const EmployeeDetail = ({
   showDetail,
   setShowDetail,
   chungChis,
-  onSuccess
+  onSuccess,
+  phuCaps,
 }) => {
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
@@ -91,16 +93,30 @@ export const EmployeeDetail = ({
                   <span>Thông tin</span>
                 </div>
               </button>
+
               <button
                 className={`px-4 py-2 text-sm font-medium ${
-                  activeTab === "salary"
+                  activeTab === "chungchi"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
-                onClick={() => setActiveTab("salary")}
+                onClick={() => setActiveTab("chungchi")}
               >
                 <div className="flex items-center">
                   <span>Chứng chỉ</span>
+                </div>
+              </button>
+
+              <button
+                className={`px-4 py-2 text-sm font-medium ${
+                  activeTab === "phucap"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                onClick={() => setActiveTab("phucap")}
+              >
+                <div className="flex items-center">
+                  <span>Phụ cấp</span>
                 </div>
               </button>
             </div>
@@ -110,11 +126,18 @@ export const EmployeeDetail = ({
               {activeTab === "info" && (
                 <InfoTab selectedEmployee={selectedEmployee} />
               )}
-              {activeTab === "salary" && (
+              {activeTab === "chungchi" && (
                 <CertificatesTab
                   chungChis={chungChis}
                   // onEdit={onEdit}
                   // onDelete={onDelete}
+                  onSuccess={onSuccess}
+                  selectedEmployee={selectedEmployee}
+                />
+              )}
+              {activeTab === "phucap" && (
+                <PhuCapTab
+                  phuCaps={phuCaps}
                   onSuccess={onSuccess}
                   selectedEmployee={selectedEmployee}
                 />
