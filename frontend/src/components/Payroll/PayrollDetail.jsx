@@ -209,7 +209,7 @@ export function PayrollDetail({
             onClick={() => onDelete(payroll.KyLuong)}
           >
             <TrashIcon size={18} className="mr-1" />
-            <span>Hủy bỏ</span>
+            <span>Hủy bỏ bảng lương</span>
           </button>
         </div>
       </div>

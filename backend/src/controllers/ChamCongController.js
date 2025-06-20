@@ -1,6 +1,6 @@
 const { where } = require("sequelize");
 const db = require("../models");
-const {createSalaryDetail} = require("./chiTietBangLuongController");
+const { createSalaryDetail } = require("./chiTietBangLuongController");
 const ChamCong = db.ChamCong;
 class ChamCongController {
   async chamcong(req, res) {

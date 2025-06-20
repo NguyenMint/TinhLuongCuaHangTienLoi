@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import ApproveTable from "../components/ApproveShift/ApproveTable";
+import ApproveTable from "../components/ShiftRequestsPage/ApproveTable.jsx";
 import { fetchCaLam } from "../api/apiCaLam";
 import { fetchLichLamViec, updateLLV } from "../api/apiLichLamViec.js";
 import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
-import ApproveModal from "../components/ApproveShift/ApproveModal.jsx";
+import ApproveModal from "../components/ShiftRequestsPage/ApproveModal";
 
 export function ShiftRequests() {
   const [shifts, setShifts] = useState([]);
