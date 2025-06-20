@@ -16,7 +16,7 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
     }));
   };
   return (
-    <div className="p-4 text-center">
+    <div className="text-center">
       <>
         <table className="w-full border-collapse border border-gray-300">
           <thead>
