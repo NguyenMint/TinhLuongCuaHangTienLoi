@@ -1,14 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 export const getHeSoPhuCap = async () => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/hesophucap`);
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/hesophucap`
+    );
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
 };
-export const createHeSoPhuCap = async (phuCapData) =>{
+export const createHeSoPhuCap = async (phuCapData) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.post(
@@ -22,18 +24,18 @@ export const createHeSoPhuCap = async (phuCapData) =>{
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if(error.response.status===409){
-      return {success:false, message: error.response.data.message}
+    if (error.response.status === 409) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi lấy hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
-}
-export const updateHeSoPhuCap = async (phuCapData) =>{
+};
+export const updateHeSoPhuCap = async (phuCapData) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.put(
-      `${process.env.REACT_APP_BACKEND_URL}/hesophucap/${phuCapData.MaHSN}`,
+      `${process.env.REACT_APP_BACKEND_URL}/hesophucap`,
       phuCapData,
       {
         headers: {
@@ -43,19 +45,20 @@ export const updateHeSoPhuCap = async (phuCapData) =>{
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if(error.response.status===404){
-      return {success:false, message: error.response.data.message}
+    if (error.response.status === 404) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi lấy hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
-}
-export const deleteHeSoPhuCap = async (MaHSN) =>{
+};
+export const deleteHeSoPhuCap = async (maHSN) => {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.delete(
-      `${process.env.REACT_APP_BACKEND_URL}/hesophucap/${MaHSN}`,
+      `${process.env.REACT_APP_BACKEND_URL}/hesophucap`,
       {
+        data: maHSN,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,10 +66,10 @@ export const deleteHeSoPhuCap = async (MaHSN) =>{
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if(error.response.status===404){
-      return {success:false, message: error.response.data.message}
+    if (error.response && error.response.status === 404) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi lấy hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
-}
+};

@@ -11,15 +11,55 @@ export function AllowanceCoefficientPage() {
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [selectedAllowanceCoefficient, setSelectedAllowanceCoefficient] =
     useState(null);
-  const [maHSN, setMaHSN] = useState(null);
+  const [maHSN, setMaHSN] = useState({
+    MaHSNCaDem: null,
+    MaHSNCaThuong: null,
+  });
   const fetchHeSoPhuCap = async () => {
     try {
       const response = await getHeSoPhuCap();
-      setData(response);
+      const { cuoiTuan, ngayThuong, ngayLe } = response;
+      const rows = [
+        ...groupByLoaiNgay(cuoiTuan, "Cuối tuần"),
+        ...groupByLoaiNgay(ngayThuong, "Ngày thường"),
+        ...groupNgayLe(ngayLe),
+      ];
+      setData(rows);
+      console.log(rows);
     } catch (error) {
       console.error("Lỗi lấy hệ số phụ cấp:", error);
     }
   };
+  function groupByLoaiNgay(arr, loaiNgay) {
+    if (!arr || arr.length === 0) return [];
+    const caThuong = arr.find((item) => !item.isCaDem);
+    const caDem = arr.find((item) => item.isCaDem);
+    return [
+      {
+        ngay: "Tất cả",
+        loaiNgay,
+        caThuong,
+        caDem,
+      },
+    ];
+  }
+  function groupNgayLe(arr) {
+    if (!arr || arr.length === 0) return [];
+    const grouped = {};
+    arr.forEach((item) => {
+      const key = item.Ngay;
+      if (!grouped[key])
+        grouped[key] = {
+          ngay: item.Ngay,
+          loaiNgay: "Ngày lễ",
+          caThuong: null,
+          caDem: null,
+        };
+      if (item.isCaDem) grouped[key].caDem = item;
+      else grouped[key].caThuong = item;
+    });
+    return Object.values(grouped);
+  }
   useEffect(() => {
     fetchHeSoPhuCap();
   }, []);
@@ -64,7 +104,6 @@ export function AllowanceCoefficientPage() {
                     <th className="p-3 border text-center">Ngày</th>
                     <th className="p-3 border text-center">Hệ số lương</th>
                     <th className="p-3 border text-center">Loại ngày</th>
-                    <th className="p-3 border text-center">Loại ca</th>
                     <th className="p-3 border text-center">Hoạt động</th>
                   </tr>
                 </thead>
@@ -75,31 +114,34 @@ export function AllowanceCoefficientPage() {
                         {index + 1}
                       </td>
                       <td className="px-4 py-2 border text-center">
-                        {coefficient.Ngay ? coefficient.Ngay : "All"}
+                        {coefficient.ngay}
                       </td>
                       <td className="px-4 py-2 border text-center">
-                        {coefficient.HeSoLuong}
+                        Ca thường: {coefficient.caThuong.HeSoLuong} - Ca đêm:{" "}
+                        {coefficient.caDem.HeSoLuong}
                       </td>
                       <td className="px-4 py-2 border text-center">
-                        {coefficient.LoaiNgay}
+                        {coefficient.loaiNgay}
                       </td>
-                      <td className="px-4 py-2 border text-center">
-                        {coefficient.isCaDem ? "Ca đêm" : "Ca thường"}
-                      </td>
-                      <td className="p-3 border flex items-center justify-center gap-4">  
+                      <td className="p-3 border flex items-center justify-center gap-4">
                         <Pencil
                           className="w-5 h-5 cursor-pointer text-gray-600 hover:text-blue-500"
                           onClick={() => {
                             setShowModalUpdate(true);
                             setSelectedAllowanceCoefficient(coefficient);
+                            console.log(coefficient);
                           }}
                         />
                         <Trash2
                           className="w-5 h-5 cursor-pointer text-gray-600 hover:text-red-500"
                           onClick={() => {
                             setShowModalDelete(true);
-                            setMaHSN(coefficient.MaHSN);
-                            console.log(maHSN);
+                             setMaHSN({
+                              MaHSNCaDem:coefficient.caDem.MaHSN,
+                              MaHSNCaThuong:coefficient.caThuong.MaHSN
+                            });
+                            console.log(coefficient.caDem.MaHSN,
+                              coefficient.caThuong.MaHSN);
                           }}
                         />
                       </td>
