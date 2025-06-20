@@ -9,6 +9,7 @@ import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx";
 import { UpdateEmployeeModal } from "../components/Employee/UpdateEmployeeModal.jsx";
 import { Pagination } from "../components/Pagination.jsx";
+import { getChungChi } from "../api/apiChungChi.js";
 
 export function HomePage() {
   // State for filters
@@ -22,6 +23,7 @@ export function HomePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [chinhanhs, setChiNhanhs] = useState([]);
+  const [chungChis, setChungChis] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   // 3 useState đóng mở thêm sửa nhân viên
@@ -57,12 +59,23 @@ export function HomePage() {
       console.error("Lỗi khi lấy Chi nhánh:", error);
     }
   };
-
+  const fetchChungChi = async (MaTK) => {
+    try {
+      const data = await getChungChi(MaTK);
+      setChungChis(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Chứng chỉ:", error);
+    }
+  };
   useEffect(() => {
     getAllNhanVien();
     fetchChiNhanh();
   }, []);
-
+  useEffect(() => {
+    if (selectedEmployee) {
+      fetchChungChi(selectedEmployee.MaTK);
+    }
+  }, [selectedEmployee]);
   useEffect(() => {
     let filtered = Array.isArray(employees) ? [...employees] : [];
 
@@ -213,13 +226,15 @@ export function HomePage() {
         {/* Employee Detail Modal */}
         {selectedEmployee && (
           <EmployeeDetail
-            employee={selectedEmployee}
+            chungChis={chungChis}
+            selectedEmployee={selectedEmployee}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             onEmployeeStatusChange={refreshEmployeeData}
             setShowModalUpdate={setShowModalUpdate}
             showDetail={showDetail}
             setShowDetail={setShowDetail}
+            onSuccess={()=>selectedEmployee && fetchChungChi(selectedEmployee.MaTK)}
           />
         )}
       </div>
