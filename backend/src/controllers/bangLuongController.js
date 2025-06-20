@@ -430,7 +430,7 @@ class bangLuongController {
         KyLuong: payroll.KyLuong,
         NgayTao: payroll.NgayTao,
         MaCN: payroll["MaTK_tai_khoan.MaCN"],
-        TongLuong: Number(payroll.TongLuong),
+        TongLuongThucNhan: Number(payroll.TongLuong),
         SoLuong: Number(payroll.SoLuong),
         ChuaTra: Number(payroll.ChuaTra),
         TenChiNhanh: payroll["MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh"],

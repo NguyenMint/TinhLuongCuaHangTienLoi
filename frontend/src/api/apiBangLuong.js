@@ -39,8 +39,6 @@ export const getKyLuong = async () => {
   }
 };
 export const getBLByCN = async (macn) => {
-  console.log(macn);
-
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_BACKEND_URL}/bangluong/getbl/${macn}`
