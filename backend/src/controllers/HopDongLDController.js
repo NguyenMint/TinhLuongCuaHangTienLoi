@@ -66,7 +66,7 @@ class HopDongController {
       }
       const oldAvatarPath = path.join(__dirname, "../../", hopdong.File);
       fs.unlink(oldAvatarPath, (err) => {
-        if (err) console.error("Không thể xóa avatar cũ:", err);
+        if (err) console.error("Không thể xóa hợp đồng cũ:", err);
       });
       await hopdong.destroy();
        res.status(200).json({message:"Xóa thành công"});

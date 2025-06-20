@@ -10,6 +10,7 @@ import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx
 import { UpdateEmployeeModal } from "../components/Employee/UpdateEmployeeModal.jsx";
 import { Pagination } from "../components/Pagination.jsx";
 import { getChungChi } from "../api/apiChungChi.js";
+import { getAllPhuCap } from "../api/apiPhuCap.js";
 
 export function HomePage() {
   // State for filters
@@ -24,6 +25,7 @@ export function HomePage() {
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [chungChis, setChungChis] = useState([]);
+  const [phuCaps, setPhuCaps] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   // 3 useState đóng mở thêm sửa nhân viên
@@ -67,15 +69,28 @@ export function HomePage() {
       console.error("Lỗi khi lấy Chứng chỉ:", error);
     }
   };
+
+  const fetchPhuCap = async (MaTK) => {
+    try {
+      const data = await getAllPhuCap(MaTK);
+      setPhuCaps(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Phụ cấp:", error);
+    }
+  };
+
   useEffect(() => {
     getAllNhanVien();
     fetchChiNhanh();
   }, []);
+
   useEffect(() => {
     if (selectedEmployee) {
+      fetchPhuCap(selectedEmployee.MaTK);
       fetchChungChi(selectedEmployee.MaTK);
     }
   }, [selectedEmployee]);
+
   useEffect(() => {
     let filtered = Array.isArray(employees) ? [...employees] : [];
 
@@ -226,6 +241,7 @@ export function HomePage() {
         {/* Employee Detail Modal */}
         {selectedEmployee && (
           <EmployeeDetail
+            phuCaps={phuCaps}
             chungChis={chungChis}
             selectedEmployee={selectedEmployee}
             activeTab={activeTab}
@@ -234,7 +250,12 @@ export function HomePage() {
             setShowModalUpdate={setShowModalUpdate}
             showDetail={showDetail}
             setShowDetail={setShowDetail}
-            onSuccess={()=>selectedEmployee && fetchChungChi(selectedEmployee.MaTK)}
+            onSuccess={() => {
+              if (selectedEmployee) {
+                fetchPhuCap(selectedEmployee.MaTK);
+                fetchChungChi(selectedEmployee.MaTK);
+              }
+            }}
           />
         )}
       </div>
