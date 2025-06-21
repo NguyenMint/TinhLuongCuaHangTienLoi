@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SearchIcon, FileIcon } from "lucide-react";
 import { ChevronDownIcon, PlusIcon } from "./icons";
-export function Header({ onSearch, onExport, setShowCreatePayroll }) {
+export function Header({ onSearch, setShowCreatePayroll }) {
   const [searchTerm, setSearchTerm] = useState("");
   // Debounce search
   useEffect(() => {
@@ -23,13 +23,6 @@ export function Header({ onSearch, onExport, setShowCreatePayroll }) {
           >
             <PlusIcon size={18} className="mr-1" />
             <span>Bảng tính lương</span>
-          </button>
-          <button
-            className="bg-green-500 text-white px-4 py-2 rounded flex items-center"
-            onClick={onExport}
-          >
-            <FileIcon size={18} className="mr-1" />
-            <span>Xuất file</span>
           </button>
         </div>
       </div>
