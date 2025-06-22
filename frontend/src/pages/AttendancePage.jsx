@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AttendanceTable from "../components/attendance/AttendanceTable";
 import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchCaLam } from "../api/apiCaLam";
-import { fetchLichLamViec } from "../api/apiLichLamViec.js";
+import { fetchLLVDaDangKy } from "../api/apiLichLamViec.js";
 import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import { chamCong, update_chamcong } from "../api/apiChamCong";
@@ -52,7 +52,7 @@ export function AttendancePage() {
 
   const getAllLichLamViec = async () => {
     try {
-      const data = await fetchLichLamViec();
+      const data = await fetchLLVDaDangKy();
       setLichLamViecs(data);
     } catch (error) {
       console.error("Lỗi khi lấy Nhân viên:", error);

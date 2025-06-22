@@ -2,6 +2,7 @@ const express = require('express');
 const route = express.Router();
 const LichLamViecController = require('../controllers/LichLamViecController');
 route.get('/getCaLamByNhanVien/:MaTK', LichLamViecController.getCaLamByNhanVien);
+route.get('/getAllDaDangKy', LichLamViecController.getAllDaDangKy);
 route.get('/getAllCaLamMonthlyByNhanVien',LichLamViecController.getAllCaLamMonthlyByNhanVien);
 route.post('/dangKyCa',LichLamViecController.dangKyCa);
 route.delete('/huyDangKy/:MaLLV',LichLamViecController.huyDangKy);

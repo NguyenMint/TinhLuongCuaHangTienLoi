@@ -201,9 +201,9 @@ export function EmployeeProfilePage() {
                       </p>
                     </div>
                     <div>
-                      <span className="text-gray-600 text-sm">Thành tiền:</span>
+                      <span className="text-gray-600 text-sm">Tiền lương ca:</span>
                       <p className="font-medium text-green-600">
-                        {formatCurrency(parseFloat(chiTiet.TienLuongNgay))}
+                        {formatCurrency(parseFloat(chiTiet.TienLuongCa))}
                       </p>
                     </div>
                   </div>

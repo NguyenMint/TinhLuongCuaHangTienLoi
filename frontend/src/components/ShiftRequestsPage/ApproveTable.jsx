@@ -27,10 +27,17 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
     if (tt === "Đã Đăng Ký") return "bg-blue-100";
     if (tt === "Chờ Xác Nhận") return "bg-yellow-100";
     if (tt === "Từ Chối") return "bg-red-100";
-    if (tt === "Chuyển ca") return "bg-purple-100";
+    if (tt === "Chuyển Ca") return "bg-purple-100";
     return "bg-red-100";
   };
-
+  const getShiftColor = (shift) => {
+    const tt = shift.TrangThai;
+    if (tt === "Đã Đăng Ký") return "text-green-600";
+    if (tt === "Chờ Xác Nhận") return "text-yellow-600";
+    if (tt === "Từ Chối") return "text-red-600";
+    if (tt === "Chuyển Ca") return "text-purple-600";
+    return "text-black";
+  };
   const renderShift = (shift, date) => {
     const dayShifts = getShiftsByShiftIdAndDay(shift.MaCa, date);
     return (
@@ -44,8 +51,9 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
                     ${getShiftBgColor(dayShift)}`}
                   onClick={() => onShiftClick(dayShift)}
                 >
-                  <div className="font-medium text-center text-sm">
-                    {dayShift.MaTK_tai_khoan.HoTen}
+                  <div className="font-medium text-center text-sm flex flex-col">
+                    <span>{dayShift.MaTK_tai_khoan.HoTen}</span>
+                    <span className={`${getShiftColor(dayShift)}`}>{dayShift.TrangThai}</span>
                   </div>
                 </div>
               );
