@@ -55,13 +55,11 @@ export const WorkSchedule = () => {
   const getAllLichLamViec = async () => {
     try {
       const data = await fetchLichLamViec();
-      // Chỉ lấy các ca đã được duyệt cho trang lịch chính
       const approvedSchedules = data.filter(
         (schedule) => schedule.TrangThai === "Đã Đăng Ký"
       );
       setSchedules(approvedSchedules);
 
-      // Đếm số lượng đăng ký chờ duyệt
       const pending = data.filter(
         (schedule) => schedule.TrangThai === "Chờ Xác Nhận"
       );

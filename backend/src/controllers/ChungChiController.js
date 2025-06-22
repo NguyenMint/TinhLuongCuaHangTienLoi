@@ -63,6 +63,7 @@ class ChungChiController {
   }
 
   async update(req, res) {
+    
     try {
       const chungChi = await ChungChi.findByPk(req.params.id);
       if (!chungChi) {

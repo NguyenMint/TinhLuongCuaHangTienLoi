@@ -11,6 +11,7 @@ import { UpdateEmployeeModal } from "../components/Employee/UpdateEmployeeModal.
 import { Pagination } from "../components/Pagination.jsx";
 import { getChungChi } from "../api/apiChungChi.js";
 import { getAllPhuCap } from "../api/apiPhuCap.js";
+import { getHopDong } from "../api/apiHopDong.js";
 
 export function HomePage() {
   // State for filters
@@ -26,6 +27,7 @@ export function HomePage() {
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [chungChis, setChungChis] = useState([]);
   const [phuCaps, setPhuCaps] = useState([]);
+  const [hopDongs, setHopDongs] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   // 3 useState đóng mở thêm sửa nhân viên
@@ -69,7 +71,14 @@ export function HomePage() {
       console.error("Lỗi khi lấy Chứng chỉ:", error);
     }
   };
-
+  const fetchHopDong = async (MaTK) => {
+    try {
+      const data = await getHopDong(MaTK);
+      setHopDongs(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy Chứng chỉ:", error);
+    }
+  };
   const fetchPhuCap = async (MaTK) => {
     try {
       const data = await getAllPhuCap(MaTK);
@@ -88,6 +97,7 @@ export function HomePage() {
     if (selectedEmployee) {
       fetchPhuCap(selectedEmployee.MaTK);
       fetchChungChi(selectedEmployee.MaTK);
+      fetchHopDong(selectedEmployee.MaTK);
     }
   }, [selectedEmployee]);
 
@@ -241,6 +251,7 @@ export function HomePage() {
         {/* Employee Detail Modal */}
         {selectedEmployee && (
           <EmployeeDetail
+            hopDongs={hopDongs}
             phuCaps={phuCaps}
             chungChis={chungChis}
             selectedEmployee={selectedEmployee}
@@ -254,6 +265,7 @@ export function HomePage() {
               if (selectedEmployee) {
                 fetchPhuCap(selectedEmployee.MaTK);
                 fetchChungChi(selectedEmployee.MaTK);
+                fetchHopDong(selectedEmployee.MaTK);
               }
             }}
           />
