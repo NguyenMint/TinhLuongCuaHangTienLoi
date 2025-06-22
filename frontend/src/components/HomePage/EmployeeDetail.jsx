@@ -5,7 +5,8 @@ import {
   updateTiepTucLamViec,
 } from "../../api/apiTaiKhoan";
 import { CertificatesTab } from "./CertTab/CertificatesTab";
-import { InfoTab } from "./CertTab/InfoTab";
+import { HopDongTab } from "./HopDongTab/HopDongTab";
+import { InfoTab } from "./InfoTab";
 import { PhuCapTab } from "./PhuCapTab";
 
 export const EmployeeDetail = ({
@@ -19,6 +20,7 @@ export const EmployeeDetail = ({
   chungChis,
   onSuccess,
   phuCaps,
+  hopDongs
 }) => {
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [confirmationCode, setConfirmationCode] = useState("");
@@ -96,6 +98,19 @@ export const EmployeeDetail = ({
 
               <button
                 className={`px-4 py-2 text-sm font-medium ${
+                  activeTab === "phucap"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                onClick={() => setActiveTab("phucap")}
+              >
+                <div className="flex items-center">
+                  <span>Phụ cấp</span>
+                </div>
+              </button>
+
+              <button
+                className={`px-4 py-2 text-sm font-medium ${
                   activeTab === "chungchi"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500 hover:text-gray-700"
@@ -109,14 +124,14 @@ export const EmployeeDetail = ({
 
               <button
                 className={`px-4 py-2 text-sm font-medium ${
-                  activeTab === "phucap"
+                  activeTab === "hopdong"
                     ? "text-blue-600 border-b-2 border-blue-600"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
-                onClick={() => setActiveTab("phucap")}
+                onClick={() => setActiveTab("hopdong")}
               >
                 <div className="flex items-center">
-                  <span>Phụ cấp</span>
+                  <span>Hợp đồng</span>
                 </div>
               </button>
             </div>
@@ -138,6 +153,16 @@ export const EmployeeDetail = ({
               {activeTab === "phucap" && (
                 <PhuCapTab
                   phuCaps={phuCaps}
+                  onSuccess={onSuccess}
+                  selectedEmployee={selectedEmployee}
+                />
+              )}
+
+              {activeTab === "hopdong" && (
+                <HopDongTab
+                  hopDongs={hopDongs}
+                  // onEdit={onEdit}
+                  // onDelete={onDelete}
                   onSuccess={onSuccess}
                   selectedEmployee={selectedEmployee}
                 />

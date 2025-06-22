@@ -12,6 +12,19 @@ class HopDongController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  async getByMaTK(req, res) {
+    try {
+      const hopdongs = await HopDong.findAll({
+        where: { MaTK: req.params.MaTK },
+      });
+      res.status(200).json(hopdongs);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async create(req, res) {
     try {
       if (!req.file) {
@@ -31,6 +44,8 @@ class HopDongController {
     }
   }
   async update(req, res) {
+    console.log(req.body);
+    
     try {
       const { MaHDLD } = req.params;
       const hopdong = await HopDong.findByPk(MaHDLD);
@@ -44,7 +59,7 @@ class HopDongController {
       }
       const oldAvatarPath = path.join(__dirname, "../../", hopdong.File);
       fs.unlink(oldAvatarPath, (err) => {
-        if (err) console.error("Không thể xóa avatar cũ:", err);
+        if (err) console.error("Không thể xóa hợp đồng cũ:", err);
       });
       const filePath = path.join("uploads/hopdong", req.file.filename);
       await hopdong.update({
@@ -69,7 +84,7 @@ class HopDongController {
         if (err) console.error("Không thể xóa hợp đồng cũ:", err);
       });
       await hopdong.destroy();
-       res.status(200).json({message:"Xóa thành công"});
+      res.status(200).json({ message: "Xóa thành công" });
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
