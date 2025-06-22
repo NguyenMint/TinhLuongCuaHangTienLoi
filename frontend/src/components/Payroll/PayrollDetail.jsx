@@ -11,14 +11,12 @@ export function PayrollDetail({
   phieuLuongs,
 }) {
   const [activeTab, setActiveTab] = useState("information");
-  // console.log(payroll);
   const phieuLuong = phieuLuongs.employees;
-
   const handleExport = async () => {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Bảng lương");
-      worksheet.mergeCells("A1:I1");
+      worksheet.mergeCells("A1:K1");
       const titleRow = worksheet.getRow(1);
       titleRow.height = 30;
       titleRow.getCell(1).value = "DANH SÁCH BẢNG LƯƠNG NHÂN VIÊN";
@@ -51,10 +49,12 @@ export function PayrollDetail({
         "STT",
         "Mã nhân viên",
         "Họ tên",
-        "Tổng lương",
+        "Số giờ làm việc",
+        "Lương tháng",
         "Tổng phụ cấp",
         "Tổng thưởng",
         "Tổng phạt",
+        "Tổng lương",
         "Thuế phải đóng",
         "Lương thực nhận",
       ];
@@ -87,20 +87,23 @@ export function PayrollDetail({
             index + 1,
             employee.MaNhanVien,
             employee.HoTen,
-            parseFloat(employee.TongLuong) || 0,
+            employee.TongGioLamViec,
+            parseFloat(employee.LuongThang) || 0,
             parseFloat(employee.TongPhuCap) || 0,
             parseFloat(employee.TongThuong) || 0,
             parseFloat(employee.TongPhat) || 0,
+            parseFloat(employee.TongLuong) || 0,
             parseFloat(employee.ThuePhaiDong) || 0,
             parseFloat(employee.LuongThucNhan) || 0,
           ]);
 
-          row.getCell(4).numFmt = "#,##0";
           row.getCell(5).numFmt = "#,##0";
           row.getCell(6).numFmt = "#,##0";
           row.getCell(7).numFmt = "#,##0";
           row.getCell(8).numFmt = "#,##0";
           row.getCell(9).numFmt = "#,##0";
+          row.getCell(10).numFmt = "#,##0";
+          row.getCell(11).numFmt = "#,##0";
 
           row.getCell(1).alignment = { horizontal: "center" };
           row.getCell(2).alignment = { horizontal: "center" };
@@ -110,15 +113,17 @@ export function PayrollDetail({
           row.getCell(7).alignment = { horizontal: "right" };
           row.getCell(8).alignment = { horizontal: "right" };
           row.getCell(9).alignment = { horizontal: "right" };
+          row.getCell(10).alignment = { horizontal: "right" };
+          row.getCell(11).alignment = { horizontal: "right" };
         });
 
         const totalRow = worksheet.addRow([]);
-        worksheet.mergeCells(`A${totalRow.number}:H${totalRow.number}`);
+        worksheet.mergeCells(`A${totalRow.number}:J${totalRow.number}`);
         const labelCell = totalRow.getCell(1);
         labelCell.value = "TỔNG CỘNG";
         labelCell.alignment = { horizontal: "right", vertical: "middle" };
 
-        const valueCell = totalRow.getCell(9);
+        const valueCell = totalRow.getCell(11);
         valueCell.value = parseFloat(payroll.TongLuongThucNhan) || 0;
 
         totalRow.eachCell({ includeEmpty: true }, (cell) => {
@@ -137,6 +142,8 @@ export function PayrollDetail({
         { width: 8 },
         { width: 15 },
         { width: 30 },
+        { width: 20 },
+        { width: 20 },
         { width: 20 },
         { width: 20 },
         { width: 20 },
