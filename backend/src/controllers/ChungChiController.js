@@ -71,7 +71,6 @@ class ChungChiController {
       }
 
       let updateData = { ...req.body };
-      console.log(chungChi.FileCC);
       
       if (req.file) {
         // Delete old file if exists

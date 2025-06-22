@@ -44,28 +44,30 @@ class HopDongController {
     }
   }
   async update(req, res) {
-    console.log(req.body);
-    
     try {
       const { MaHDLD } = req.params;
       const hopdong = await HopDong.findByPk(MaHDLD);
       if (!hopdong) {
-        return res.status(404).json({ message: "Hợp dồng không tồn tại" });
+        return res.status(404).json({ message: "Hợp đồng không tồn tại" });
       }
-      if (!req.file) {
-        return res
-          .status(400)
-          .json({ message: "Vui lòng upload file hợp đồng" });
+      let updateData = { ...req.body };
+
+      if (req.file) {
+        // Delete old file if exists
+        if (hopdong.File) {
+          const oldFilePath = path.join(
+            __dirname,
+            "../../uploads/hopdong",
+            hopdong.File
+          );
+          if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+          }
+        }
+        updateData.File = `${req.File.name}`;
       }
-      const oldAvatarPath = path.join(__dirname, "../../", hopdong.File);
-      fs.unlink(oldAvatarPath, (err) => {
-        if (err) console.error("Không thể xóa hợp đồng cũ:", err);
-      });
-      const filePath = path.join("uploads/hopdong", req.file.filename);
-      await hopdong.update({
-        ...req.body,
-        File: filePath,
-      });
+
+      await hopdong.update(updateData);
       res.status(200).json(hopdong);
     } catch (error) {
       console.log("ERROR: " + error);
@@ -77,7 +79,7 @@ class HopDongController {
       const { MaHDLD } = req.params;
       const hopdong = await HopDong.findByPk(MaHDLD);
       if (!hopdong) {
-        return res.status(404).json({ message: "Hợp dồng không tồn tại" });
+        return res.status(404).json({ message: "Hợp đồng không tồn tại" });
       }
       const oldAvatarPath = path.join(__dirname, "../../", hopdong.File);
       fs.unlink(oldAvatarPath, (err) => {
