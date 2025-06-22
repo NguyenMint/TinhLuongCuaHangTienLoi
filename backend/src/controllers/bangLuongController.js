@@ -525,6 +525,8 @@ class bangLuongController {
           MaBangLuong: payroll.MaBangLuong,
           MaNhanVien: payroll.MaTK_tai_khoan.MaNhanVien,
           HoTen: payroll.MaTK_tai_khoan.HoTen,
+          LuongThang:payroll.LuongThang,
+          TongGioLamViec:payroll.TongGioLamViec,
           TongLuong: payroll.TongLuong,
           TongPhuCap: payroll.TongPhuCap,
           TongThuong: payroll.TongThuong,
