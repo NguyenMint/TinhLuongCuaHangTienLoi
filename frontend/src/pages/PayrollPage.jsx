@@ -16,7 +16,9 @@ import { getChiNhanh } from "../api/apiChiNhanh";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
 import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 import { Pagination } from "../components/Pagination";
-
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import { formatCurrency } from "../utils/format";
 export function PayrollPage() {
   // State variables
   const [payrolls, setPayrolls] = useState([]);
@@ -97,8 +99,8 @@ export function PayrollPage() {
   const fetchPhieuLuongs = async (kyLuong) => {
     try {
       const data = await getBLByKyLuong(kyLuong);
-
       setPhieuLuongs(Array.isArray(data.employees) ? data : []);
+      console.log(data);
     } catch (error) {
       console.error("Lỗi khi lấy Bảng Lương:", error);
       setPhieuLuongs([]);
@@ -209,14 +211,6 @@ export function PayrollPage() {
     setSelectedPayroll(payroll);
   };
 
-  const handleExport = () => {
-    if (filteredPayrolls.length === 0) {
-      alert("Không có dữ liệu để xuất");
-      return;
-    }
-    alert("Chức năng xuất dữ liệu sẽ được triển khai ở đây");
-  };
-
   const handleDelete = async (KyLuong) => {
     if (window.confirm("Bạn có chắc chắn muốn hủy bảng lương này?")) {
       await deleteBangLuong(KyLuong);
@@ -278,7 +272,6 @@ export function PayrollPage() {
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header
           onSearch={handleSearch}
-          onExport={handleExport}
           setShowCreatePayroll={setShowCreatePayroll}
           loading={loading}
         />
@@ -321,7 +314,7 @@ export function PayrollPage() {
 
           {showDetail && selectedPayroll && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-auto">
+              <div className="bg-white rounded-lg shadow-lg max-w-5xl w-full mx-4 max-h-[90vh] overflow-auto">
                 <PayrollDetail
                   phieuLuongs={phieuLuongs}
                   payroll={selectedPayroll}

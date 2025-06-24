@@ -48,7 +48,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     ThuePhaiDong: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(15,2),
       allowNull: false
     },
     NgayTao: {

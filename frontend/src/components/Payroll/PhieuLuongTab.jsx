@@ -23,10 +23,12 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
             <tr className="bg-gray-100">
               <th className="border border-gray-300 p-2">Mã NV</th>
               <th className="border border-gray-300 p-2">Tên NV</th>
-              <th className="border border-gray-300 p-2">Tổng Lương</th>
+              <th className="border border-gray-300 p-2">Số giờ làm việc</th>
+              <th className="border border-gray-300 p-2">Lương tháng</th>
               <th className="border border-gray-300 p-2">Phụ Cấp</th>
               <th className="border border-gray-300 p-2">Thưởng</th>
               <th className="border border-gray-300 p-2">Phạt</th>
+              <th className="border border-gray-300 p-2">Tổng Lương</th>
               <th className="border border-gray-300 p-2">Thuế</th>
               <th className="border border-gray-300 p-2">Lương Thực Nhận</th>
               {/* <th className="border border-gray-300 p-2">Chi Tiết</th> */}
@@ -42,8 +44,11 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
                   <td className="border border-gray-300 p-2 text-center">
                     {employee.HoTen}
                   </td>
-                  <td className="border border-gray-300 p-2 text-right">
-                    {formatCurrency(employee.TongLuong)}
+                  <td className="border border-gray-300 p-2 text-center">
+                    {employee.TongGioLamViec} giờ
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center">
+                    {formatCurrency(employee.LuongThang)}
                   </td>
                   <td className="border border-gray-300 p-2 text-right">
                     {formatCurrency(employee.TongPhuCap)}
@@ -53,6 +58,9 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
                   </td>
                   <td className="border border-gray-300 p-2 text-right">
                     {formatCurrency(employee.TongPhat)}
+                  </td>
+                  <td className="border border-gray-300 p-2 text-right">
+                    {formatCurrency(employee.TongLuong)}
                   </td>
                   <td className="border border-gray-300 p-2 text-right">
                     {formatCurrency(employee.ThuePhaiDong)}

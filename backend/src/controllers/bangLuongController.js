@@ -61,7 +61,7 @@ async function createBL(MaTK, Thang, Nam) {
     });
     TongLuong += TongPhuCap;
     const taiKhoan = await TaiKhoan.findByPk(MaTK);
-    if (taiKhoan) {
+    if (taiKhoan && taiKhoan.LoaiNV === "FullTime") {
       if (TongGioLamViec >= 24 * 8) LuongThang = taiKhoan.LuongCoBanHienTai;
     }
     const phuCapTinhThue = await PhuCap.findAll({
@@ -525,6 +525,8 @@ class bangLuongController {
           MaBangLuong: payroll.MaBangLuong,
           MaNhanVien: payroll.MaTK_tai_khoan.MaNhanVien,
           HoTen: payroll.MaTK_tai_khoan.HoTen,
+          LuongThang:payroll.LuongThang,
+          TongGioLamViec:payroll.TongGioLamViec,
           TongLuong: payroll.TongLuong,
           TongPhuCap: payroll.TongPhuCap,
           TongThuong: payroll.TongThuong,

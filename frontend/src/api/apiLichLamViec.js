@@ -10,6 +10,15 @@ export const fetchLichLamViec = async () => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const fetchLLVDaDangKy = async () => {
+  try {
+    const response = await axios.get( `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllDaDangKy`);
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Ca làm:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+}
 export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
   try {
     const response = await axios.get(

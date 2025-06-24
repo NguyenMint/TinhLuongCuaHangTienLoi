@@ -11,65 +11,147 @@ export function PayrollDetail({
   phieuLuongs,
 }) {
   const [activeTab, setActiveTab] = useState("information");
-  // console.log(payroll);
   const phieuLuong = phieuLuongs.employees;
-
-  const exportData = [
-    { "Mã bảng lương": payroll.MaBangLuong },
-    // { "Tên nhân viên": payroll.MaTK_tai_khoan.HoTen },
-    { "Kỳ lương": payroll.KyLuong },
-    { "Ngày tạo": payroll.NgayTao },
-    // { "Chi nhánh": payroll.MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh },
-    { "Lương thực nhận": formatCurrency(payroll.LuongThucNhan) },
-    { "Tổng lương": formatCurrency(payroll.TongLuong) },
-    { "Thu nhập miễn thuế": formatCurrency(payroll.ThuNhapMienThue) },
-    { "Thu nhập chịu thuế": formatCurrency(payroll.ThuNhapChiuThue) },
-    { "Thuế phải đóng": formatCurrency(payroll.ThuePhaiDong) },
-    { "Tổng phạt": formatCurrency(payroll.TongPhat) },
-    { "Tổng phụ cấp": formatCurrency(payroll.TongPhuCap) },
-    { "Tổng thưởng": formatCurrency(payroll.TongThuong) },
-    {
-      "Ngày thanh toán": payroll.NgayThanhToan
-        ? payroll.NgayThanhToan
-        : "Chưa thanh toán",
-    },
-  ];
-
   const handleExport = async () => {
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Bảng lương");
-      worksheet.mergeCells("A1:N1");
+      worksheet.mergeCells("A1:K1");
       const titleRow = worksheet.getRow(1);
       titleRow.height = 30;
-      titleRow.getCell(1).value = "DANH SÁCH BẢNG LƯƠNG";
-      titleRow.getCell(1).font = { bold: true, size: 16, name: "Arial" };
+      titleRow.getCell(1).value = "DANH SÁCH BẢNG LƯƠNG NHÂN VIÊN";
+      titleRow.getCell(1).font = {
+        bold: true,
+        size: 16,
+        name: "Arial",
+        color: { argb: "000000" },
+      };
       titleRow.getCell(1).alignment = {
         horizontal: "center",
         vertical: "middle",
       };
-      const headers = exportData.map((item) => Object.keys(item)[0]);
-      const headerRow = worksheet.addRow(headers);
-
-      headerRow.font = { bold: true, color: { argb: "000000" } };
-      headerRow.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF" },
+      worksheet.mergeCells("A2:I2");
+      const periodRow = worksheet.getRow(2);
+      periodRow.height = 25;
+      periodRow.getCell(1).value = `Kỳ lương: ${payroll.KyLuong}`;
+      periodRow.getCell(1).font = {
+        bold: true,
+        size: 14,
+        name: "Arial",
+        color: { argb: "000000" },
       };
-      headerRow.alignment = { horizontal: "center" };
+      periodRow.getCell(1).alignment = {
+        horizontal: "center",
+        vertical: "middle",
+      };
 
-      const rowData = exportData.map((item) => Object.values(item)[0]);
-      worksheet.addRow(rowData);
+      const headers = [
+        "STT",
+        "Mã nhân viên",
+        "Họ tên",
+        "Số giờ làm việc",
+        "Lương tháng",
+        "Tổng phụ cấp",
+        "Tổng thưởng",
+        "Tổng phạt",
+        "Tổng lương",
+        "Thuế phải đóng",
+        "Lương thực nhận",
+      ];
 
-      worksheet.columns = headers.map((header, index) => ({
-        width: index === 1 || index === 2 ? 25 : 15,
-        style: {
-          alignment: {
-            horizontal: index === 0 ? "center" : "left",
-          },
-        },
-      }));
+      const headerRow = worksheet.addRow(headers);
+      headerRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.font = {
+          bold: true,
+          color: { argb: "FFFFFF" },
+          size: 12,
+        };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "4472C4" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+        };
+      });
+
+      if (
+        phieuLuongs &&
+        phieuLuongs.employees &&
+        phieuLuongs.employees.length > 0
+      ) {
+        phieuLuongs.employees.forEach((employee, index) => {
+          const row = worksheet.addRow([
+            index + 1,
+            employee.MaNhanVien,
+            employee.HoTen,
+            employee.TongGioLamViec,
+            parseFloat(employee.LuongThang) || 0,
+            parseFloat(employee.TongPhuCap) || 0,
+            parseFloat(employee.TongThuong) || 0,
+            parseFloat(employee.TongPhat) || 0,
+            parseFloat(employee.TongLuong) || 0,
+            parseFloat(employee.ThuePhaiDong) || 0,
+            parseFloat(employee.LuongThucNhan) || 0,
+          ]);
+
+          row.getCell(5).numFmt = "#,##0";
+          row.getCell(6).numFmt = "#,##0";
+          row.getCell(7).numFmt = "#,##0";
+          row.getCell(8).numFmt = "#,##0";
+          row.getCell(9).numFmt = "#,##0";
+          row.getCell(10).numFmt = "#,##0";
+          row.getCell(11).numFmt = "#,##0";
+
+          row.getCell(1).alignment = { horizontal: "center" };
+          row.getCell(2).alignment = { horizontal: "center" };
+          row.getCell(4).alignment = { horizontal: "right" };
+          row.getCell(5).alignment = { horizontal: "right" };
+          row.getCell(6).alignment = { horizontal: "right" };
+          row.getCell(7).alignment = { horizontal: "right" };
+          row.getCell(8).alignment = { horizontal: "right" };
+          row.getCell(9).alignment = { horizontal: "right" };
+          row.getCell(10).alignment = { horizontal: "right" };
+          row.getCell(11).alignment = { horizontal: "right" };
+        });
+
+        const totalRow = worksheet.addRow([]);
+        worksheet.mergeCells(`A${totalRow.number}:J${totalRow.number}`);
+        const labelCell = totalRow.getCell(1);
+        labelCell.value = "TỔNG CỘNG";
+        labelCell.alignment = { horizontal: "right", vertical: "middle" };
+
+        const valueCell = totalRow.getCell(11);
+        valueCell.value = parseFloat(payroll.TongLuongThucNhan) || 0;
+
+        totalRow.eachCell({ includeEmpty: true }, (cell) => {
+          cell.font = { bold: true, color: { argb: "FFFFFF" } };
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "70AD47" },
+          };
+        });
+        valueCell.numFmt = "#,##0.##";
+        valueCell.alignment = { horizontal: "right", vertical: "middle" };
+      }
+
+      worksheet.columns = [
+        { width: 8 },
+        { width: 15 },
+        { width: 30 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
+      ];
+
       worksheet.eachRow((row, rowNumber) => {
         row.eachCell((cell) => {
           cell.border = {
@@ -80,17 +162,16 @@ export function PayrollDetail({
           };
         });
       });
-
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-      saveAs(
-        blob,
-        `Bang_luong_${payroll.MaTK_tai_khoan.HoTen}_${payroll.KyLuong}.xlsx`
-      );
+      const fileName = `Bang_luong_${payroll.KyLuong}.xlsx`;
+      saveAs(blob, fileName);
+      alert("Xuất file Excel thành công!");
     } catch (error) {
       console.error("Lỗi khi export file Excel:", error);
+      alert("Có lỗi xảy ra khi xuất file Excel!");
     }
   };
 
@@ -198,7 +279,7 @@ export function PayrollDetail({
         </div>
         <div className="flex space-x-2">
           <button
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded flex items-center"
+            className="bg-green-500 text-white px-4 py-2 rounded flex items-center"
             onClick={handleExport}
           >
             <FileIcon size={18} className="mr-1" />

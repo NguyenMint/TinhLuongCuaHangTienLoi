@@ -37,7 +37,11 @@ class ChamCongController {
         if (vaoThucTe - vaoChuan > 10) {
           DiTre = vaoThucTe - vaoChuan;
         }
+        //console.log("Vao chuan: ",vaoChuan);
       }
+      //console.log("Di tre:", DiTre);
+      //console.log("Gio vao:",GioVao);
+
       const isNextDay = (afterDate, beforeDate) => {
         const d1 = new Date(afterDate);
         const d2 = new Date(beforeDate);

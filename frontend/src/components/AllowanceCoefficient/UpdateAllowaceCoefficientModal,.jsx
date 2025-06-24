@@ -1,38 +1,36 @@
 import { useState } from "react";
 import { updateHeSoPhuCap } from "../../api/apiHeSoPC";
-export function UpdateAllowanceCoefficientForm({ setShowModalUpdate, getData,allowanceCoefficient }) {
+export function UpdateAllowanceCoefficientForm({
+  setShowModalUpdate,
+  getData,
+  allowanceCoefficient,
+}) {
   const [form, setForm] = useState({
-    Ngay: allowanceCoefficient.Ngay,
-    LoaiNgay: allowanceCoefficient.LoaiNgay,
-    HeSoLuong: allowanceCoefficient.HeSoLuong,
-    isCaDem: allowanceCoefficient.isCaDem,
-    MaHSN: allowanceCoefficient.MaHSN
+    Ngay: allowanceCoefficient.ngay,
+    LoaiNgay: allowanceCoefficient.loaiNgay,
+    HeSoLuongCaDem: allowanceCoefficient.caDem.HeSoLuong,
+    HeSoLuongCaThuong: allowanceCoefficient.caThuong.HeSoLuong,
+    MaHSNCaDem: allowanceCoefficient.caDem.MaHSN,
+    MaHSNCaThuong: allowanceCoefficient.caThuong.MaHSN
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "isCaDem") {
       setForm((prev) => ({
         ...prev,
-        [name]: e.target.checked ? 1 : 0,
+        [name]: value,
       }));
-    } else {
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const result = await updateHeSoPhuCap(form);
-        if (!result.success) {
-          alert(result.message || "Update hệ số phụ cấp thất bại.");
-          return;
-        }
-        alert("Update hệ số phụ cấp thành công!");
-        getData();
+      const result = await updateHeSoPhuCap(form);
+      if (!result.success) {
+        alert(result.message || "Update hệ số phụ cấp thất bại.");
+        return;
+      }
+      alert("Update hệ số phụ cấp thành công!");
+      getData();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
       alert("Lỗi không xác định. Vui lòng thử lại.");
@@ -58,7 +56,7 @@ export function UpdateAllowanceCoefficientForm({ setShowModalUpdate, getData,all
               value={form.LoaiNgay}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
-              disabled 
+              disabled
             >
               <option value="Ngày lễ">Ngày lễ</option>
               <option value="Cuối tuần">Cuối tuần</option>
@@ -66,25 +64,27 @@ export function UpdateAllowanceCoefficientForm({ setShowModalUpdate, getData,all
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Hệ số lương</label>
+            <label className="block mb-1 font-medium">Hệ số lương ca thường</label>
             <input
               type="number"
               step="0.1"
-              name="HeSoLuong"
-              value={form.HeSoLuong}
+              name="HeSoLuongCaThuong"
+              value={form.HeSoLuongCaThuong}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
               min={1}
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">Ca đêm</label>
+            <label className="block mb-1 font-medium">Hệ số lương ca đêm</label>
             <input
-              type="checkbox"
-              name="isCaDem"
-              checked={form.isCaDem}
+              type="number"
+              step="0.1"
+              name="HeSoLuongCaDem"
+              value={form.HeSoLuongCaDem}
               onChange={handleChange}
-              className="w-5 h-5 accent-blue-600"
+              className="w-full border rounded px-3 py-2"
+              min={1}
             />
           </div>
           {form.LoaiNgay === "Ngày lễ" && (

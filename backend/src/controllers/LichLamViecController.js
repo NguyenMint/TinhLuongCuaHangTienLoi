@@ -1,7 +1,7 @@
 const db = require("../models");
 const LichLamViec = db.LichLamViec;
 const { Op, where } = require("sequelize");
-const {getSoNgayTrongThang} = require('../util/util')
+const { getSoNgayTrongThang } = require("../util/util");
 class LichLamViecController {
   async getAll(req, res) {
     try {
@@ -32,7 +32,36 @@ class LichLamViecController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-
+  async getAllDaDangKy(req, res) {
+    try {
+      const LichLamViecs = await LichLamViec.findAll({
+        where: { [Op.or]: [{ TrangThai: "Đã Đăng Ký"}, {TrangThai: "Chuyển Ca" }] },
+        include: [
+          { model: db.ChamCong, as: "cham_congs" },
+          { model: db.CaLam, as: "MaCaLam_ca_lam" },
+          {
+            model: db.TaiKhoan,
+            as: "MaTK_tai_khoan",
+            attributes: [
+              "MaTK",
+              "HoTen",
+              "MaCN",
+              "MaNhanVien",
+              "LuongTheoGioHienTai",
+            ],
+          },
+          {
+            model: db.KhenThuongKyLuat,
+            as: "khen_thuong_ky_luats",
+          },
+        ],
+      });
+      res.status(200).json(LichLamViecs);
+    } catch (error) {
+      console.log("ERROR: " + error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
   async getById(req, res) {
     try {
       const lichLamViec = await LichLamViec.findByPk(req.params.id);
@@ -99,9 +128,7 @@ class LichLamViecController {
             [Op.between]: [startDate, endDate],
           },
         },
-        include: [
-          { model: db.CaLam, as: "MaCaLam_ca_lam" }
-        ],
+        include: [{ model: db.CaLam, as: "MaCaLam_ca_lam" }],
       });
 
       res.status(200).json(lichlamviec);
@@ -110,14 +137,14 @@ class LichLamViecController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async dangKyCa (req,res){
+  async dangKyCa(req, res) {
     try {
-      const {MaTK,MaCaLam,NgayLam} = req.body;
+      const { MaTK, MaCaLam, NgayLam } = req.body;
       const dangKyCa = LichLamViec.create({
         MaTK,
         MaCaLam,
-        TrangThai:"Chờ Xác Nhận",
-        NgayLam
+        TrangThai: "Chờ Xác Nhận",
+        NgayLam,
       });
       res.status(200).json(dangKyCa);
     } catch (error) {
@@ -125,17 +152,21 @@ class LichLamViecController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async huyDangKy (req,res){
+  async huyDangKy(req, res) {
     try {
       const lichLamViec = await LichLamViec.findByPk(req.params.MaLLV);
-      if(!lichLamViec){
-        return res.status(404).json({message:"Không tồn tại đăng ký ca này"});
+      if (!lichLamViec) {
+        return res
+          .status(404)
+          .json({ message: "Không tồn tại đăng ký ca này" });
       }
-      if(lichLamViec.TrangThai!=="Chờ Xác Nhận"){
-        return res.status(400).json({message:"Chỉ hủy khi trạng thái còn chờ xác nhận"});
+      if (lichLamViec.TrangThai !== "Chờ Xác Nhận") {
+        return res
+          .status(400)
+          .json({ message: "Chỉ hủy khi trạng thái còn chờ xác nhận" });
       }
       lichLamViec.destroy();
-      res.status(200).json({message:"Hủy đăng ký ca thành công"});
+      res.status(200).json({ message: "Hủy đăng ký ca thành công" });
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
