@@ -131,7 +131,7 @@ export function PayrollDetail({
           cell.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "70AD47" },
+            fgColor: { argb: "4472C4" },
           };
         });
         valueCell.numFmt = "#,##0.##";
