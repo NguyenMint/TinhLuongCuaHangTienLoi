@@ -8,9 +8,10 @@ import {
   deleteBangLuong,
   getAllBangLuong,
   getBLByCN,
-  getBLByKyLuong,
+  getPLByKyLuong,
   getBLTotal,
   getKyLuong,
+  getPLByKyLuongCN,
 } from "../api/apiBangLuong";
 import { getChiNhanh } from "../api/apiChiNhanh";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
@@ -96,11 +97,16 @@ export function PayrollPage() {
       setChiNhanhs([]);
     }
   };
-  const fetchPhieuLuongs = async (kyLuong) => {
+  const fetchPhieuLuongs = async (chiNhanh = selectedChiNhanh, kyLuong) => {
     try {
-      const data = await getBLByKyLuong(kyLuong);
+      let data = [];
+
+      if (chiNhanh === "Tổng hợp") {
+        data = await getPLByKyLuong(kyLuong);
+      } else {
+        data = await getPLByKyLuongCN(kyLuong, chiNhanh.MaCN);
+      }
       setPhieuLuongs(Array.isArray(data.employees) ? data : []);
-      console.log(data);
     } catch (error) {
       console.error("Lỗi khi lấy Bảng Lương:", error);
       setPhieuLuongs([]);
@@ -109,6 +115,7 @@ export function PayrollPage() {
   const fetchBLByCN = async (chiNhanh = selectedChiNhanh) => {
     try {
       let data = [];
+
       if (chiNhanh === "Tổng hợp") {
         data = await getBLTotal();
       } else {
@@ -140,12 +147,15 @@ export function PayrollPage() {
   useEffect(() => {
     if (selectedChiNhanh !== undefined) {
       fetchBLByCN(selectedChiNhanh);
+      if (selectedPayroll) {
+        fetchPhieuLuongs(selectedChiNhanh, selectedPayroll.KyLuong);
+      }
     }
   }, [selectedChiNhanh]);
 
   useEffect(() => {
     if (selectedPayroll) {
-      fetchPhieuLuongs(selectedPayroll.KyLuong);
+      fetchPhieuLuongs(selectedChiNhanh, selectedPayroll.KyLuong);
     }
   }, [selectedPayroll]);
 
