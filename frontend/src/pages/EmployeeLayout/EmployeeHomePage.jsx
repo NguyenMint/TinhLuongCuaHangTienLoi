@@ -36,7 +36,7 @@ export function EmployeeHomePage() {
   };
   const ChamCongVao = async (MaLLV) => {
     //const gioVao = gioHienTai;
-    const gioVao = "14:05:00";
+    const gioVao = "6:35:00";
     const response = await chamCongVao(ngay, gioVao, MaLLV, false);
     if (!response.success) {
       alert(response.message || "Chấm công thất bại");
@@ -44,8 +44,8 @@ export function EmployeeHomePage() {
     getDKCByNhanVien();
   };
   const ChamCongRa = async (MaLLV) => {
-    //const gioRa = gioHienTai;
-    const gioRa = "22:09:00";
+    const gioRa = gioHienTai;
+    //const gioRa = "22:09:00";
     const response = await chamCongRa(ngay, gioRa, MaLLV, false);
     if (!response.success) {
       alert(response.message || "Chấm công thất bại");
