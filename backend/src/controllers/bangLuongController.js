@@ -398,13 +398,23 @@ class bangLuongController {
         attributes: [
           "KyLuong",
           "NgayTao",
-          [sequelize.fn("SUM", sequelize.col("LuongThucNhan")), "TongLuong"],
+
+          [
+            sequelize.fn("SUM", sequelize.col("TongLuong")),
+            "TongLuongThucNhan",
+          ],
           [sequelize.fn("COUNT", sequelize.col("BangLuong.MaTK")), "SoLuong"],
           [
             sequelize.literal(
               "SUM(CASE WHEN NgayThanhToan IS NULL THEN 1 ELSE 0 END)"
             ),
             "ChuaTra",
+          ],
+          [
+            sequelize.literal(
+              "SUM(CASE WHEN NgayThanhToan IS NOT NULL THEN TongLuong ELSE 0 END)"
+            ),
+            "LuongDaTra",
           ],
         ],
         include: [
@@ -430,10 +440,12 @@ class bangLuongController {
         KyLuong: payroll.KyLuong,
         NgayTao: payroll.NgayTao,
         MaCN: payroll["MaTK_tai_khoan.MaCN"],
-        TongLuongThucNhan: Number(payroll.TongLuong),
+        TongLuongThucNhan: Number(payroll.TongLuongThucNhan),
         SoLuong: Number(payroll.SoLuong),
         ChuaTra: Number(payroll.ChuaTra),
         TenChiNhanh: payroll["MaTK_tai_khoan.MaCN_chi_nhanh.TenChiNhanh"],
+        LuongDaTra: Number(payroll.LuongDaTra),
+        LuongChuaTra: Number(payroll.TongLuongThucNhan - payroll.LuongDaTra),
       }));
 
       res.json(formattedPayrolls);
@@ -491,7 +503,7 @@ class bangLuongController {
         .json({ error: "Lỗi server khi lấy danh sách bảng lương" });
     }
   }
-  async getBLByKyLuong(req, res) {
+  async getPLByKyLuong(req, res) {
     const { kyLuong } = req.body;
 
     try {
@@ -525,8 +537,69 @@ class bangLuongController {
           MaBangLuong: payroll.MaBangLuong,
           MaNhanVien: payroll.MaTK_tai_khoan.MaNhanVien,
           HoTen: payroll.MaTK_tai_khoan.HoTen,
-          LuongThang:payroll.LuongThang,
-          TongGioLamViec:payroll.TongGioLamViec,
+          LuongThang: payroll.LuongThang,
+          TongGioLamViec: payroll.TongGioLamViec,
+          TongLuong: payroll.TongLuong,
+          TongPhuCap: payroll.TongPhuCap,
+          TongThuong: payroll.TongThuong,
+          TongPhat: payroll.TongPhat,
+          ThuePhaiDong: payroll.ThuePhaiDong,
+          LuongThucNhan: payroll.LuongThucNhan,
+          details: payroll.chi_tiet_bang_luongs.map((detail) => ({
+            Ngay: detail.Ngay,
+            GioLamViec: detail.GioLamViec,
+            LuongMotGio: detail.LuongMotGio,
+            TienLuongCa: detail.TienLuongCa,
+            TienPhuCap: detail.TienPhuCap,
+            TienPhat: detail.TienPhat,
+            tongtien: detail.tongtien,
+          })),
+        })),
+      };
+
+      res.json(response);
+    } catch (error) {
+      console.error("Error fetching payroll details:", error);
+      res.status(500).json({ error: "Lỗi server" });
+    }
+  }
+  async getPLByKyLuongCN(req, res) {
+    const { kyLuong, maCN } = req.body;
+
+    try {
+      const payrolls = await BangLuong.findAll({
+        where: { KyLuong: kyLuong },
+        include: [
+          {
+            where: { MaCN: maCN },
+            model: TaiKhoan,
+            as: "MaTK_tai_khoan",
+            attributes: ["MaNhanVien", "HoTen"],
+          },
+          {
+            model: ChiTietBangLuong,
+            as: "chi_tiet_bang_luongs",
+            attributes: [
+              "Ngay",
+              "GioLamViec",
+              "LuongMotGio",
+              "TienLuongCa",
+              "TienPhuCap",
+              "TienPhat",
+              "tongtien",
+            ],
+          },
+        ],
+      });
+
+      const response = {
+        KyLuong: kyLuong,
+        employees: payrolls.map((payroll) => ({
+          MaBangLuong: payroll.MaBangLuong,
+          MaNhanVien: payroll.MaTK_tai_khoan.MaNhanVien,
+          HoTen: payroll.MaTK_tai_khoan.HoTen,
+          LuongThang: payroll.LuongThang,
+          TongGioLamViec: payroll.TongGioLamViec,
           TongLuong: payroll.TongLuong,
           TongPhuCap: payroll.TongPhuCap,
           TongThuong: payroll.TongThuong,

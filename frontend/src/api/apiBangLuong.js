@@ -60,11 +60,23 @@ export const getBLTotal = async () => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-export const getBLByKyLuong = async (kyLuong) => {
+export const getPLByKyLuong = async (kyLuong) => {
   try {
     const response = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/bangluong/getbl/`,
+      `${process.env.REACT_APP_BACKEND_URL}/bangluong/getpl/`,
       { kyLuong }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Bảng lương:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+export const getPLByKyLuongCN = async (kyLuong, maCN) => {
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/bangluong/getplbycn/`,
+      { kyLuong, maCN }
     );
     return response.data;
   } catch (error) {

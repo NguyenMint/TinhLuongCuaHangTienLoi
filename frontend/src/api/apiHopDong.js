@@ -49,17 +49,26 @@ export async function createHopDong(formData) {
     return { sucesss: false, message: "Lỗi kết nối server" };
   }
 }
-export async function updateHopDong(MaHDLD) {
+export async function updateHopDong(formData) {
+  const MaHDLD = formData.get("MaHDLD");
+
   try {
     const res = await axios.put(
-      `${process.env.REACT_APP_BACKEND_URL}/HopDong/${MaHDLD}`
+      `${process.env.REACT_APP_BACKEND_URL}/HopDong/${MaHDLD}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return { success: true, data: res.data };
   } catch (error) {
     if (error.response.status === 409) {
       return { sucesss: false, message: error.response.data.message };
     }
-    console.error("Lỗi update phụ cấp:", error);
+    console.error("Lỗi update hợp đồng:", error);
     return { sucesss: false, message: "Lỗi kết nối server" };
   }
 }

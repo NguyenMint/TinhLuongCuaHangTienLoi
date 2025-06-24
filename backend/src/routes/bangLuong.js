@@ -6,7 +6,8 @@ router.post("/", bangLuongController.create);
 router.get("/getKyLuong", bangLuongController.getKyLuong);
 router.get("/", bangLuongController.getAll);
 
-router.post("/getbl", bangLuongController.getBLByKyLuong);
+router.post("/getpl", bangLuongController.getPLByKyLuong);
+router.post("/getplbycn", bangLuongController.getPLByKyLuongCN);
 router.get("/getbl/:macn", bangLuongController.getBLByCN);
 router.get("/getbltotal", bangLuongController.getBLTotal);
 router.post("/createAll", bangLuongController.createAll);
