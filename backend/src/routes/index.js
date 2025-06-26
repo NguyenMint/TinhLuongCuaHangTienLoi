@@ -12,6 +12,7 @@ const LichLamViecRoute = require("./lichlamviec");
 const ChamCongroute = require('./chamcong');
 const bangLuongRoute = require('./bangLuong');
 const chiTietBangLuongRoute = require('./chiTietBangLuong');
+const XinNghiPhepRoute = require('./ngayNghiPhep');
 const express = require('express');
 const path = require("path");
 const initRoutes = (app) =>{
@@ -29,6 +30,7 @@ const initRoutes = (app) =>{
     app.use("/chamcong", ChamCongroute);
     app.use("/bangluong", bangLuongRoute);
     app.use("/chitietbangluong", chiTietBangLuongRoute);
+    app.use("/ngaynghiphep",XinNghiPhepRoute);
     app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 }
 
