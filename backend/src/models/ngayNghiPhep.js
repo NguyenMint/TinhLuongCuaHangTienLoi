@@ -15,10 +15,6 @@ module.exports = function(sequelize, DataTypes) {
         key: 'MaTK'
       }
     },
-    LoaiPhep: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
     NgayBatDau: {
       type: DataTypes.DATEONLY,
       allowNull: false
@@ -27,21 +23,17 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    LyDo: {
-      type: DataTypes.TEXT,
+    SoNgayNghi: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     NgayDangKy: {
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    NguoiDuyet: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'tai_khoan',
-        key: 'MaTK'
-      }
+    TrangThai: {
+      type: DataTypes.ENUM('Chờ duyệt','Đã duyệt','Từ chối'),
+      allowNull: false
     }
   }, {
     sequelize,
@@ -61,13 +53,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaTK" },
-        ]
-      },
-      {
-        name: "NguoiDuyet",
-        using: "BTREE",
-        fields: [
-          { name: "NguoiDuyet" },
         ]
       },
     ]
