@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../api/apiTaiKhoan.js";
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState("");
+  const [maNhanVien, setMaNhanVien] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
 
   const [errors, setErrors] = useState({
-    email: "",
+    manhanvien: "",
     password: "",
   });
   const navigate = useNavigate();
@@ -19,11 +19,11 @@ export const LoginPage = () => {
   const validateForm = () => {
     let isValid = true;
     const newErrors = {
-      email: "",
+      manhanvien: "",
       password: "",
     };
-    if (!email.trim()) {
-      newErrors.email = "Vui lòng nhập email";
+    if (!maNhanVien.trim()) {
+      newErrors.manhanvien = "Vui lòng nhập mã nhân viên";
       isValid = false;
     }
     if (!password.trim()) {
@@ -37,7 +37,7 @@ export const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const result = await login(email, password);
+      const result = await login(maNhanVien, password);
       if (result.success) {
         localStorage.setItem("token", result.data.access_token);
         localStorage.setItem("user", JSON.stringify(result.data.user));
@@ -65,28 +65,22 @@ export const LoginPage = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
               <input
-                id="email"
-                name="email"
+                id="manhanvien"
+                name="manhanvien"
                 type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={maNhanVien}
+                onChange={(e) => setMaNhanVien(e.target.value)}
                 className={`appearance-none relative block w-full px-3 py-3 border ${
-                  errors.email ? "border-red-300" : "border-gray-300"
+                  errors.manhanvien ? "border-red-300" : "border-gray-300"
                 } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
-                placeholder="Email"
+                placeholder="Mã nhân viên"
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              {errors.manhanvien && (
+                <p className="mt-1 text-sm text-red-600">{errors.manhanvien}</p>
               )}
             </div>
             <div className="relative">
-              <label htmlFor="password" className="sr-only">
-                Mật khẩu
-              </label>
               <input
                 id="password"
                 name="password"

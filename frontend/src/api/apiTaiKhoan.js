@@ -47,19 +47,19 @@ export const searchEmployee = async (keyword) => {
 //   }
 // };
 
-export const login = async (Email, Password) => {
+export const login = async (MaNhanVien, Password) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/taikhoan/login`,
       {
-        Email,
+        MaNhanVien,
         Password,
       }
     );
     return { success: true, data: response.data };
   } catch (error) {
     if (error.response?.status === 404) {
-      return { success: false, message: "Email không tồn tại" };
+      return { success: false, message: "Mã nhân viên không tồn tại" };
     } else if (error.response?.status === 401) {
       return { success: false, message: "Mật khẩu không đúng" };
     }
