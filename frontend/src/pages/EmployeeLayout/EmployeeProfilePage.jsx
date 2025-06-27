@@ -201,7 +201,9 @@ export function EmployeeProfilePage() {
                       </p>
                     </div>
                     <div>
-                      <span className="text-gray-600 text-sm">Tiền lương ca:</span>
+                      <span className="text-gray-600 text-sm">
+                        Tiền lương ca:
+                      </span>
                       <p className="font-medium text-green-600">
                         {formatCurrency(parseFloat(chiTiet.TienLuongCa))}
                       </p>
@@ -237,6 +239,41 @@ export function EmployeeProfilePage() {
                     </div>
                   </div>
 
+                  {/* Chi tiết khen thưởng/kỷ luật */}
+                  {chiTiet.cham_congs[0].MaLLV_lich_lam_viec
+                    .khen_thuong_ky_luats.length > 0 && (
+                    <div className="border-t mt-4 pt-4">
+                      <div className="font-semibold mb-2">
+                        Chi tiết phạt/thưởng:
+                      </div>
+                      <ul className="space-y-1">
+                        {chiTiet.cham_congs[0].MaLLV_lich_lam_viec.khen_thuong_ky_luats.map(
+                          (ktkl) => (
+                            <li
+                              key={ktkl.MaKTKL}
+                              className="flex items-center gap-2 text-sm"
+                            >
+                              <span
+                                className={
+                                  ktkl.ThuongPhat
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }
+                              >
+                                {ktkl.ThuongPhat ? "+ " : "- "}
+                                {formatCurrency(parseFloat(ktkl.MucThuongPhat))}
+                              </span>
+                              <span>
+                                {ktkl.ThuongPhat ? "Thưởng" : "Phạt"}:{" "}
+                                {ktkl.LyDo}
+                              </span>
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
                   {(parseFloat(chiTiet.TienPhuCap) > 0 ||
                     parseFloat(chiTiet.TienPhat) > 0) && (
                     <div className="border-t mt-4 pt-4">
@@ -253,7 +290,9 @@ export function EmployeeProfilePage() {
                         )}
                         {parseFloat(chiTiet.TienPhat) > 0 && (
                           <div>
-                            <span className="text-gray-600 text-sm">Phạt:</span>
+                            <span className="text-gray-600 text-sm">
+                              Tổng phạt:
+                            </span>
                             <p className="font-medium text-red-600">
                               -{formatCurrency(parseFloat(chiTiet.TienPhat))}
                             </p>

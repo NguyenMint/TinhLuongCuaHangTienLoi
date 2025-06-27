@@ -51,12 +51,14 @@ export function ChangePasswordForm() {
           required
         />
       </div>
+      <div className="mt-2 flex justify-center">
       <button
         type="submit"
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         Đổi mật khẩu
       </button>
+      </div>
     </form>
   );
 }

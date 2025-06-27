@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BellIcon } from "lucide-react";
 import { FilterSidebar } from "../components/HomePage/FilterSidebar.jsx";
 import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
@@ -12,7 +13,8 @@ import { Pagination } from "../components/Pagination.jsx";
 import { getChungChi } from "../api/apiChungChi.js";
 import { getAllPhuCap } from "../api/apiPhuCap.js";
 import { getHopDong } from "../api/apiHopDong.js";
-
+import { getDonXinNghi } from "../api/apiNgayNghiPhep.js";
+import { LeaveRequestListModal } from "../components/LeaveRequestList.jsx";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -30,6 +32,9 @@ export function HomePage() {
   const [hopDongs, setHopDongs] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [donXinNghis, setDonXinNghis] = useState([]);
+  const [showModalListDonXinNghis, setShowModalListDonXinNghis] =
+    useState(false);
   // 3 useState đóng mở thêm sửa nhân viên
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
@@ -87,10 +92,18 @@ export function HomePage() {
       console.error("Lỗi khi lấy Phụ cấp:", error);
     }
   };
-
+  const fetchDonXinNghi = async () => {
+    try {
+      const response = await getDonXinNghi();
+      setDonXinNghis(response);
+    } catch (error) {
+      console.error("Lỗi khi lấy đơn xin nghĩ:", error);
+    }
+  };
   useEffect(() => {
     getAllNhanVien();
     fetchChiNhanh();
+    fetchDonXinNghi();
   }, []);
 
   useEffect(() => {
@@ -180,7 +193,15 @@ export function HomePage() {
           position={position}
           setPosition={setPosition}
         />
-
+        {donXinNghis.length > 0 && (
+          <button
+            onClick={() => setShowModalListDonXinNghis(true)}
+            className="fixed top-2 right-6 flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors"
+          >
+            <BellIcon className="h-4 w-4 mr-2" />
+            {donXinNghis.length} xin nghĩ phép năm chờ duyệt
+          </button>
+        )}
         <div className="flex-1 px-6 md:p-6">
           <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
             <Search
@@ -268,6 +289,13 @@ export function HomePage() {
                 fetchHopDong(selectedEmployee.MaTK);
               }
             }}
+          />
+        )}
+        {showModalListDonXinNghis && (
+          <LeaveRequestListModal
+            setShowModalDonXinNghis={setShowModalListDonXinNghis}
+            requests = {donXinNghis}
+            fecthRequests={fetchDonXinNghi}
           />
         )}
       </div>
