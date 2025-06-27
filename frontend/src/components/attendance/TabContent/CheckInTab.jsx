@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { format, differenceInMinutes } from "date-fns";
+import { calculatePhat } from "../../../utils/TreSom";
 
 export const CheckInTab = ({
   isOpen,
@@ -13,17 +14,14 @@ export const CheckInTab = ({
 }) => {
   const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
   const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
+  const luongTheoGio = formData.MaTK_tai_khoan?.LuongTheoGioHienTai;
 
   const getTimeHHmm = (time) => {
     if (!time) return "";
     return format(new Date(`2000-01-01T${time}`), "HH:mm");
   };
 
-  // const [activeTab, setActiveTab] = useState("timekeeping");
   const [workStatus, setWorkStatus] = useState("working");
-  // const [notes, setNotes] = useState("");
-
-  // Check-in state - Initialize with existing data
   const [isCheckedIn, setIsCheckedIn] = useState(
     !!formData.cham_congs[0]?.GioVao
   );
@@ -33,7 +31,6 @@ export const CheckInTab = ({
   const [checkInLateHours, setCheckInLateHours] = useState("0");
   const [checkInLateMinutes, setCheckInLateMinutes] = useState("0");
 
-  // Check-out state - Initialize with existing data
   const [isCheckedOut, setIsCheckedOut] = useState(
     !!formData.cham_congs[0]?.GioRa
   );
@@ -44,6 +41,7 @@ export const CheckInTab = ({
   const [checkOutEarlyMinutes, setCheckOutEarlyMinutes] = useState("0");
 
   const getTimeDifference = (time1, time2) => {
+    if (!time1 || !time2) return 0;
     const [hours1, minutes1] = time1.split(":").map(Number);
     const [hours2, minutes2] = time2.split(":").map(Number);
     const date1 = new Date(2000, 0, 1, hours1, minutes1);
@@ -52,87 +50,121 @@ export const CheckInTab = ({
   };
 
   const getCheckInStatus = () => {
+    if (!checkInTime || !isCheckedIn) return null;
     const diff = getTimeDifference(startTime, checkInTime);
-    
     if (diff > 10) return "late";
     if (diff < 0) return "overtime";
     return "ontime";
   };
 
   const getCheckOutStatus = () => {
+    if (!checkOutTime || !isCheckedOut) return null;
     const diff = getTimeDifference(endTime, checkOutTime);
     if (diff < -10) return "early";
     if (diff > 0) return "overtime";
     return "ontime";
   };
 
-  const tabs = [
-    {
-      id: "working",
-      label: "Đang làm việc",
-    },
-    {
-      id: "excused",
-      label: "Nghỉ có phép",
-    },
-    {
-      id: "unexcused",
-      label: "Nghỉ không phép",
-    },
-  ];
+  const checkInStatus = getCheckInStatus();
+  const checkOutStatus = getCheckOutStatus();
 
-  const checkInStatus = isCheckedIn ? getCheckInStatus() : null;
-  const checkOutStatus = isCheckedOut ? getCheckOutStatus() : null;
+  // Calculate late/early minutes and violations
+  const lateMinutes = useMemo(
+    () =>
+      isCheckedIn && checkInStatus === "late"
+        ? getTimeDifference(startTime, checkInTime)
+        : 0,
+    [isCheckedIn, checkInStatus, checkInTime, startTime]
+  );
+  const earlyMinutes = useMemo(
+    () =>
+      isCheckedOut && checkOutStatus === "early"
+        ? Math.abs(getTimeDifference(checkOutTime, endTime))
+        : 0,
+    [isCheckedOut, checkOutStatus, checkOutTime, endTime]
+  );
 
   useEffect(() => {
-    if (isCheckedIn && checkInStatus === "late") {
-      const lateMinutes = getTimeDifference(startTime, checkInTime);
-      setCheckInLateHours(Math.floor(lateMinutes / 60));
-      setCheckInLateMinutes(lateMinutes % 60);
+    setCheckInLateHours(Math.floor(lateMinutes / 60));
+    setCheckInLateMinutes(lateMinutes % 60);
+  }, [lateMinutes]);
+
+  useEffect(() => {
+    setCheckOutEarlyHours(Math.floor(earlyMinutes / 60));
+    setCheckOutEarlyMinutes(earlyMinutes % 60);
+  }, [earlyMinutes]);
+
+  // Update cham_congs and violations
+  useEffect(() => {
+    const newChamCong = {
+      ...formData.cham_congs[0],
+      GioVao: isCheckedIn ? checkInTime : null,
+      GioRa: isCheckedOut ? checkOutTime : null,
+      DiTre: lateMinutes,
+      VeSom: earlyMinutes,
+    };
+
+    let newViolations = (formData.violations || []).filter((v) => !v.isAuto);
+
+    if (luongTheoGio) {
+      if (lateMinutes > 0) {
+        newViolations.push({
+          MaKTKL: `auto_late_${Date.now()}`,
+          LyDo: "Đi muộn",
+          MucThuongPhat: calculatePhat(lateMinutes, luongTheoGio),
+          DuocMienThue: true,
+          isAuto: true,
+        });
+      }
+      if (earlyMinutes > 0) {
+        newViolations.push({
+          MaKTKL: `auto_early_${Date.now()}`,
+          LyDo: "Về sớm",
+          MucThuongPhat: calculatePhat(earlyMinutes, luongTheoGio),
+          DuocMienThue: true,
+          isAuto: true,
+        });
+      }
     }
-  }, [checkInTime, isCheckedIn, checkInStatus, startTime]);
 
-  useEffect(() => {
-    if (isCheckedOut && checkOutStatus === "early") {
-      const earlyMinutes = getTimeDifference(checkOutTime, endTime);
-      setCheckOutEarlyHours(Math.floor(earlyMinutes / 60));
-      setCheckOutEarlyMinutes(earlyMinutes % 60);
+    if (JSON.stringify(formData.cham_congs) !== JSON.stringify([newChamCong])) {
+      onChange("cham_congs", [newChamCong]);
     }
-  }, [checkOutTime, isCheckedOut, checkOutStatus, endTime]);
 
-  const calcLateMinutes = () =>
-    isCheckedIn && checkInStatus === "late"
-      ? getTimeDifference(startTime, checkInTime)
-      : 0;
+    if (JSON.stringify(formData.violations) !== JSON.stringify(newViolations)) {
+      onChange("violations", newViolations);
+    }
 
-  const calcEarlyMinutes = () =>
-    isCheckedOut && checkOutStatus === "early"
-      ? getTimeDifference(checkOutTime, endTime)
-      : 0;
-
-  // Update dataUpdate when check-in/out values change
-  useEffect(() => {
-    setDataUpdate((prevData) => ({
-      ...prevData,
-      GioVao: checkInTime,
-      GioRa: checkOutTime,
-      DiTre: isCheckedIn
-        ? calcLateMinutes()
-        : formData.cham_congs[0]?.DiTre || 0,
-      VeSom: isCheckedOut
-        ? calcEarlyMinutes()
-        : formData.cham_congs[0]?.VeSom || 0,
-    }));
+    setDataUpdate((prev) => {
+      const updated = {
+        ...prev,
+        GioVao: isCheckedIn ? checkInTime : "",
+        GioRa: isCheckedOut ? checkOutTime : "",
+        DiTre: lateMinutes,
+        VeSom: earlyMinutes,
+        violations: newViolations,
+      };
+      if (JSON.stringify(updated) !== JSON.stringify(prev)) return updated;
+      return prev;
+    });
   }, [
-    checkInTime,
-    checkOutTime,
     isCheckedIn,
     isCheckedOut,
-    checkInStatus,
-    checkOutStatus,
+    checkInTime,
+    checkOutTime,
+    lateMinutes,
+    earlyMinutes,
+    luongTheoGio,
+    onChange,
     setDataUpdate,
     formData.cham_congs,
   ]);
+
+  const tabs = [
+    { id: "working", label: "Đang làm việc" },
+    { id: "excused", label: "Nghỉ có phép" },
+    { id: "unexcused", label: "Nghỉ không phép" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -140,7 +172,6 @@ export const CheckInTab = ({
         <label className="block text-sm font-medium text-gray-700">
           Chấm công
         </label>
-
         {tabs.map((status) => (
           <label key={status.id} className="flex items-center gap-2">
             <input
@@ -155,8 +186,6 @@ export const CheckInTab = ({
           </label>
         ))}
       </div>
-
-      {/* Check-in Block */}
       <div className="flex items-center gap-4 mb-6">
         <label className="flex items-center gap-2">
           <input
@@ -165,9 +194,7 @@ export const CheckInTab = ({
             onChange={(e) => {
               const checked = e.target.checked;
               setIsCheckedIn(checked);
-              if (checked) {
-                setCheckInTime(checkInTime);
-              } else {
+              if (!checked) {
                 setCheckInTime("");
                 setCheckInLateHours("0");
                 setCheckInLateMinutes("0");
@@ -177,21 +204,18 @@ export const CheckInTab = ({
           />
           <span>Vào</span>
         </label>
-
         <input
           type="time"
           placeholder="--:--"
           value={checkInTime}
           disabled={!isCheckedIn}
           onChange={(e) => setCheckInTime(e.target.value)}
-          className={`px-3 py-2 border rounded-md
-                ${
-                  isCheckedIn
-                    ? "border-gray-300"
-                    : "border-gray-200 bg-gray-100 cursor-not-allowed"
-                }`}
+          className={`px-3 py-2 border rounded-md ${
+            isCheckedIn
+              ? "border-gray-300"
+              : "border-gray-200 bg-gray-100 cursor-not-allowed"
+          }`}
         />
-
         {isCheckedIn && checkInStatus === "late" && (
           <div className="flex items-center gap-2 ml-6">
             <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
@@ -216,14 +240,12 @@ export const CheckInTab = ({
             <span>phút</span>
           </div>
         )}
-
         {isCheckedIn && checkInStatus === "overtime" && (
           <span className="ml-6 px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
             Tăng ca
           </span>
         )}
       </div>
-
       <div className="flex items-center gap-4">
         <label className="flex items-center gap-2">
           <input
@@ -232,9 +254,7 @@ export const CheckInTab = ({
             onChange={(e) => {
               const checked = e.target.checked;
               setIsCheckedOut(checked);
-              if (checked) {
-                setCheckOutTime(checkOutTime);
-              } else {
+              if (!checked) {
                 setCheckOutTime("");
                 setCheckOutEarlyHours("0");
                 setCheckOutEarlyMinutes("0");
@@ -244,21 +264,18 @@ export const CheckInTab = ({
           />
           <span className="pr-2">Ra</span>
         </label>
-
         <input
           type="time"
           placeholder="--:--"
           value={checkOutTime}
           disabled={!isCheckedOut}
           onChange={(e) => setCheckOutTime(e.target.value)}
-          className={`px-3 py-2 border rounded-md
-                ${
-                  isCheckedOut
-                    ? "border-gray-300"
-                    : "border-gray-200 bg-gray-100 cursor-not-allowed"
-                }`}
+          className={`px-3 py-2 border rounded-md ${
+            isCheckedOut
+              ? "border-gray-300"
+              : "border-gray-200 bg-gray-100 cursor-not-allowed"
+          }`}
         />
-
         {isCheckedOut && checkOutStatus === "early" && (
           <div className="flex items-center gap-2 ml-6">
             <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
@@ -283,7 +300,6 @@ export const CheckInTab = ({
             <span>phút</span>
           </div>
         )}
-
         {isCheckedOut && checkOutStatus === "overtime" && (
           <span className="ml-6 px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
             Tăng ca

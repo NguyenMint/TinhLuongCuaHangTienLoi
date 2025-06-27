@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import CheckInTab from "./TabContent/CheckInTab";
 import HistoryTab from "./TabContent/HistoryTab";
 import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
 import { CircleUserRound, IdCard, X } from "lucide-react";
-import { calculatePhat } from "../../utils/TreSom";
 import { formatDate } from "../../utils/format.js";
 
 const ShiftModal = ({
@@ -21,147 +20,71 @@ const ShiftModal = ({
     ...shift,
     attendanceType: shift.attendanceType || "working",
     substituteId: shift.substituteId || "",
+    violations: shift.violations || [],
+    rewards: shift.rewards || [],
   });
 
-  // Set initial dataUpdate when formData changes
-  useEffect(() => {
-    const calcLateMinutes = () => {
-      if (!formData.cham_congs[0]?.GioVao) return 0;
-      const startTime = formData.MaCaLam_ca_lam.ThoiGianBatDau;
-      const checkInTime = formData.cham_congs[0]?.GioVao;
-      if (!startTime || !checkInTime) return 0;
-      const [startHours, startMinutes] = startTime.split(":").map(Number);
-      const [checkHours, checkMinutes] = checkInTime.split(":").map(Number);
-      const startDate = new Date(2000, 0, 1, startHours, startMinutes);
-      const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
-      const diff = (checkDate - startDate) / (1000 * 60);
-
-      return diff > 10 ? diff : 0;
-    };
-
-    const calcEarlyMinutes = () => {
-      if (!formData.cham_congs[0]?.GioRa) return 0;
-      const endTime = formData.MaCaLam_ca_lam.ThoiGianKetThuc;
-      const checkOutTime = formData.cham_congs[0]?.GioRa;
-      if (!endTime || !checkOutTime) return 0;
-      const [endHours, endMinutes] = endTime.split(":").map(Number);
-      const [checkHours, checkMinutes] = checkOutTime.split(":").map(Number);
-      const endDate = new Date(2000, 0, 1, endHours, endMinutes);
-      const checkDate = new Date(2000, 0, 1, checkHours, checkMinutes);
-      const diff = (endDate - checkDate) / (1000 * 60);
-      return diff > 10 ? diff : 0;
-    };
-
-    setDataUpdate({
-      GioVao:
-        formData.cham_congs[0]?.GioVao ||
-        formData.MaCaLam_ca_lam.ThoiGianBatDau,
-      GioRa:
-        formData.cham_congs[0]?.GioRa ||
-        formData.MaCaLam_ca_lam.ThoiGianKetThuc,
-      MaChamCong: formData.cham_congs[0]?.MaChamCong,
-      DiTre: formData.cham_congs[0]?.DiTre || calcLateMinutes(),
-      VeSom: formData.cham_congs[0]?.VeSom || calcEarlyMinutes(),
+  // Memoize formData fields to stabilize dependencies
+  const formDataDeps = useMemo(
+    () => ({
+      cham_congs: formData.cham_congs,
+      violations: formData.violations,
+      rewards: formData.rewards,
       MaLLV: formData.MaLLV,
       NgayLam: formData.NgayLam,
       MaTK: formData.MaTK_tai_khoan.MaTK,
-      violations: formData.violations || [],
-      rewards: formData.rewards || [],
-    });
-  }, [formData, setDataUpdate]);
+      ThoiGianBatDau: formData.MaCaLam_ca_lam.ThoiGianBatDau,
+      ThoiGianKetThuc: formData.MaCaLam_ca_lam.ThoiGianKetThuc,
+    }),
+    [
+      formData.cham_congs,
+      formData.violations,
+      formData.rewards,
+      formData.MaLLV,
+      formData.NgayLam,
+      formData.MaTK_tai_khoan.MaTK,
+      formData.MaCaLam_ca_lam.ThoiGianBatDau,
+      formData.MaCaLam_ca_lam.ThoiGianKetThuc,
+    ]
+  );
 
-  // Calculate violations when luongTheoGio is loaded
+  // Synchronize dataUpdate with formData
   useEffect(() => {
-    // Only calculate violations if luongTheoGio is loaded (not 0) and not currently loading
-    const existsData = formData.khen_thuong_ky_luats.filter(
-      (item) => item.LyDo === "Đi muộn" || item.LyDo === "Về sớm"
-    );
-    if (existsData.length > 0) return;
-
-    const chamCong = formData.cham_congs?.[0];
-    if (!chamCong) return;
-
-    const isLate = chamCong.DiTre > 0;
-    const isEarly = chamCong.VeSom > 0;
-
-    let newViolations = [...(formData.violations || [])];
-    let hasChanged = false;
-
-    const addViolation = (type, reason, minutes) => {
-      const idPrefix = type === "late" ? "auto_late_" : "auto_early_";
-      const existing = newViolations.find((v) => v.LyDo === reason && v.isAuto);
-      if (!existing) {
-        newViolations.push({
-          MaKTKL: `${idPrefix}${Date.now()}`,
-          LyDo: reason,
-          MucThuongPhat:
-            type === "late"
-              ? calculatePhat(
-                  minutes,
-                  formData.MaTK_tai_khoan.LuongTheoGioHienTai
-                )
-              : calculatePhat(
-                  minutes,
-                  formData.MaTK_tai_khoan.LuongTheoGioHienTai
-                ),
-          DuocMienThue: true,
-          isAuto: true,
-        });
-        hasChanged = true;
+    setDataUpdate((prev) => {
+      const newDataUpdate = {
+        ...prev,
+        GioVao:
+          formDataDeps.cham_congs[0]?.GioVao || formDataDeps.ThoiGianBatDau,
+        GioRa:
+          formDataDeps.cham_congs[0]?.GioRa || formDataDeps.ThoiGianKetThuc,
+        MaChamCong: formDataDeps.cham_congs[0]?.MaChamCong,
+        DiTre: formDataDeps.cham_congs[0]?.DiTre || 0,
+        VeSom: formDataDeps.cham_congs[0]?.VeSom || 0,
+        MaLLV: formDataDeps.MaLLV,
+        NgayLam: formDataDeps.NgayLam,
+        MaTK: formDataDeps.MaTK,
+        violations: formDataDeps.violations || [],
+        rewards: formDataDeps.rewards || [],
+      };
+      if (JSON.stringify(newDataUpdate) !== JSON.stringify(prev)) {
+        return newDataUpdate;
       }
-    };
-
-    const removeViolation = (reason) => {
-      const updated = newViolations.filter(
-        (v) => !(v.LyDo === reason && v.isAuto)
-      );
-      if (updated.length !== newViolations.length) {
-        newViolations = updated;
-        hasChanged = true;
-      }
-    };
-
-    if (isLate) {
-      addViolation("late", "Đi muộn", chamCong.DiTre);
-    } else {
-      removeViolation("Đi muộn");
-    }
-
-    if (isEarly) {
-      addViolation("early", "Về sớm", chamCong.VeSom);
-    } else {
-      removeViolation("Về sớm");
-    }
-
-    if (hasChanged) {
-      handleInputChange("violations", newViolations);
-    }
-  }, [formData.cham_congs]); // Added isLoadingForLuong to dependencies
+      return prev;
+    });
+  }, [formDataDeps, setDataUpdate]);
 
   const tabs = [
-    {
-      id: "checkin",
-      label: "Chấm công",
-    },
-    {
-      id: "history",
-      label: "Lịch sử chấm công",
-    },
-    {
-      id: "violations",
-      label: "Phạt vi phạm",
-    },
-    {
-      id: "rewards",
-      label: "Thưởng",
-    },
+    { id: "checkin", label: "Chấm công" },
+    { id: "history", label: "Lịch sử chấm công" },
+    { id: "violations", label: "Phạt vi phạm" },
+    { id: "rewards", label: "Thưởng" },
   ];
 
   const handleInputChange = (field, value) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [field]: value,
-    });
+    }));
   };
 
   const handleSave = () => {
@@ -169,22 +92,20 @@ const ShiftModal = ({
   };
 
   const getStatusBadge = () => {
-    if (
-      formData.cham_congs[0]?.DiTre > 0 &&
-      formData.cham_congs[0]?.VeSom > 0
-    ) {
+    const chamCong = formData.cham_congs[0];
+    if (chamCong?.DiTre > 0 && chamCong?.VeSom > 0) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
           Đi muộn / Về sớm
         </span>
       );
-    } else if (formData.cham_congs[0]?.DiTre > 0) {
+    } else if (chamCong?.DiTre > 0) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
           Đi muộn
         </span>
       );
-    } else if (formData.cham_congs[0]?.VeSom > 0) {
+    } else if (chamCong?.VeSom > 0) {
       return (
         <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
           Về sớm

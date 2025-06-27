@@ -3,8 +3,8 @@ import AttendanceTable from "../components/attendance/AttendanceTable";
 import ShiftModal from "../components/attendance/ShiftModal";
 import { fetchCaLam } from "../api/apiCaLam";
 import { fetchLLVDaDangKy } from "../api/apiLichLamViec.js";
-import { addWeeks, format, set, subWeeks } from "date-fns";
-import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
+import { addWeeks, format, subWeeks } from "date-fns";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { chamCong, update_chamcong } from "../api/apiChamCong";
 import { createKTKL } from "../api/apiKTKL";
 import Search from "../components/search.jsx";
@@ -14,14 +14,9 @@ export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoadingForLuong, setisLoadingForLuong] = useState(false);
-  // const [viewMode, setViewMode] = useState("Xem theo ca");
-  // const [searchQuery, setSearchQuery] = useState("");
   const [lichLamViecs, setLichLamViecs] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  // const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [chinhanhs, setChiNhanhs] = useState([]);
-
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [filteredLLVs, setFilteredLLVs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,21 +27,19 @@ export function AttendancePage() {
     GioRa: "",
     MaChamCong: "",
     DiTre: 0,
-    RaSom: 0,
+    VeSom: 0,
     MaLLV: "",
     NgayLam: "",
     violations: [],
     rewards: [],
   });
 
-  // console.log(dataUpdate);
-
   const getAllCaLam = async () => {
     try {
       const data = await fetchCaLam();
       setShifts(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy ca làm:", error);
     }
   };
 
@@ -55,17 +48,19 @@ export function AttendancePage() {
       const data = await fetchLLVDaDangKy();
       setLichLamViecs(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy lịch làm việc:", error);
     }
   };
+
   const fetchChiNhanh = async () => {
     try {
       const data = await getChiNhanh();
       setChiNhanhs(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy chi nhánh:", error);
     }
   };
+
   useEffect(() => {
     getAllCaLam();
     getAllLichLamViec();
@@ -75,9 +70,11 @@ export function AttendancePage() {
   const handlePreviousWeek = () => {
     setCurrentDate(subWeeks(currentDate, 1));
   };
+
   const handleNextWeek = () => {
     setCurrentDate(addWeeks(currentDate, 1));
   };
+
   const handleThisWeek = () => {
     setCurrentDate(new Date());
   };
@@ -89,36 +86,42 @@ export function AttendancePage() {
 
   useEffect(() => {
     let filtered = Array.isArray(lichLamViecs) ? [...lichLamViecs] : [];
-
-    // Lọc theo chi nhánh
     if (selectedChiNhanh) {
       filtered = filtered.filter(
         (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
       );
     }
-
-    // Lọc theo từ khóa tìm kiếm (theo họ tên)
     if (searchQuery.trim() !== "") {
       const lowerSearch = searchQuery.toLowerCase();
       filtered = filtered.filter((emp) =>
         emp.MaTK_tai_khoan?.HoTen?.toLowerCase().includes(lowerSearch)
       );
     }
-
     setFilteredLLVs(filtered);
   }, [selectedChiNhanh, lichLamViecs, searchQuery]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setisLoadingForLuong(false);
+    setDataUpdate({
+      GioVao: "",
+      MaTK: "",
+      GioRa: "",
+      MaChamCong: "",
+      DiTre: 0,
+      VeSom: 0,
+      MaLLV: "",
+      NgayLam: "",
+      violations: [],
+      rewards: [],
+    });
   };
 
-  const handleSaveShift = async () => {
+  const handleSaveShift = async (formData) => {
     try {
       const records = [
         ...(dataUpdate.violations || []).map((violation) => ({
           MaLLV: dataUpdate.MaLLV,
-          ThuongPhat: 0, // Vi phạm
+          ThuongPhat: 0,
           LyDo: violation.LyDo,
           MucThuongPhat: violation.MucThuongPhat,
           DuocMienThue: violation.DuocMienThue ? 1 : 0,
@@ -126,7 +129,7 @@ export function AttendancePage() {
         })),
         ...(dataUpdate.rewards || []).map((reward) => ({
           MaLLV: dataUpdate.MaLLV,
-          ThuongPhat: 1, // Khen thưởng
+          ThuongPhat: 1,
           LyDo: reward.LyDo,
           MucThuongPhat: reward.MucThuongPhat,
           DuocMienThue: reward.DuocMienThue ? 1 : 0,
@@ -138,19 +141,13 @@ export function AttendancePage() {
         const results = await Promise.all(
           records.map((record) => createKTKL(record))
         );
-
         const failedRecords = results.filter((res) => !res.success);
-
-        if (failedRecords.length === 0) {
-          alert("Đã duyệt chấm công thành công!");
-        } else {
+        if (failedRecords.length > 0) {
           console.warn("Một số bản ghi bị lỗi:", failedRecords);
           alert(
             `Chấm công đã được lưu, nhưng có ${failedRecords.length} bản ghi khen thưởng/vi phạm bị lỗi.`
           );
         }
-      } else {
-        alert("Đã duyệt chấm công thành công!");
       }
 
       await update_chamcong(
@@ -165,11 +162,10 @@ export function AttendancePage() {
 
       await getAllLichLamViec();
       setIsModalOpen(false);
+      alert("Đã duyệt chấm công thành công!");
     } catch (error) {
       console.error("Lỗi khi lưu dữ liệu:", error);
-
-      const errorMessage = error.message || "Lỗi không xác định";
-      alert(`Lỗi khi lưu dữ liệu: ${errorMessage}`);
+      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Lỗi không xác định"}`);
     }
   };
 
@@ -198,17 +194,17 @@ export function AttendancePage() {
               </div>
               <div className="relative">
                 <select
-                  value={selectedChiNhanh.TenCN}
+                  value={selectedChiNhanh.TenChiNhanh || ""}
                   onChange={(e) => {
                     const selected = chinhanhs?.find(
                       (chinhanh) => chinhanh.TenChiNhanh === e.target.value
                     );
-                    setSelectedChiNhanh(selected ?? "");
+                    setSelectedChiNhanh(selected || "");
                   }}
                   className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Chọn chi nhánh...</option>
-                  {chinhanhs?.map?.((chinhanh) => (
+                  {chinhanhs?.map((chinhanh) => (
                     <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
                       {chinhanh.TenChiNhanh}
                     </option>
@@ -217,33 +213,26 @@ export function AttendancePage() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                {/* Week Navigation */}
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={handlePreviousWeek}
-                      className="p-2 hover:bg-gray-100 rounded"
-                    >
-                      <ChevronLeftIcon className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={handleThisWeek}
-                      className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                    >
-                      Tuần này
-                    </button>
-                    <button
-                      onClick={handleNextWeek}
-                      className="p-2 hover:bg-gray-100 rounded"
-                    >
-                      <ChevronRightIcon className="h-5 w-5" />
-                    </button>
-                    <span className="text-sm text-gray-600 ml-2">
-                      {weekLabel}
-                    </span>
-                  </div>
-                </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={handlePreviousWeek}
+                  className="p-2 hover:bg-gray-100 rounded"
+                >
+                  <ChevronLeftIcon className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={handleThisWeek}
+                  className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Tuần này
+                </button>
+                <button
+                  onClick={handleNextWeek}
+                  className="p-2 hover:bg-gray-100 rounded"
+                >
+                  <ChevronRightIcon className="h-5 w-5" />
+                </button>
+                <span className="text-sm text-gray-600 ml-2">{weekLabel}</span>
               </div>
             </div>
           </div>
@@ -268,3 +257,5 @@ export function AttendancePage() {
     </div>
   );
 }
+
+export default AttendancePage;
