@@ -134,26 +134,6 @@ export function AttendancePage() {
         })),
       ];
 
-      if (dataUpdate.MaChamCong) {
-        await update_chamcong(
-          // nếu đã có chấm công thì cập nhật lại giờ do quản lý chỉnh
-          dataUpdate.GioVao,
-          dataUpdate.GioRa,
-          dataUpdate.DiTre,
-          dataUpdate.VeSom,
-          dataUpdate.MaChamCong
-        );
-      } else {
-        await chamCong(
-          // nếu duyệt mà chưa có bản chấm công thì tự động tạo một bảng chấm công mới
-          dataUpdate.NgayLam,
-          dataUpdate.GioVao,
-          dataUpdate.GioRa,
-          dataUpdate.MaLLV,
-          false
-        );
-      }
-
       if (records.length > 0) {
         const results = await Promise.all(
           records.map((record) => createKTKL(record))
@@ -172,6 +152,16 @@ export function AttendancePage() {
       } else {
         alert("Đã duyệt chấm công thành công!");
       }
+
+      await update_chamcong(
+        dataUpdate.GioVao,
+        dataUpdate.GioRa,
+        dataUpdate.DiTre,
+        dataUpdate.VeSom,
+        dataUpdate.MaChamCong,
+        dataUpdate.NgayLam,
+        dataUpdate.MaLLV
+      );
 
       await getAllLichLamViec();
       setIsModalOpen(false);

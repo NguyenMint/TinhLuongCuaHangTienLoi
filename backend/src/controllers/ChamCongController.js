@@ -90,9 +90,9 @@ class ChamCongController {
 
   async update_chamcong(req, res) {
     try {
-      const { GioVao, DiTre, GioRa, VeSom, MaChamCong, NgayChamCong, MaLLV } =
+      const { GioVao, DiTre, GioRa, VeSom, MaChamCong, NgayLam, MaLLV } =
         req.body;
-
+      const NgayChamCong = NgayLam;
       let updatedRecord = null;
       let chamCongRecord = null;
 

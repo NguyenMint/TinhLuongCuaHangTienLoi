@@ -65,7 +65,9 @@ export const update_chamcong = async (
   GioRa,
   DiTre,
   VeSom,
-  MaChamCong
+  MaChamCong,
+  NgayLam,
+  MaLLV
 ) => {
   try {
     const response = await axios.put(
@@ -76,6 +78,8 @@ export const update_chamcong = async (
         DiTre,
         VeSom,
         MaChamCong,
+        NgayLam,
+        MaLLV,
       }
     );
     return { success: true, data: response.data };
