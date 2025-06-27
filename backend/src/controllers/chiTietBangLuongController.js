@@ -118,8 +118,8 @@ exports.create = async (req, res) => {
       where: { MaLLV: chamCong.MaLLV, ThuongPhat: false },
     });
     let TienPhat = 0;
-    kyLuats.forEach((khen) => {
-      TienPhat += khen.MucThuongPhat;
+    kyLuats.forEach((phat) => {
+      TienPhat += parseFloat(phat.MucThuongPhat);
     });
     const tongtien =
       parseFloat(TienLuongCa) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
@@ -339,6 +339,10 @@ exports.getByNhanVienAndNgay = async (req, res) => {
                   model: CaLam,
                   as: "MaCaLam_ca_lam",
                 },
+                {
+                  model: KhenThuongKyLuat,
+                  as:"khen_thuong_ky_luats"
+                }
               ],
             },
           ],

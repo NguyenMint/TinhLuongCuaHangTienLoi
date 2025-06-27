@@ -10,10 +10,10 @@ export function UpdateEmployeeModal({
   setShowModalUpdate,
   chiNhanhs,
   employee,
-  refreshEmployeeData
+  refreshEmployeeData,
 }) {
   const [form, setForm] = useState({
-    MaTK:employee.MaTK,
+    MaTK: employee.MaTK,
     HoTen: employee.HoTen,
     GioiTinh: employee.GioiTinh,
     Email: employee.Email,
@@ -32,19 +32,22 @@ export function UpdateEmployeeModal({
     MaVaiTro: employee.MaVaiTro,
     MaCN: employee.MaCN,
     QuanLyBoi: employee.QuanLyBoi,
+    ThangLuong: "",
   });
   const [thangLuong, setThangLuong] = useState([]);
   const [mauLuong, setMauLuong] = useState([]);
   const [quanLys, setQuanLys] = useState([]);
-  const handleChange = (e) => {
+    const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
-      const { BacLuong, LuongCoBanHienTai,LuongTheoGioHienTai } = JSON.parse(value);
+      const { BacLuong, LuongCoBanHienTai, LuongTheoGioHienTai } =
+        JSON.parse(value);
       setForm((prev) => ({
         ...prev,
         BacLuong,
         LuongCoBanHienTai,
-        LuongTheoGioHienTai
+        LuongTheoGioHienTai,
+        ThangLuong:value
       }));
       return;
     }
@@ -52,8 +55,9 @@ export function UpdateEmployeeModal({
       const { LuongTheoGio } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
-        LuongCoBanHienTai:0,
-        LuongTheoGioHienTai: LuongTheoGio
+        LuongCoBanHienTai: 0,
+        LuongTheoGioHienTai: LuongTheoGio,
+        ThangLuong:value
       }));
       return;
     }
@@ -106,7 +110,6 @@ export function UpdateEmployeeModal({
     try {
       const response = await getAllThangLuongFullTime();
       setThangLuong(response);
-      console.log(response);
     } catch (error) {
       console.error("Lỗi khi lấy Tháng lương:", error);
     }
@@ -134,15 +137,52 @@ export function UpdateEmployeeModal({
   useEffect(() => {
     fetchAllQuanLyByChiNhanh();
   }, [form.MaCN]);
+  const [isThangLuongInitialized, setIsThangLuongInitialized] = useState(false);
+
+useEffect(() => {
+  if (!isThangLuongInitialized) {
+    if (form.LoaiNV === "FullTime" && thangLuong.length > 0) {
+      const current = thangLuong.find(
+        (tl) =>
+          tl.BacLuong === form.BacLuong &&
+          tl.LuongCoBan === form.LuongCoBanHienTai
+      );
+      if (current) {
+        setForm((prev) => ({
+          ...prev,
+          ThangLuong: JSON.stringify({
+            BacLuong: current.BacLuong,
+            LuongCoBanHienTai: current.LuongCoBan,
+            LuongTheoGioHienTai: current.LuongTheoGio,
+          }),
+        }));
+        setIsThangLuongInitialized(true);
+      }
+    }
+    if (form.LoaiNV === "PartTime" && mauLuong.length > 0) {
+      const current = mauLuong.find(
+        (ml) => ml.LuongTheoGio === form.LuongTheoGioHienTai
+      );
+      if (current) {
+        setForm((prev) => ({
+          ...prev,
+          ThangLuong: JSON.stringify({
+            LuongTheoGio: current.LuongTheoGio,
+          }),
+        }));
+        setIsThangLuongInitialized(true);
+      }
+    }
+  }
+  // eslint-disable-next-line
+}, [thangLuong, mauLuong, form.LoaiNV]);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <form
         className="bg-white p-6 rounded shadow-lg w-full max-w-4xl mx-auto relative z-10"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-xl font-bold mb-4 text-center">
-          Update nhân viên 
-        </h2>
+        <h2 className="text-xl font-bold mb-4 text-center">Update nhân viên</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block mb-1 font-medium">Họ tên</label>
@@ -298,16 +338,14 @@ export function UpdateEmployeeModal({
                 className="w-full border rounded px-3 py-2"
                 required
               >
-                <option value="">Chọn thang lương</option>
                 {thangLuong
                   .filter((tl) => tl.MaVaiTro === Number(form.MaVaiTro))
                   .map((thangluong) => (
                     <option
-                      key={thangluong.BacLuong}
                       value={JSON.stringify({
                         BacLuong: thangluong.BacLuong,
                         LuongCoBanHienTai: thangluong.LuongCoBan,
-                        LuongTheoGioHienTai: thangluong.LuongTheoGio
+                        LuongTheoGioHienTai: thangluong.LuongTheoGio,
                       })}
                     >
                       Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}
@@ -334,7 +372,7 @@ export function UpdateEmployeeModal({
                       LuongTheoGio: mauluong.LuongTheoGio,
                     })}
                   >
-                   Lương theo giờ: {formatCurrency(mauluong.LuongTheoGio)}
+                    Lương theo giờ: {formatCurrency(mauluong.LuongTheoGio)}
                   </option>
                 ))}
               </select>
