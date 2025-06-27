@@ -12,37 +12,34 @@ const violationTypes = [
 ];
 
 const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
-  const [currentViolations, setCurrentViolations] = useState(violations || []);
+  const [currentViolations, setCurrentViolations] = useState(violations);
   const [showViolations, setShowViolations] = useState(violations);
-  const [deletedDatabaseIds, setDeletedDatabaseIds] = useState(new Set()); //Xóa CSDL
+  const [deletedDatabaseIds, setDeletedDatabaseIds] = useState(new Set());
   const [newViolation, setNewViolation] = useState({
     LyDo: "",
     MucThuongPhat: 0,
     DuocMienThue: true,
   });
   const [isAdding, setIsAdding] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(null); // Chọn item xóa
+  const [isDeleting, setIsDeleting] = useState(null);
 
   const handleAddViolation = () => {
     if (!newViolation.LyDo || newViolation.MucThuongPhat < 0) return;
-    console.log(newViolation.MucThuongPhat);
-    
+
     const newItem = {
       ...newViolation,
-      MaKTKL: `temp_${Date.now()}`, // Temporary ID for new items
+      MaKTKL: `temp_${Date.now()}`,
+      isAuto: false,
     };
 
     const updatedViolations = [...currentViolations, newItem];
-
     setCurrentViolations(updatedViolations);
     onUpdate(updatedViolations);
-
     setNewViolation({ LyDo: "", DuocMienThue: true, MucThuongPhat: 0 });
     setIsAdding(false);
   };
 
   const handleDelete = async (MaKTKL, isFromDatabase = false) => {
-    // Show confirmation dialog
     const confirmed = window.confirm("Bạn có chắc chắn muốn xóa vi phạm này?");
     if (!confirmed) return;
 
@@ -57,7 +54,6 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
       const updatedViolations = currentViolations.filter(
         (v) => v.MaKTKL !== MaKTKL
       );
-
       setCurrentViolations(updatedViolations);
       onUpdate(updatedViolations);
     } catch (error) {
@@ -74,13 +70,23 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
   };
 
   useEffect(() => {
-    // Separate database violations from current violations
-    const databaseViolations = formData.khen_thuong_ky_luats
-      ?.filter((item) => item.ThuongPhat === false)
-      .filter((item) => !deletedDatabaseIds.has(item.MaKTKL));
+    const databaseViolations =
+      formData.khen_thuong_ky_luats
+        ?.filter(
+          (item) =>
+            item.ThuongPhat === false &&
+            item.LyDo !== "Đi muộn" &&
+            item.LyDo !== "Về sớm"
+        )
+        .filter((item) => !deletedDatabaseIds.has(item.MaKTKL)) || [];
 
-    setShowViolations([...databaseViolations, ...currentViolations]);
-  }, [currentViolations, formData, deletedDatabaseIds]); // Add deletedDatabaseIds to dependencies
+    const allViolations = [
+      ...databaseViolations.map((v) => ({ ...v, isAuto: false })),
+      ...currentViolations,
+    ];
+
+    setShowViolations(allViolations);
+  }, [currentViolations, formData.khen_thuong_ky_luats, deletedDatabaseIds]);
 
   return (
     <div>
@@ -142,7 +148,6 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
                 </td>
               </tr>
             )}
-
             {isAdding && (
               <tr className="border-t bg-blue-50">
                 <td className="p-3">
@@ -170,7 +175,7 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
                     onChange={(e) =>
                       setNewViolation({
                         ...newViolation,
-                        MucThuongPhat: parseInt(e.target.value || 0),
+                        MucThuongPhat: parseInt(e.target.value) || 0,
                       })
                     }
                   />
@@ -178,8 +183,8 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
                 <td className="p-3">
                   <input
                     type="checkbox"
-                    className="w-full border rounded-md p-2"
-                    checked={!!newViolation.DuocMienThue}
+                    className="w-4 h-4 border rounded-md"
+                    checked={newViolation.DuocMienThue}
                     onChange={(e) =>
                       setNewViolation({
                         ...newViolation,
@@ -194,7 +199,6 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
           </tbody>
         </table>
       </div>
-
       {!isAdding ? (
         <button
           onClick={() => setIsAdding(true)}
