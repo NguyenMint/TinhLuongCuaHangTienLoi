@@ -232,14 +232,14 @@ class TaiKhoanController {
   }
   async login(req, res) {
     try {
-      const { Email, Password } = req.body;
+      const { MaNhanVien, Password } = req.body;
 
       const user = await TaiKhoan.findOne({
-        where: { Email },
+        where: { MaNhanVien },
         include: [{ model: db.ChiNhanh, as: "MaCN_chi_nhanh" }],
       });
       if (!user) {
-        return res.status(404).json({ message: "Email không tồn tại" });
+        return res.status(404).json({ message: "Mã nhân viên không tồn tại" });
       }
       const isMatch = await bcrypt.compare(Password, user.Password);
       if (!isMatch) {
