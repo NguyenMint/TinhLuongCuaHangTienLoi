@@ -8,8 +8,6 @@ export const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-
-
   const [errors, setErrors] = useState({
     manhanvien: "",
     password: "",
