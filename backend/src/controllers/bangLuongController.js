@@ -6,6 +6,7 @@ const NguoiPhuThuoc = db.NguoiPhuThuoc;
 const PhuCap = db.PhuCap;
 const ChamCong = db.ChamCong;
 const LichLamViec = db.LichLamViec;
+const KhenThuongKyLuat = db.KhenThuongKyLuat;
 const { Op, where } = require("sequelize");
 const { formatDate, tinhThueTNCN } = require("../util/util");
 const sequelize = require("../config/connectionDB");
@@ -522,10 +523,35 @@ class bangLuongController {
               "Ngay",
               "GioLamViec",
               "LuongMotGio",
+              "HeSoLuong",
+              "isNgayLe",
+              "isCuoiTuan",
+              "isCaDem",
               "TienLuongCa",
               "TienPhuCap",
               "TienPhat",
               "tongtien",
+            ],
+            include: [
+              {
+                model: ChamCong,
+                as: "cham_congs",
+                attributes: ["MaChamCong"],
+                include: [
+                  {
+                    model: LichLamViec,
+                    as: "MaLLV_lich_lam_viec",
+                    attributes: ["MaLLV"],
+                    include: [
+                      {
+                        model: KhenThuongKyLuat,
+                        as: "khen_thuong_ky_luats",
+                        attributes: ["ThuongPhat", "LyDo", "MucThuongPhat"],
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
         ],
@@ -549,10 +575,22 @@ class bangLuongController {
             Ngay: detail.Ngay,
             GioLamViec: detail.GioLamViec,
             LuongMotGio: detail.LuongMotGio,
+            HeSoLuong: detail.HeSoLuong,
+            isNgayLe: detail.isNgayLe,
+            isCuoiTuan: detail.isCuoiTuan,
+            isCaDem: detail.isCaDem,
             TienLuongCa: detail.TienLuongCa,
             TienPhuCap: detail.TienPhuCap,
             TienPhat: detail.TienPhat,
             tongtien: detail.tongtien,
+            detailsThuongPhat:
+              detail.cham_congs?.[0]?.MaLLV_lich_lam_viec?.khen_thuong_ky_luats?.map(
+                (ktkl) => ({
+                  ThuongPhat: ktkl.ThuongPhat,
+                  LyDo: ktkl.LyDo,
+                  MucThuongPhat: ktkl.MucThuongPhat,
+                })
+              ) || [],
           })),
         })),
       };

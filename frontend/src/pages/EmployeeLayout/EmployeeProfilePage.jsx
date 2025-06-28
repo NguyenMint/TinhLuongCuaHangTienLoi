@@ -2,14 +2,20 @@ import React, { useState, useEffect } from "react";
 import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
 import { formatCurrency, formatDate, formatTime } from "../../utils/format";
+import { RefreshUserInfo } from "../../components/Employee/RefreshUserInfo";
 
 export function EmployeeProfilePage() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
   const [salaryData, setSalaryData] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Function để cập nhật user state khi có thay đổi
+  const handleUserRefresh = (updatedUser) => {
+    setUser(updatedUser);
+  };
 
   const fetchSalaryData = async (date) => {
     setLoading(true);
@@ -47,33 +53,36 @@ export function EmployeeProfilePage() {
 
   useEffect(() => {
     fetchSalaryData(selectedDate);
-  }, []);
+  }, [selectedDate, user.MaTK]);
 
   return (
     <div className="bg-gray-50 min-h-screen p-4 mt-5">
       <div className="bg-white rounded-xl shadow-sm py-8 px-6 mb-6">
-        <div className="flex items-center gap-6 mb-8">
-          <div className="w-28 h-28 rounded-full from-blue-100 to-blue-200 overflow-hidden">
-            <img
-              src={`${process.env.REACT_APP_BACKEND_URL}/${user.Avatar}`}
-              alt="avatar"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <div className="font-bold text-2xl mb-1 text-gray-800">
-              {user.HoTen}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-6">
+            <div className="w-28 h-28 rounded-full from-blue-100 to-blue-200 overflow-hidden">
+              <img
+                src={`${process.env.REACT_APP_BACKEND_URL}/${user.Avatar}`}
+                alt="avatar"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <div className="text-gray-500 text-sm">{user.Email}</div>
-            <div className="text-gray-600 text-sm mt-1">
-              <span className="mr-4">
-                <b>Giới tính:</b> {user.GioiTinh ? "Nam" : "Nữ"}
-              </span>
-              <span>
-                <b>Ngày sinh:</b> {user.NgaySinh}
-              </span>
+            <div>
+              <div className="font-bold text-2xl mb-1 text-gray-800">
+                {user.HoTen}
+              </div>
+              <div className="text-gray-500 text-sm">{user.Email}</div>
+              <div className="text-gray-600 text-sm mt-1">
+                <span className="mr-4">
+                  <b>Giới tính:</b> {user.GioiTinh ? "Nam" : "Nữ"}
+                </span>
+                <span>
+                  <b>Ngày sinh:</b> {user.NgaySinh}
+                </span>
+              </div>
             </div>
           </div>
+          <RefreshUserInfo onRefresh={handleUserRefresh} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

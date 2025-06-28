@@ -37,7 +37,7 @@ export function UpdateEmployeeModal({
   const [thangLuong, setThangLuong] = useState([]);
   const [mauLuong, setMauLuong] = useState([]);
   const [quanLys, setQuanLys] = useState([]);
-    const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
       const { BacLuong, LuongCoBanHienTai, LuongTheoGioHienTai } =
@@ -47,7 +47,7 @@ export function UpdateEmployeeModal({
         BacLuong,
         LuongCoBanHienTai,
         LuongTheoGioHienTai,
-        ThangLuong:value
+        ThangLuong: value,
       }));
       return;
     }
@@ -57,7 +57,7 @@ export function UpdateEmployeeModal({
         ...prev,
         LuongCoBanHienTai: 0,
         LuongTheoGioHienTai: LuongTheoGio,
-        ThangLuong:value
+        ThangLuong: value,
       }));
       return;
     }
@@ -102,7 +102,28 @@ export function UpdateEmployeeModal({
       alert(result.message || "Update nhân viên thất bại.");
       return;
     }
-    alert("Update nhân viên thành công!");
+
+    // Kiểm tra nếu đang update chính mình thì cập nhật localStorage
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (currentUser && currentUser.MaTK === employee.MaTK) {
+      // Cập nhật localStorage với thông tin mới
+      const updatedUser = {
+        ...currentUser,
+        ...result.data,
+        // Giữ lại các field từ JWT token
+        TenChiNhanh: result.data.MaCN_chi_nhanh?.TenChiNhanh,
+        DiaChiCN: result.data.MaCN_chi_nhanh?.DiaChi,
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // Thông báo cho user biết thông tin đã được cập nhật
+      alert(
+        "Update nhân viên thành công! Thông tin cá nhân của bạn đã được cập nhật."
+      );
+    } else {
+      alert("Update nhân viên thành công!");
+    }
+
     refreshEmployeeData();
     setShowModalUpdate(false);
   };
@@ -139,43 +160,43 @@ export function UpdateEmployeeModal({
   }, [form.MaCN]);
   const [isThangLuongInitialized, setIsThangLuongInitialized] = useState(false);
 
-useEffect(() => {
-  if (!isThangLuongInitialized) {
-    if (form.LoaiNV === "FullTime" && thangLuong.length > 0) {
-      const current = thangLuong.find(
-        (tl) =>
-          tl.BacLuong === form.BacLuong &&
-          tl.LuongCoBan === form.LuongCoBanHienTai
-      );
-      if (current) {
-        setForm((prev) => ({
-          ...prev,
-          ThangLuong: JSON.stringify({
-            BacLuong: current.BacLuong,
-            LuongCoBanHienTai: current.LuongCoBan,
-            LuongTheoGioHienTai: current.LuongTheoGio,
-          }),
-        }));
-        setIsThangLuongInitialized(true);
+  useEffect(() => {
+    if (!isThangLuongInitialized) {
+      if (form.LoaiNV === "FullTime" && thangLuong.length > 0) {
+        const current = thangLuong.find(
+          (tl) =>
+            tl.BacLuong === form.BacLuong &&
+            tl.LuongCoBan === form.LuongCoBanHienTai
+        );
+        if (current) {
+          setForm((prev) => ({
+            ...prev,
+            ThangLuong: JSON.stringify({
+              BacLuong: current.BacLuong,
+              LuongCoBanHienTai: current.LuongCoBan,
+              LuongTheoGioHienTai: current.LuongTheoGio,
+            }),
+          }));
+          setIsThangLuongInitialized(true);
+        }
+      }
+      if (form.LoaiNV === "PartTime" && mauLuong.length > 0) {
+        const current = mauLuong.find(
+          (ml) => ml.LuongTheoGio === form.LuongTheoGioHienTai
+        );
+        if (current) {
+          setForm((prev) => ({
+            ...prev,
+            ThangLuong: JSON.stringify({
+              LuongTheoGio: current.LuongTheoGio,
+            }),
+          }));
+          setIsThangLuongInitialized(true);
+        }
       }
     }
-    if (form.LoaiNV === "PartTime" && mauLuong.length > 0) {
-      const current = mauLuong.find(
-        (ml) => ml.LuongTheoGio === form.LuongTheoGioHienTai
-      );
-      if (current) {
-        setForm((prev) => ({
-          ...prev,
-          ThangLuong: JSON.stringify({
-            LuongTheoGio: current.LuongTheoGio,
-          }),
-        }));
-        setIsThangLuongInitialized(true);
-      }
-    }
-  }
-  // eslint-disable-next-line
-}, [thangLuong, mauLuong, form.LoaiNV]);
+    // eslint-disable-next-line
+  }, [thangLuong, mauLuong, form.LoaiNV]);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <form

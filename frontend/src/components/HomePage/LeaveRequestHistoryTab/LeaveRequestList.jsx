@@ -7,7 +7,6 @@ export const LeaveRequestTab = ({MaTK}) => {
     try {
         const response = await getDonXinNghiByNV(MaTK);
         setDonXinNghis(response);
-        console.log(response);
       } catch (error) {
         console.log("Lỗi fetch đơn chờ duyệt: " + error);
       }
