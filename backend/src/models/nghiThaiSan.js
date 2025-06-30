@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     TrangThai: {
-      type: DataTypes.ENUM('Ch? duy?t','?ang ngh?','?ã k?t thúc','?ã duy?t'),
+      type: DataTypes.ENUM('Chờ duyệt','Đang nghĩ','Đã kết thúc','Đã duyệt'),
       allowNull: false
     },
     FileGiayThaiSan: {

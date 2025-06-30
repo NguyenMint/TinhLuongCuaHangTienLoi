@@ -12,7 +12,6 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
   const openDetailModal = async (employee) => {
     setShowModal(true);
     setSelectedEmployee(employee);
-    console.log(employee);
   };
 
   // Hàm đóng modal

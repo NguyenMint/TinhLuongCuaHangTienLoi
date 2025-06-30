@@ -1,8 +1,10 @@
 const express = require('express');
 const route = express.Router();
 const NguoiPhuThuocController = require("../controllers/NguoiPhuThuocController");
-route.get("/",NguoiPhuThuocController.getAll);
-route.post("/",NguoiPhuThuocController.create);
-route.put("/:MaNPT",NguoiPhuThuocController.update);
-route.delete("/:MaNPT",NguoiPhuThuocController.delete);
+const { authMiddleware } = require("../middleware/authMiddleware");
+const { authorizeRoles } = require("../middleware/authMiddleware");
+route.get("/:MaTK",authMiddleware, NguoiPhuThuocController.getByNV);
+route.post("/",authMiddleware, authorizeRoles(1,3) ,NguoiPhuThuocController.create);
+route.put("/:MaNPT",authMiddleware, authorizeRoles(1,3),NguoiPhuThuocController.update);
+route.delete("/:MaNPT",authMiddleware, authorizeRoles(1,3),NguoiPhuThuocController.delete);
 module.exports = route;

@@ -17,13 +17,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     BacLuongCu: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: "BacLuongCu"
+      allowNull: false
     },
     BacLuongMoi: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: "BacLuongMoi"
+      allowNull: false
     },
     NgayApDung: {
       type: DataTypes.DATEONLY,
@@ -48,22 +46,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaLSTL" },
-        ]
-      },
-      {
-        name: "BacLuongCu",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "BacLuongCu" },
-        ]
-      },
-      {
-        name: "BacLuongMoi",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "BacLuongMoi" },
         ]
       },
       {
