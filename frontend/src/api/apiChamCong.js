@@ -13,7 +13,7 @@ export const chamCongVao = async (NgayChamCong, GioVao, MaLLV, NgayLe) => {
     return { success: true, data: response.data };
   } catch (error) {
     if (error.response.status === 401) {
-      return { success: false, message: "Không tồn tại lịch đăng ký ca này" };3
+      return { success: false, message: "Không tồn tại lịch đăng ký ca này" };
     }
     console.error("Lỗi tạo Ca làm:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
