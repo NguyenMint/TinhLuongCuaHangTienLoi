@@ -114,19 +114,12 @@ class LichLamViecController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async getAllCaLamMonthlyByNhanVien(req, res) {
+  async getAllCaLamByNhanVien(req, res) {
     try {
-      const { MaTK, Ngay } = req.query;
-      const [Nam, Thang] = Ngay.split("-");
-      const startDate = `${Nam}-${Thang}-01`;
-      const sumDayOnMonth = getSoNgayTrongThang(Ngay);
-      const endDate = `${Nam}-${Thang}-${sumDayOnMonth}`;
+      const { MaTK } = req.params;
       const lichlamviec = await LichLamViec.findAll({
         where: {
           MaTK,
-          NgayLam: {
-            [Op.between]: [startDate, endDate],
-          },
         },
         include: [{ model: db.CaLam, as: "MaCaLam_ca_lam" }],
       });

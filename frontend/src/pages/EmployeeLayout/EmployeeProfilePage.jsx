@@ -2,21 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
 import { formatCurrency, formatDate, formatTime } from "../../utils/format";
-import { RefreshUserInfo } from "../../components/Employee/RefreshUserInfo";
 
 export function EmployeeProfilePage() {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const user = JSON.parse(localStorage.getItem("user"));
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
   const [salaryData, setSalaryData] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  // Function để cập nhật user state khi có thay đổi
-  const handleUserRefresh = (updatedUser) => {
-    setUser(updatedUser);
-  };
-
   const fetchSalaryData = async (date) => {
     setLoading(true);
     try {
@@ -53,7 +46,7 @@ export function EmployeeProfilePage() {
 
   useEffect(() => {
     fetchSalaryData(selectedDate);
-  }, [selectedDate, user.MaTK]);
+  }, [selectedDate]);
 
   return (
     <div className="bg-gray-50 min-h-screen p-4 mt-5">
@@ -82,7 +75,6 @@ export function EmployeeProfilePage() {
               </div>
             </div>
           </div>
-          <RefreshUserInfo onRefresh={handleUserRefresh} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

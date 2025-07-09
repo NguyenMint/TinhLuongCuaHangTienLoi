@@ -158,19 +158,3 @@ export const updateTiepTucLamViec = async (MaTK) => {
   }
 };
 
-export const refreshUserInfo = async (MaTK) => {
-  try {
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/${MaTK}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    return { success: true, data: response.data };
-  } catch (error) {
-    console.error("Lỗi refresh thông tin user:", error);
-    return { success: false, message: "Lỗi kết nối đến server" };
-  }
-};

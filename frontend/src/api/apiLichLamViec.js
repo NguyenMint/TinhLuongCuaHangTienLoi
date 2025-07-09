@@ -31,10 +31,10 @@ export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
   }
 };
 
-export const getAllLLVMonthlyByNhanVien = async (MaTK,Ngay) => {
+export const getAllLLVByNhanVien = async (MaTK) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllCaLamMonthlyByNhanVien?MaTK=${MaTK}&Ngay=${Ngay}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllCaLamByNhanVien/${MaTK}`
     );
     return response.data;
   } catch (error) {

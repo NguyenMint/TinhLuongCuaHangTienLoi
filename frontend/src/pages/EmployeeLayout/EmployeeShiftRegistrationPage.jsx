@@ -2,11 +2,10 @@ import React, { useEffect, useState } from "react";
 import { ShiftRegistration } from "../../components/Employee/ShiftRegistration";
 import { ControlRegistrationModal } from "../../components/Employee/ControlRegistrationModal";
 import { fetchCaLam } from "../../api/apiCaLam";
-import { getAllLLVMonthlyByNhanVien, dangKyCa, huyDangKyCa } from "../../api/apiLichLamViec";
+import { getAllLLVByNhanVien, dangKyCa, huyDangKyCa } from "../../api/apiLichLamViec";
 import { format } from "date-fns";
 export const EmployeeShiftRegistrationPage = () => {
   const currentDate = new Date();
-  const ngay = currentDate.toISOString().slice(0, 10);
   const user = JSON.parse(localStorage.getItem("user"));
   const [lichLamViec, setLichLamViec] = useState([]);
   const [shifts, setShifts] = useState([]);
@@ -20,9 +19,9 @@ export const EmployeeShiftRegistrationPage = () => {
       console.error("Lỗi khi lấy ca làm:", error);
     }
   };
-  const fetchLichLamViecMonthlyByNhanVien = async () => {
+  const fetchLichLamViecByNhanVien = async () => {
     try {
-      const response = await getAllLLVMonthlyByNhanVien(user.MaTK, ngay);
+      const response = await getAllLLVByNhanVien(user.MaTK);
       setLichLamViec(response);
     } catch (error) {
       console.error("Lỗi khi lấy lịch làm việc của nhân viên này", error);
@@ -30,7 +29,7 @@ export const EmployeeShiftRegistrationPage = () => {
   };
   useEffect(() => {
     fetchAllCaLam();
-    fetchLichLamViecMonthlyByNhanVien();
+    fetchLichLamViecByNhanVien();
   }, []);
   const handleDangKyCa = async (MaCa, day) => {
     const NgayLam = format(day, "yyyy-MM-dd");
@@ -45,7 +44,7 @@ export const EmployeeShiftRegistrationPage = () => {
       return;
     }
     alert("Đăng ký ca thành công");
-    fetchLichLamViecMonthlyByNhanVien();
+    fetchLichLamViecByNhanVien();
   };
   const handleHuyDangKy = async () =>{
     const response = await huyDangKyCa(selectedLLV.MaLLV);
@@ -56,7 +55,7 @@ export const EmployeeShiftRegistrationPage = () => {
     }
     alert("Hủy ca thành công");
     setShowControl(false);
-    fetchLichLamViecMonthlyByNhanVien();
+    fetchLichLamViecByNhanVien();
   }
   return (
     <div className="min-h-screen bg-gray-100">

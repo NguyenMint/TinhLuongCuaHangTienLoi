@@ -85,9 +85,6 @@ export const AddShiftModal = ({
               <h4 className="text-sm font-medium text-gray-900">
                 Chọn ca làm việc
               </h4>
-              <button className="text-blue-600 hover:text-blue-700">
-                <PlusIcon className="h-5 w-5" />
-              </button>
             </div>
 
             <div className="space-y-4">
@@ -96,58 +93,6 @@ export const AddShiftModal = ({
                 setSelectedShifts={setSelectedShifts}
                 selectedShifts={selectedShifts}
               />
-            </div>
-          </div>
-          {/* Toggles Section */}
-          <div className="space-y-4">
-            <div>
-              <label className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm font-medium text-gray-900 block">
-                    Lặp lại hàng tuần
-                  </span>
-                  <span className="text-sm text-gray-500 block">
-                    Ca làm việc sẽ được tự động lặp lại vào cùng ngày trong
-                    tuần.
-                  </span>
-                </div>
-                <button
-                  onClick={() => setRepeatWeekly(!repeatWeekly)}
-                  className={`${
-                    repeatWeekly ? "bg-blue-600" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}
-                >
-                  <span
-                    className={`${
-                      repeatWeekly ? "translate-x-6" : "translate-x-1"
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out mt-1`}
-                  />
-                </button>
-              </label>
-            </div>
-            <div>
-              <label className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm font-medium text-gray-900 block">
-                    Áp dụng cho nhân viên khác
-                  </span>
-                  <span className="text-sm text-gray-500 block">
-                    Ca làm việc sẽ được áp dụng cho các nhân viên được chọn.
-                  </span>
-                </div>
-                <button
-                  onClick={() => setApplyToOthers(!applyToOthers)}
-                  className={`${
-                    applyToOthers ? "bg-blue-600" : "bg-gray-200"
-                  } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}
-                >
-                  <span
-                    className={`${
-                      applyToOthers ? "translate-x-6" : "translate-x-1"
-                    } inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out mt-1`}
-                  />
-                </button>
-              </label>
             </div>
           </div>
         </div>

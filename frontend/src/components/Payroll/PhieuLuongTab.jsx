@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { formatCurrency } from "../../utils/format";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
-
+import { X, FileIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { saveAs } from "file-saver";
+import ExcelJS from "exceljs";
 export const PhieuLuongsTab = ({ phieuLuong }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -21,18 +22,136 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
     setDetailData([]);
     setExpandedDetails({});
   };
-
   const toggleDetailExpansion = (detailIndex) => {
-    console.log("prev:", expandedDetails);
-    console.log("prev[detailIndex]:", expandedDetails[detailIndex]);
-    console.log("!prev[detailIndex]:", !expandedDetails[detailIndex]);
-
     setExpandedDetails((prev) => ({
       ...prev,
       [detailIndex]: !prev[detailIndex],
     }));
   };
+  const handleExport = async () => {
+    try {
+      if (
+        !selectedEmployee ||
+        !selectedEmployee.details ||
+        selectedEmployee.details.length === 0
+      ) {
+        alert("Không có dữ liệu để xuất!");
+        return;
+      }
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("ChiTietLuongCa");
+      worksheet.mergeCells("A1:K1");
+      const titleRow = worksheet.getRow(1);
+      titleRow.height = 30;
+      titleRow.getCell(
+        1
+      ).value = `Chi tiết lương của nhân viên ${selectedEmployee.MaNhanVien} - ${selectedEmployee.HoTen}`;
+      titleRow.getCell(1).font = {
+        bold: true,
+        size: 16,
+        name: "Arial",
+        color: { argb: "000000" },
+      };
+      titleRow.getCell(1).alignment = {
+        horizontal: "center",
+        vertical: "middle",
+      };
 
+      const headers = [
+        "STT",
+        "Ngày",
+        "Giờ làm việc",
+        "Lương/giờ",
+        "Hệ số lương",
+        "Loại ca",
+        "Loại ngày",
+        "Tiền lương ca",
+        "Thưởng phụ cấp",
+        "Phạt",
+        "Tổng tiền",
+      ];
+      const headerRow = worksheet.addRow(headers);
+      headerRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.font = {
+          bold: true,
+          color: { argb: "FFFFFF" },
+          size: 12,
+        };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "4472C4" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+        };
+      });
+
+      let stt = 1;
+      selectedEmployee.details.forEach((detail) => {
+        const row = worksheet.addRow([
+          stt++,
+          detail.Ngay,
+          detail.GioLamViec,
+          parseFloat(detail.LuongMotGio),
+          detail.HeSoLuong,
+          detail.isCaDem ? "Ca đêm" : "Ca thường",
+          detail.isNgayLe
+            ? "Ngày lễ"
+            : detail.isCuoiTuan
+            ? "Cuối tuần"
+            : "Ngày thường",
+          parseFloat(detail.TienLuongCa),
+          parseFloat(detail.TienPhuCap),
+          parseFloat(detail.TienPhat),
+          parseFloat(detail.tongtien),
+        ]);
+        row.getCell(4).numFmt = "#,##0";
+        row.getCell(8).numFmt = "#,##0";
+        row.getCell(9).numFmt = "#,##0";
+        row.getCell(10).numFmt = "#,##0";
+        row.getCell(11).numFmt = "#,##0";
+      });
+
+      worksheet.columns = [
+        { width: 8 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+        { width: 15 },
+      ];
+      worksheet.eachRow((row, rowNumber) => {
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          if (rowNumber > 2) {
+            cell.alignment = { horizontal: "center", vertical: "middle" };
+          }
+        });
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const fileName = `ChiTietLuongCa_${selectedEmployee.MaNhanVien}.xlsx`;
+      saveAs(blob, fileName);
+      alert("Xuất file Excel chi tiết thành công!");
+    } catch (error) {
+      console.error("Lỗi khi export file Excel chi tiết:", error);
+      alert("Có lỗi xảy ra khi xuất file Excel chi tiết!");
+    }
+  };
   return (
     <div className="text-center">
       <table className="w-full border-collapse border border-gray-300">
@@ -160,7 +279,6 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
                               detail.TienPhuCap > 0 && (
                                 <button
                                   onClick={(e) => {
-                                    
                                     toggleDetailExpansion(index);
                                   }}
                                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -181,7 +299,6 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
                               detail.TienPhat > 0 && (
                                 <button
                                   onClick={(e) => {
-                                    
                                     toggleDetailExpansion(index);
                                   }}
                                   className="ml-2 text-red-600 hover:text-red-800"
@@ -249,7 +366,14 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
                 )}
               </tbody>
             </table>
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-end gap-3">
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded flex items-center"
+                onClick={handleExport}
+              >
+                <FileIcon size={18} className="mr-1" />
+                <span>Xuất file</span>
+              </button>
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                 onClick={closeModal}
