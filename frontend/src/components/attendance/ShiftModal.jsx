@@ -234,12 +234,12 @@ const ShiftModal = ({
           )}
         </div>
         <div className="p-4 border-t flex justify-end gap-2">
-          <button
+          {/* <button
             className="px-4 py-2 border rounded-md hover:bg-gray-50"
             onClick={() => handleInputChange("shiftChanged", true)}
           >
             Đổi ca
-          </button>
+          </button> */}
           <button
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
             onClick={handleSave}

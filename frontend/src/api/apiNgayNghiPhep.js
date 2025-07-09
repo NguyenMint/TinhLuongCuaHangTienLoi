@@ -75,7 +75,7 @@ export const getDonXinNghiByNV = async (MaTK) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy Ca làm:", error);
+    console.error("Lỗi lấy đơn xin nghĩ", error);
     return { message: "Lỗi kết nối đến server" };
   }
 };

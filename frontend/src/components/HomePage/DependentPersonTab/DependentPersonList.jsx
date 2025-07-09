@@ -133,7 +133,7 @@ export const DependentPersonList = ({ employee }) => {
         <ConfirmDeleteModal
           setShowModalDelete={setShowModalDelete}
           onDelete={handleDelete}
-          Name={"Hehe"}
+          Name={"người phụ thuộc"}
         />
       )}
     </div>

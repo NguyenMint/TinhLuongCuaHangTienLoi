@@ -157,7 +157,7 @@ export const EmployeeDetail = ({
                 onClick={() => setActiveTab("donnghiphep")}
               >
                 <div className="flex items-center">
-                  <span>Lịch sử nghĩ phép</span>
+                  <span>Lịch sử nghỉ phép</span>
                 </div>
               </button>
             </div>
