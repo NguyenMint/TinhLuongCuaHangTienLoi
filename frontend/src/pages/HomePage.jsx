@@ -47,6 +47,8 @@ export function HomePage() {
   const employeeCurrent = filteredEmployees.slice(indexFirst, indexLast);
   const totalPage = Math.ceil(filteredEmployees.length / nhanVienInPage);
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const handlePageChange = (pagenumber) => {
     setCurrentPage(pagenumber);
   };
@@ -117,11 +119,15 @@ export function HomePage() {
   useEffect(() => {
     let filtered = Array.isArray(employees) ? [...employees] : [];
 
-    // Lọc theo chi nhánh
-    if (selectedChiNhanh) {
-      filtered = filtered.filter(
-        (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
-      );
+    if (user.MaVaiTro === 1) {
+      filtered = filtered.filter((emp) => emp.MaCN === Number(user.MaCN));
+    } else {
+      // Lọc theo chi nhánh
+      if (selectedChiNhanh) {
+        filtered = filtered.filter(
+          (emp) => emp.MaCN === Number(selectedChiNhanh.MaCN)
+        );
+      }
     }
 
     // Lọc theo trạng thái
@@ -294,7 +300,7 @@ export function HomePage() {
         {showModalListDonXinNghis && (
           <LeaveRequestListModal
             setShowModalDonXinNghis={setShowModalListDonXinNghis}
-            requests = {donXinNghis}
+            requests={donXinNghis}
             fecthRequests={fetchDonXinNghi}
           />
         )}

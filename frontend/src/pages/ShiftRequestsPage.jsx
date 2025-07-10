@@ -38,6 +38,7 @@ export function ShiftRequests() {
     rewards: [],
   });
 
+  const user = JSON.parse(localStorage.getItem("user"));
   // console.log(dataUpdate);
 
   const getAllCaLam = async () => {
@@ -88,12 +89,18 @@ export function ShiftRequests() {
 
   useEffect(() => {
     let filtered = Array.isArray(dangKyCas) ? [...dangKyCas] : [];
-    
+
     // Lọc theo chi nhánh
-    if (selectedChiNhanh) {
-      filtered = filtered.filter(
-        (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
-      );
+    if (user.MaVaiTro === 1) {
+      filtered = filtered.filter((emp) => emp.MaTK_tai_khoan.MaCN === Number(user.MaCN));
+      
+    } else {
+      // Lọc theo chi nhánh
+      if (selectedChiNhanh) {
+        filtered = filtered.filter(
+          (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
+        );
+      }
     }
 
     // Lọc theo từ khóa tìm kiếm (theo họ tên)
@@ -157,25 +164,27 @@ export function ShiftRequests() {
                   setQuery={setSearchQuery}
                 />
               </div>
-              <div className="relative">
-                <select
-                  value={selectedChiNhanh.TenCN}
-                  onChange={(e) => {
-                    const selected = chinhanhs?.find(
-                      (chinhanh) => chinhanh.TenChiNhanh === e.target.value
-                    );
-                    setSelectedChiNhanh(selected ?? "");
-                  }}
-                  className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Chọn chi nhánh...</option>
-                  {chinhanhs?.map?.((chinhanh) => (
-                    <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
-                      {chinhanh.TenChiNhanh}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {user.MaVaiTro === 3 && (
+                <div className="relative">
+                  <select
+                    value={selectedChiNhanh.TenCN}
+                    onChange={(e) => {
+                      const selected = chinhanhs?.find(
+                        (chinhanh) => chinhanh.TenChiNhanh === e.target.value
+                      );
+                      setSelectedChiNhanh(selected ?? "");
+                    }}
+                    className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Chọn chi nhánh...</option>
+                    {chinhanhs?.map?.((chinhanh) => (
+                      <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
+                        {chinhanh.TenChiNhanh}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">

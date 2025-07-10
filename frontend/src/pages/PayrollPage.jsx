@@ -38,6 +38,7 @@ export function PayrollPage() {
   const [loading, setLoading] = useState(false);
   const [phieuLuongs, setPhieuLuongs] = useState([]);
 
+  const user = JSON.parse(localStorage.getItem("user"));
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const payrollInPage = 5;
@@ -145,7 +146,9 @@ export function PayrollPage() {
 
   // Fetch BL when selected chi nhánh changes
   useEffect(() => {
-    if (selectedChiNhanh !== undefined) {
+    if (user.MaVaiTro === 1) {
+      fetchBLByCN(user.MaCN);
+    } else if (selectedChiNhanh !== undefined) {
       fetchBLByCN(selectedChiNhanh);
       if (selectedPayroll) {
         fetchPhieuLuongs(selectedChiNhanh, selectedPayroll.KyLuong);
