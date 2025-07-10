@@ -35,12 +35,24 @@ const links = [
   },
 ];
 
+const getRole = () => {
+  const user = localStorage.getItem("user");
+  if (!user) return null;
+  return JSON.parse(user).MaVaiTro;
+};
+
 export default function NavLinks() {
   const location = useLocation();
+  const role = getRole();
+
+  // Filter out "Thiết lập" if MaVaiTro is 1
+  const filteredLinks = links.filter(
+    (link) => !(role === 1 && link.href === "/settings")
+  );
 
   return (
     <>
-      {links.map((link) => {
+      {filteredLinks.map((link) => {
         const LinkIcon = link.icon;
         return (
           <Link

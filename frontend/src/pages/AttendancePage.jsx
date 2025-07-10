@@ -21,6 +21,8 @@ export function AttendancePage() {
   const [filteredLLVs, setFilteredLLVs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const [dataUpdate, setDataUpdate] = useState({
     GioVao: "",
     MaTK: "",
@@ -86,7 +88,10 @@ export function AttendancePage() {
 
   useEffect(() => {
     let filtered = Array.isArray(lichLamViecs) ? [...lichLamViecs] : [];
-    if (selectedChiNhanh) {
+
+    if (user.MaVaiTro === 1) {
+      filtered = filtered.filter((emp) => emp.MaTK_tai_khoan.MaCN === Number(user.MaCN));
+    } else if (selectedChiNhanh) {
       filtered = filtered.filter(
         (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
       );
@@ -192,25 +197,27 @@ export function AttendancePage() {
                   setQuery={setSearchQuery}
                 />
               </div>
-              <div className="relative">
-                <select
-                  value={selectedChiNhanh.TenChiNhanh || ""}
-                  onChange={(e) => {
-                    const selected = chinhanhs?.find(
-                      (chinhanh) => chinhanh.TenChiNhanh === e.target.value
-                    );
-                    setSelectedChiNhanh(selected || "");
-                  }}
-                  className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Chọn chi nhánh...</option>
-                  {chinhanhs?.map((chinhanh) => (
-                    <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
-                      {chinhanh.TenChiNhanh}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {user.MaVaiTro === 3 && (
+                <div className="relative">
+                  <select
+                    value={selectedChiNhanh.TenChiNhanh || ""}
+                    onChange={(e) => {
+                      const selected = chinhanhs?.find(
+                        (chinhanh) => chinhanh.TenChiNhanh === e.target.value
+                      );
+                      setSelectedChiNhanh(selected || "");
+                    }}
+                    className="block w-full pl-3 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Chọn chi nhánh...</option>
+                    {chinhanhs?.map((chinhanh) => (
+                      <option key={chinhanh.MaCN} value={chinhanh.TenChiNhanh}>
+                        {chinhanh.TenChiNhanh}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-4">
