@@ -1,6 +1,7 @@
 import axios from "axios";
 export const chamCongVao = async (NgayChamCong, GioVao, MaLLV, NgayLe) => {
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
       {
@@ -8,6 +9,11 @@ export const chamCongVao = async (NgayChamCong, GioVao, MaLLV, NgayLe) => {
         GioVao,
         MaLLV,
         NgayLe,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     return { success: true, data: response.data };
@@ -21,6 +27,7 @@ export const chamCongVao = async (NgayChamCong, GioVao, MaLLV, NgayLe) => {
 };
 export const chamCongRa = async (NgayChamCong, GioRa, MaLLV, NgayLe) => {
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
       {
@@ -28,6 +35,11 @@ export const chamCongRa = async (NgayChamCong, GioRa, MaLLV, NgayLe) => {
         GioRa,
         MaLLV,
         NgayLe,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     return { success: true, data: response.data };
@@ -41,6 +53,7 @@ export const chamCongRa = async (NgayChamCong, GioRa, MaLLV, NgayLe) => {
 };
 export const chamCong = async (NgayChamCong, GioVao, GioRa, MaLLV, NgayLe) => {
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong`,
       {
@@ -49,6 +62,11 @@ export const chamCong = async (NgayChamCong, GioVao, GioRa, MaLLV, NgayLe) => {
         GioVao,
         MaLLV,
         NgayLe,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     return { success: true, data: response.data };
@@ -70,6 +88,7 @@ export const update_chamcong = async (
   MaLLV
 ) => {
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/chamcong/update`,
       {
@@ -80,6 +99,11 @@ export const update_chamcong = async (
         MaChamCong,
         NgayLam,
         MaLLV,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     return { success: true, data: response.data };

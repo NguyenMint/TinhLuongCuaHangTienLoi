@@ -1,7 +1,7 @@
 const db = require("../models");
 const PhuCap = db.PhuCap;
 class PhuCapController {
-  async getAll(req, res) {
+  async getAllByTK(req, res) {
     try {
       const PhuCaps = await PhuCap.findAll({
         where: { MaTK: req.params.MaTK },

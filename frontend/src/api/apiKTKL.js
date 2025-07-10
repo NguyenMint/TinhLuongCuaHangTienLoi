@@ -5,7 +5,12 @@ export const createKTKL = async (formData) => {
     
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/khenthuongkyluat`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -16,7 +21,12 @@ export const createKTKL = async (formData) => {
 export const getAllKTKL = async () => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/khenthuongkyluat`
+      `${process.env.REACT_APP_BACKEND_URL}/khenthuongkyluat`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -32,7 +42,7 @@ export const deleteKTKL = async (maKTKL) => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // 'Authorization': `Bearer ${token}`,
+           'Authorization': `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );

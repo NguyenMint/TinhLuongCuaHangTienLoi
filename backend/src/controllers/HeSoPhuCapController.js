@@ -28,19 +28,6 @@ class HeSoPhuCapController {
     }
   }
 
-  async getById(req, res) {
-    try {
-      const heSoPhuCap = await HeSoPhuCap.findByPk(req.params.id);
-      if (!heSoPhuCap) {
-        return res.status(404).json({ message: "Hệ số phụ cấp không tồn tại" });
-      }
-      res.status(200).json(heSoPhuCap);
-    } catch (error) {
-      console.log("ERROR: " + error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
   async create(req, res) {
     try {
       let { LoaiNgay, Ngay, HeSoLuongCaDem, HeSoLuongCaThuong } = req.body;

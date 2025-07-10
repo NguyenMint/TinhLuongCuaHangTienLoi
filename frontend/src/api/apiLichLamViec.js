@@ -2,17 +2,28 @@ import axios from "axios";
 export const fetchLichLamViec = async () => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy Ca làm:", error);
+    console.error("Lỗi lấy lịch làm việc:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
 export const fetchLLVDaDangKy = async () => {
   try {
-    const response = await axios.get( `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllDaDangKy`);
+    const response = await axios.get( `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllDaDangKy`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy Ca làm:", error);
@@ -22,7 +33,12 @@ export const fetchLLVDaDangKy = async () => {
 export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getCaLamByNhanVien/${MaNV}?NgayLam=${NgayLam}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getCaLamByNhanVien/${MaNV}?NgayLam=${NgayLam}`, 
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -34,7 +50,12 @@ export const fetchLLVByNhanVien = async (MaNV, NgayLam) => {
 export const getAllLLVByNhanVien = async (MaTK) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllCaLamByNhanVien/${MaTK}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/getAllCaLamByNhanVien/${MaTK}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -47,7 +68,12 @@ export const dangKyCa = async (formData)=>{
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/dangKyCa`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return { success: true, data: response.data };
   } catch (error) {
@@ -58,7 +84,12 @@ export const dangKyCa = async (formData)=>{
 export const huyDangKyCa = async (MaLLV) => {
   try {
     const response = await axios.delete(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/huyDangKy/${MaLLV}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/huyDangKy/${MaLLV}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return { success: true, data: response.data.message };
   } catch (error) {
@@ -72,7 +103,12 @@ export const huyDangKyCa = async (MaLLV) => {
 export const deleteLichLamViec = async (MaLLV) => {
   try {
     const response = await axios.delete(
-      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/${MaLLV}`
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/${MaLLV}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return { success: true, data: response.data.message };
   } catch (error) {
@@ -92,7 +128,12 @@ export const updateLLV = async (MaLLV, status) => {
   try {
     const response = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/lichlamviec`,
-      { MaLLV, status }
+      { MaLLV, status },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -105,7 +146,12 @@ export const createLLV = async (formData) => {
     const { MaTK, NgayLam, MaCaLam, TrangThai } = formData;
     const response = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/lichlamviec`,
-      { MaTK, NgayLam, MaCaLam, TrangThai }
+      { MaTK, NgayLam, MaCaLam, TrangThai },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {

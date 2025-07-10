@@ -3,7 +3,12 @@ import axios from "axios";
 export const getHopDong = async (MaTK) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/HopDong/${MaTK}`
+      `${process.env.REACT_APP_BACKEND_URL}/HopDong/${MaTK}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -18,7 +23,7 @@ export const deleteHopDong = async (MaHDLD) => {
       {
         headers: {
           "Content-Type": "application/json",
-          // 'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
@@ -36,7 +41,7 @@ export async function createHopDong(formData) {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
@@ -59,7 +64,7 @@ export async function updateHopDong(formData) {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );

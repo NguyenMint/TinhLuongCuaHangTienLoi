@@ -2,12 +2,11 @@ const express = require('express');
 const route = express.Router();
 const ChungChiController = require('../controllers/ChungChiController');
 const { uploadChungChi } = require('../middleware/upload');
-
-route.get('/', ChungChiController.getAll);
-route.get('/:id', ChungChiController.getById);
-route.get('/getbymatk/:matk', ChungChiController.getByMaTK);
-route.post('/', uploadChungChi.single('chungchi'), ChungChiController.create);
-route.put('/:id', uploadChungChi.single('chungchi'), ChungChiController.update);
-route.delete('/:id', ChungChiController.delete);
+const {authMiddleware} = require('../middleware/authMiddleware');
+const {authorizeRoles} = require('../middleware/authMiddleware');
+route.get('/getbymatk/:matk',authMiddleware, ChungChiController.getByMaTK);
+route.post('/',authMiddleware,authorizeRoles(1,3), uploadChungChi.single('chungchi'), ChungChiController.create);
+route.put('/:id',authMiddleware,authorizeRoles(1,3), uploadChungChi.single('chungchi'), ChungChiController.update);
+route.delete('/:id',authMiddleware,authorizeRoles(1,3), ChungChiController.delete);
 
 module.exports = route; 

@@ -1,8 +1,10 @@
 const express = require('express');
 const route = express.Router();
 const ChiNhanhController = require('../controllers/ChiNhanhController');
-route.get('/',ChiNhanhController.getAll);
-route.post('/',ChiNhanhController.create);
-route.put('/:MaCN',ChiNhanhController.update);
-route.delete('/:MaCN',ChiNhanhController.delete);
+const {authMiddleware} = require('../middleware/authMiddleware');
+const {authorizeRoles} = require('../middleware/authMiddleware');
+route.get('/',authMiddleware,ChiNhanhController.getAll);
+route.post('/',authorizeRoles(1,3), ChiNhanhController.create);
+route.put('/:MaCN',authorizeRoles(1,3), ChiNhanhController.update);
+route.delete('/:MaCN',authorizeRoles(1,3), ChiNhanhController.delete);
 module.exports = route;

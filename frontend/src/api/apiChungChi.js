@@ -2,7 +2,12 @@ import axios from "axios";
 export const getChungChi = async (matk) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/chungchi/getbymatk/${matk}`
+      `${process.env.REACT_APP_BACKEND_URL}/chungchi/getbymatk/${matk}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -38,7 +43,7 @@ export const deleteChungChi = async (MaCC) => {
       {
         headers: {
           "Content-Type": "application/json",
-          // 'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
@@ -58,7 +63,7 @@ export async function updateChungChi(formData) {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`
         },
       }
     );

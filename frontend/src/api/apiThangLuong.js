@@ -1,31 +1,52 @@
-import axios from 'axios';
-export const getAllThangLuong = async () =>{
-    try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/thangluong`);
-        return response.data;
-    } catch (error) {
-        console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
-      return { success: false, message: "Lỗi kết nối đến server" };
-    }
-}
-export const getAllThangLuongFullTime = async () =>{
-    try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/thangluong/fulltime`);
-        return response.data;
-    } catch (error) {
-        console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
-      return { success: false, message: "Lỗi kết nối đến server" };
-    }
-}
-export const getAllThangLuongPartTime = async () =>{
-    try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/thangluong/parttime`);
-        return response.data;
-    } catch (error) {
-        console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
-      return { success: false, message: "Lỗi kết nối đến server" };
-    }
-}
+import axios from "axios";
+export const getAllThangLuong = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/thangluong`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+export const getAllThangLuongFullTime = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/thangluong/fulltime`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+export const getAllThangLuongPartTime = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/thangluong/parttime`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
 export const createThangLuong = async (thangLuongData) => {
   try {
     const token = localStorage.getItem("token");
@@ -40,7 +61,7 @@ export const createThangLuong = async (thangLuongData) => {
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if(error.response.status === 409) {
+    if (error.response.status === 409) {
       return { success: false, message: "Bậc lương đã tồn tại" };
     }
     console.error("Lỗi tạo Thang lương:", error);
@@ -61,9 +82,9 @@ export const updateThangLuong = async (thangLuongData) => {
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if(error.response.status === 409) {
+    if (error.response.status === 409) {
       return { success: false, message: "Bậc lương đã tồn tại" };
-    }else if(error.response.status === 404) {
+    } else if (error.response.status === 404) {
       return { success: false, message: "Thang lương không tồn tại" };
     }
     console.error("Lỗi tạo Thang lương:", error);

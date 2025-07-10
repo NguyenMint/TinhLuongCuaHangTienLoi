@@ -3,7 +3,12 @@ import axios from "axios";
 export const fetchAllNhanVien = async () => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllNhanVienVaQuanLy`
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllNhanVienVaQuanLy`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -14,7 +19,12 @@ export const fetchAllNhanVien = async () => {
 export const getAllQuanLyByChiNhanh = async (MaCN) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllQuanLyByChiNhanh/${MaCN}`
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/getAllQuanLyByChiNhanh/${MaCN}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -28,6 +38,9 @@ export const searchEmployee = async (keyword) => {
       `${process.env.REACT_APP_BACKEND_URL}/taikhoan/search`,
       {
         params: { keyword },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     return response.data;
@@ -36,17 +49,6 @@ export const searchEmployee = async (keyword) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
-
-// export const createDangKyCaByMaNS = async (MaNS) => {
-//   try {
-//     const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/dangkyca/${MaNS}`);
-//     return response.data;
-//   } catch (error) {
-//     console.error("Lỗi lấy Ca làm:", error);
-//     return { success: false, message: "Lỗi kết nối đến server" };
-//   }
-// };
-
 export const login = async (MaNhanVien, Password) => {
   try {
     const response = await axios.post(
@@ -60,7 +62,7 @@ export const login = async (MaNhanVien, Password) => {
   } catch (error) {
     if (error.response?.status === 404) {
       return { success: false, message: "Mã nhân viên không tồn tại" };
-    } else if (error.response?.status === 401) {
+    } else if (error.response?.status === 400) {
       return { success: false, message: "Mật khẩu không đúng" };
     }
     console.error("Lỗi đăng nhập:", error);
@@ -119,11 +121,16 @@ export const changePassword = async (MaTK, Password, NewPassword) => {
       {
         Password,
         NewPassword,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     return { success: true };
   } catch (error) {
-    if (error.response.status === 401 || error.response.status === 404) {
+    if (error.response.status === 400 || error.response.status === 404) {
       return { sucesss: false, message: error.response.data.message };
     }
     console.error("Lỗi đăng nhập:", error);
@@ -135,6 +142,11 @@ export const updateNgungLamViec = async (MaTK) => {
       `${process.env.REACT_APP_BACKEND_URL}/taikhoan/updateNgungLamViec`,
       {
         MaTK,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     return response.data;
@@ -149,6 +161,11 @@ export const updateTiepTucLamViec = async (MaTK) => {
       `${process.env.REACT_APP_BACKEND_URL}/taikhoan/updateTiepTucLamViec`,
       {
         MaTK,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
     );
     return response.data;

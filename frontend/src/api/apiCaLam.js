@@ -1,7 +1,15 @@
 import axios from "axios";
 export const fetchCaLam = async () => {
   try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/calam`);
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/calam`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy Ca làm:", error);
@@ -45,7 +53,7 @@ export const updateCaLam = async (caLamData) => {
   } catch (error) {
     if (error.response.status === 404) {
       return { success: false, message: "Ca làm không tồn tại" };
-    }else if(error.response.status === 409){
+    } else if (error.response.status === 409) {
       return { success: false, message: "Tên ca làm đã tồn tại" };
     }
     console.error("Lỗi tạo Ca làm:", error);
