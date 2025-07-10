@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { xinNghiPhep, getDonXinNghiByNV } from "../../api/apiNgayNghiPhep";
+import { fetchNhanVien } from "../../api/apiTaiKhoan";
 
 export function LeaveRequestForm() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user,setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [form, setForm] = useState({
     NgayBatDau: "",
     NgayKetThuc: "",
@@ -19,7 +20,6 @@ export function LeaveRequestForm() {
         return;
       }
       alert("Gửi yêu cầu thành công");
-      // Reset form và fetch lại danh sách
       setForm({
         NgayBatDau: "",
         NgayKetThuc: "",
@@ -47,8 +47,16 @@ export function LeaveRequestForm() {
       console.log("Lỗi fetch đơn chờ duyệt: " + error);
     }
   };
-
+  const refeshInfo = async () => {
+    try {
+      const res = await fetchNhanVien(user.MaTK);
+      setUser(res);
+    } catch (error) {
+      console.log("Lỗi: ", error);
+    }
+  };
   useEffect(() => {
+    refeshInfo();
     fetchDonXinNghi();
   }, []);
 
@@ -71,7 +79,6 @@ export function LeaveRequestForm() {
 
   return (
     <div className="bg-gray-50 p-4 rounded mt-2">
-      {/* Form xin nghỉ phép */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-4 text-gray-800">
           Gửi đơn xin nghỉ phép năm

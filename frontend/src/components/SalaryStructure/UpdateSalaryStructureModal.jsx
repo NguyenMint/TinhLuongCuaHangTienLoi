@@ -66,7 +66,7 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
       onSubmit={handleSubmit}
       >
         <h2 className="text-xl font-bold mb-4 text-center">
-          Thêm thang lương mới
+          Update thang lương mới
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>

@@ -13,6 +13,7 @@ import { SettingsPage } from "./pages/SettingPage/SettingsPage";
 import { ShiftPage } from "./pages/SettingPage/ShiftPage";
 import { SalaryStructure } from "./pages/SettingPage/SalaryStructurePage";
 import { AllowanceCoefficientPage } from "./pages/SettingPage/AllowanceCoefficientPage";
+import { BranchPage } from "./pages/SettingPage/BranchPage";
 // role nhan vien page
 import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
@@ -123,6 +124,16 @@ function App() {
             <ProtectedRoute allowedRoles={[3, 1]}>
               <MainLayout>
                 <AllowanceCoefficientPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/settings/branch"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <BranchPage/>
               </MainLayout>
             </ProtectedRoute>
           }

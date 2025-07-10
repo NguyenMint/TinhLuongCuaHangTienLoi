@@ -61,7 +61,6 @@ class NgayNghiPhepController {
     try {
       const { MaNNP } = req.params;
       const { TrangThai } = req.body;
-      console.log(TrangThai);
       const nghiPhep = await NgayNghiPhep.findByPk(MaNNP);
       if (!nghiPhep) {
         return res.status(404).json({ message: "Không tồn tại nghĩ phép này" });

@@ -320,7 +320,6 @@ class TaiKhoanController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-
   async updateNgungLamViec(req, res) {
     try {
       const { MaTK } = req.body;

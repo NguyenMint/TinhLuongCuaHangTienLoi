@@ -3,9 +3,10 @@ import { UserIcon, AlertCircle } from "lucide-react";
 import { fetchLLVByNhanVien } from "../../api/apiLichLamViec";
 import { chamCongVao, chamCongRa } from "../../api/apiChamCong";
 import { formatDate, formatTime } from "../../utils/format";
+import { fetchNhanVien } from "../../api/apiTaiKhoan";
 export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [now, setNow] = useState(new Date());
   const ngay = now.toISOString().slice(0, 10);
   // const tomorrow = new Date();
@@ -22,8 +23,17 @@ export function EmployeeHomePage() {
     second: "2-digit",
     hour12: false,
   });
+  const refeshInfo = async () => {
+    try {
+      const res = await fetchNhanVien(user.MaTK);
+      setUser(res);
+    } catch (error) {
+      console.log("Lỗi: ", error);
+    }
+  };
   useEffect(() => {
     getDKCByNhanVien();
+    refeshInfo();
     const interval = setInterval(() => {
       setNow(new Date());
     }, 60000); // 60000ms = 1 phút

@@ -37,6 +37,15 @@ export function SettingsPage() {
             Thiết lập
           </button>
         </div>
+        <div className="flex items-center justify-between p-3 border rounded hover:bg-gray-50 transition">
+          <div className="flex items-center space-x-2">
+            <span className="font-medium">Chi nhánh</span>
+          </div>
+          <button className="bg-gray-100 hover:bg-gray-200 text-sm px-3 py-1 rounded"
+          onClick={()=>navigate('/settings/branch')}>
+            Thiết lập
+          </button>
+        </div>
       </div>
     </div>
   );
