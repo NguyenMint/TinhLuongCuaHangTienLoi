@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
 import { formatCurrency, formatDate, formatTime } from "../../utils/format";
-
+import { fetchNhanVien } from "../../api/apiTaiKhoan";
 export function EmployeeProfilePage() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user,setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -15,14 +15,23 @@ export function EmployeeProfilePage() {
     try {
       const response = await getByNhanVienAndNgay(user.MaTK, date);
       setSalaryData(response);
-      console.log(response);
     } catch (error) {
       console.error("Error fetching salary data:", error);
       setSalaryData(null);
     }
     setLoading(false);
   };
-
+  const refeshInfo = async () => {
+    try {
+      const res = await fetchNhanVien(user.MaTK);
+      setUser(res);
+    } catch (error) {
+      console.log("Lỗi: ", error);
+    }
+  };
+  useEffect(()=>{
+    refeshInfo();
+  },[]);
   const calculateDailySummary = (chiTietBangLuong) => {
     return chiTietBangLuong.reduce(
       (acc, item) => {

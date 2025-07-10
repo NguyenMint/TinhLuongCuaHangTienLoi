@@ -32,6 +32,22 @@ export const getAllQuanLyByChiNhanh = async (MaCN) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const fetchNhanVien = async (MaTK) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/${MaTK}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy user:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
 export const searchEmployee = async (keyword) => {
   try {
     const response = await axios.get(

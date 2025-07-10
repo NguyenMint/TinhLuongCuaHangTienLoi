@@ -6,6 +6,7 @@ export const LeaveRequestListModal = ({
   fecthRequests
 }) => {
   const [selected, setSelected] = useState([]);
+  const [dangDuyet,setDangDuyet] = useState(false);
   const handleCheckAll = (e) => {
     if (e.target.checked) {
       setSelected(requests.map((req) => req.MaNNP));
@@ -19,6 +20,7 @@ export const LeaveRequestListModal = ({
     );
   };
   const handleDuyet = async () => {
+    setDangDuyet(true);
     try {
         await Promise.all(
           selected.map((maNNP) => duyetDon(maNNP))
@@ -30,6 +32,7 @@ export const LeaveRequestListModal = ({
       } catch (error) {
         console.log("Có lỗi khi từ chối đơn: ",error);
       }
+      setDangDuyet(false);
   }
   const handleTuChoi = async () => {
     try {
@@ -120,7 +123,7 @@ export const LeaveRequestListModal = ({
           <button
             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50"
             onClick={handleDuyet}
-            disabled={selected.length === 0}
+            disabled={selected.length === 0 || dangDuyet}
           >
             Duyệt
           </button>

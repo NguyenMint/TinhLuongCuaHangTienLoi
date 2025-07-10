@@ -10,7 +10,7 @@ export function ConfirmDeleteModal({ setShowModalDelete,onDelete,Name }) {
           Thao tác này không thể hoàn tác.
         </p>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-between gap-4">
           <button
             onClick={()=>setShowModalDelete(false)}
             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
