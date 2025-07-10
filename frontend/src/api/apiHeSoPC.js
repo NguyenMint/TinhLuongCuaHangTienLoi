@@ -2,7 +2,12 @@ import axios from "axios";
 export const getHeSoPhuCap = async () => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/hesophucap`
+      `${process.env.REACT_APP_BACKEND_URL}/hesophucap`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {

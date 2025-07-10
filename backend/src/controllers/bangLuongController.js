@@ -280,60 +280,6 @@ class bangLuongController {
     }
   }
 
-  // Update salary sheet
-  async update(req, res) {
-    try {
-      const bangLuong = await BangLuong.findByPk(req.params.id);
-
-      if (!bangLuong) {
-        return res.status(404).json({
-          success: false,
-          message: "Salary sheet not found",
-        });
-      }
-
-      await bangLuong.update(req.body);
-
-      res.status(200).json({
-        success: true,
-        message: "Salary sheet updated successfully",
-        data: bangLuong,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Error updating salary sheet",
-        error: error.message,
-      });
-    }
-  }
-
-  // Delete salary sheet
-  async delete(req, res) {
-    try {
-      const bangLuong = await BangLuong.findByPk(req.params.id);
-
-      if (!bangLuong) {
-        return res.status(404).json({
-          success: false,
-          message: "Salary sheet not found",
-        });
-      }
-
-      await bangLuong.destroy();
-
-      res.status(200).json({
-        success: true,
-        message: "Salary sheet deleted successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Error deleting salary sheet",
-        error: error.message,
-      });
-    }
-  }
   async deleteBL(req, res) {
     try {
       const { KyLuong } = req.body;

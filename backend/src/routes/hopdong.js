@@ -2,10 +2,10 @@ const express = require("express");
 const route = express.Router();
 const HopDongController = require("../controllers/HopDongLDController");
 const {uploadHopDong} = require("../middleware/upload");
-
-route.get('/:MaTK',HopDongController.getByMaTK);
-route.get('/',HopDongController.getAll);
-route.post('/',uploadHopDong.single('hopdong'),HopDongController.create);
-route.put('/:MaHDLD',uploadHopDong.single('hopdong'),HopDongController.update);
-route.delete('/:MaHDLD',HopDongController.delete);
+const { authMiddleware } = require("../middleware/authMiddleware");
+const { authorizeRoles } = require("../middleware/authMiddleware");
+route.get('/:MaTK',authMiddleware,HopDongController.getByMaTK);
+route.post('/',authMiddleware,authorizeRoles(1,3),uploadHopDong.single('hopdong'),HopDongController.create);
+route.put('/:MaHDLD',authMiddleware,authorizeRoles(1,3),uploadHopDong.single('hopdong'),HopDongController.update);
+route.delete('/:MaHDLD',authMiddleware,authorizeRoles(1,3),HopDongController.delete);
 module.exports = route;

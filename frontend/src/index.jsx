@@ -1,3 +1,4 @@
+
 import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -21,7 +22,20 @@ import { EmployeeUtilitiesPage } from "./pages/EmployeeLayout/EmployeeUtilitiesP
 import { EmployeeShiftRegistrationPage } from "./pages/EmployeeLayout/EmployeeShiftRegistrationPage";
 import { PayrollPage } from "./pages/PayrollPage";
 import { ShiftRequests } from "./pages/ShiftRequestsPage";
+import axios from "axios";
 
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+      alert("Token hết hạn, vui lòng đăng nhập lại");
+    }
+    return Promise.reject(error);
+  }
+);
 function App() {
   const getRole = () => {
     const user = localStorage.getItem("user");

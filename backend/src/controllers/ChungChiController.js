@@ -4,28 +4,6 @@ const fs = require("fs");
 const path = require("path");
 
 class ChungChiController {
-  async getAll(req, res) {
-    try {
-      const chungChis = await ChungChi.findAll({});
-      res.status(200).json(chungChis);
-    } catch (error) {
-      console.log("ERROR: " + error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
-  async getById(req, res) {
-    try {
-      const chungChi = await ChungChi.findByPk(req.params.id);
-      if (!chungChi) {
-        return res.status(404).json({ message: "Chứng chỉ không tồn tại" });
-      }
-      res.status(200).json(chungChi);
-    } catch (error) {
-      console.log("ERROR: " + error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
   async getByMaTK(req, res) {
     try {
       const chungChi = await ChungChi.findAll({

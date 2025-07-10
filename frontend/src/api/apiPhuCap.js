@@ -3,7 +3,12 @@ import axios from "axios";
 export const getAllPhuCap = async (MaTK) => {
   try {
     const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/phucap/${MaTK}`
+      `${process.env.REACT_APP_BACKEND_URL}/phucap/${MaTK}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -18,7 +23,7 @@ export const deletePhuCap = async (MaPhuCap) => {
       {
         headers: {
           "Content-Type": "application/json",
-          // 'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
@@ -32,7 +37,12 @@ export async function createPhuCap(formData) {
   try {
     const res = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/phucap`,
-      formData
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return { success: true, data: res.data };
   } catch (error) {
@@ -46,7 +56,12 @@ export async function createPhuCap(formData) {
 export async function updatePhuCap(MaPhuCap) {
   try {
     const res = await axios.put(
-      `${process.env.REACT_APP_BACKEND_URL}/phucap/${MaPhuCap}`
+      `${process.env.REACT_APP_BACKEND_URL}/phucap/${MaPhuCap}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
     );
     return { success: true, data: res.data };
   } catch (error) {

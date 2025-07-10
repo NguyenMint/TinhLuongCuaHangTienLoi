@@ -243,7 +243,7 @@ class TaiKhoanController {
       }
       const isMatch = await bcrypt.compare(Password, user.Password);
       if (!isMatch) {
-        return res.status(401).json({ message: "Mật khẩu không đúng" });
+        return res.status(400).json({ message: "Mật khẩu không đúng" });
       }
       // Tạo token
       const payload = {
@@ -308,7 +308,7 @@ class TaiKhoanController {
       }
       const isMatch = await bcrypt.compare(Password, taiKhoan.Password);
       if (!isMatch) {
-        return res.status(401).json({ message: "Mật khẩu không đúng" });
+        return res.status(400).json({ message: "Mật khẩu không đúng" });
       }
       const newPass = await bcrypt.hash(NewPassword, 10);
       await taiKhoan.update({

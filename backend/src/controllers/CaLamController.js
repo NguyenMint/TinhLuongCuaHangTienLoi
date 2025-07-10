@@ -12,20 +12,6 @@ class CaLamController {
             res.status(500).json({ message: "Internal server error" });
         }
     }
-
-    async getById(req, res) {
-        try {
-            const caLam = await CaLam.findByPk(req.params.id);
-            if (!caLam) {
-                return res.status(404).json({ message: "Ca làm không tồn tại" });
-            }
-            res.status(200).json(caLam);
-        } catch (error) {
-            console.log("ERROR: " + error);
-            res.status(500).json({ message: "Internal server error" });
-        }
-    }
-
     async create(req, res) {
         try {
             const {TenCa} = req.body;
@@ -43,7 +29,6 @@ class CaLamController {
 
     async update(req, res) {
         try {
-            //add check caLam
             const caLam = await CaLam.findByPk(req.params.id);
             if (!caLam) {
                 return res.status(404).json({ message: "Ca làm không tồn tại" });

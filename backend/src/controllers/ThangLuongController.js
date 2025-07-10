@@ -33,19 +33,6 @@ class ThangLuongController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-  async getById(req, res) {
-    try {
-      const thangLuong = await ThangLuong.findByPk(req.params.id);
-      if (!thangLuong) {
-        return res.status(404).json({ message: "Thang lương không tồn tại" });
-      }
-      res.status(200).json(thangLuong);
-    } catch (error) {
-      console.log("ERROR: " + error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
   async create(req, res) {
     try {
       const {

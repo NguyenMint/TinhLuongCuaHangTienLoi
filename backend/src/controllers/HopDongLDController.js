@@ -3,16 +3,6 @@ const HopDong = db.HopDongLd;
 const path = require("path");
 const fs = require("fs");
 class HopDongController {
-  async getAll(req, res) {
-    try {
-      const hopdongs = await HopDong.findAll({});
-      res.status(200).json(hopdongs);
-    } catch (error) {
-      console.log("ERROR: " + error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  }
-
   async getByMaTK(req, res) {
     try {
       const hopdongs = await HopDong.findAll({
