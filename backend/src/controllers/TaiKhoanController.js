@@ -6,6 +6,7 @@ const fs = require("fs");
 const { Op } = db.Sequelize;
 const TaiKhoan = db.TaiKhoan;
 const NguoiPhuThuoc = db.NguoiPhuThuoc;
+const ChiNhanh = db.ChiNhanh;
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { log } = require("console");
@@ -71,10 +72,39 @@ class TaiKhoanController {
   async getById(req, res) {
     try {
       const { MaTK } = req.params;
-      const taikhoan = await TaiKhoan.findByPk(MaTK, {
-        include: [{ model: db.ChiNhanh, as: "MaCN_chi_nhanh" }],
+      const user = await TaiKhoan.findByPk(MaTK,{
+        include:[
+          {
+            model:ChiNhanh,
+            as:"MaCN_chi_nhanh"
+          }
+        ]
       });
-      res.status(200).json(taikhoan);
+      const result = {
+        MaTK: user.MaTK,
+        Email: user.Email,
+        HoTen: user.HoTen,
+        GioiTinh: user.GioiTinh,
+        NgaySinh: user.NgaySinh,
+        DiaChi: user.DiaChi,
+        SoDienThoai: user.SoDienThoai,
+        CCCD: user.CCCD,
+        Avatar: user.Avatar,
+        LoaiNV: user.LoaiNV,
+        TenNganHang: user.TenNganHang,
+        STK: user.STK,
+        TrangThai: user.TrangThai,
+        BacLuong: user.Bacluong,
+        LuongCoBanHienTai: user.LuongCoBanHienTai,
+        SoNgayNghiPhep: user.SoNgayNghiPhep,
+        SoNgayChuaNghi: user.SoNgayChuaNghi,
+        MaCN: user.MaCN,
+        QuanLyBoi: user.QuanLyBoi,
+        MaVaiTro: user.MaVaiTro,
+        TenChiNhanh: user.MaCN_chi_nhanh?.TenChiNhanh,
+        DiaChiCN: user.MaCN_chi_nhanh?.DiaChi,
+      };
+      res.status(200).json(result);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });
