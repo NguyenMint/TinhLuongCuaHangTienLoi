@@ -32,7 +32,7 @@ axios.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
-      alert("Token hết hạn, vui lòng đăng nhập lại");
+      alert("Đăng nhập hết hạn, vui lòng đăng nhập lại");
     }
     return Promise.reject(error);
   }

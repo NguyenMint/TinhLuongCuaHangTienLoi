@@ -15,13 +15,9 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       >
         Trước
       </button>
-
-      {/* Current Page Display */}
       <span className="px-4 py-2 font-medium text-gray-700">
         Trang {currentPage}/{totalPages}
       </span>
-
-      {/* Next Button */}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}

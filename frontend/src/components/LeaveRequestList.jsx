@@ -35,6 +35,7 @@ export const LeaveRequestListModal = ({
       setDangDuyet(false);
   }
   const handleTuChoi = async () => {
+    setDangDuyet(true);
     try {
         await Promise.all(
           selected.map((maNNP) => tuChoiDon(maNNP))
@@ -46,6 +47,7 @@ export const LeaveRequestListModal = ({
       } catch (error) {
         console.log("Có lỗi khi từ chối đơn: ",error);
       }
+      setDangDuyet(false);
   }
 
   return (
@@ -130,7 +132,7 @@ export const LeaveRequestListModal = ({
           <button
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded disabled:opacity-50"
             onClick={handleTuChoi}
-            disabled={selected.length === 0}
+            disabled={selected.length === 0 || dangDuyet}
           >
             Từ chối
           </button>
