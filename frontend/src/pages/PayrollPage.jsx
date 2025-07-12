@@ -102,7 +102,9 @@ export function PayrollPage() {
     try {
       let data = [];
 
-      if (chiNhanh === "Tổng hợp") {
+      if (user.MaVaiTro === 1) {
+        data = await getPLByKyLuongCN(kyLuong, user.MaCN);
+      } else if (chiNhanh === "Tổng hợp") {
         data = await getPLByKyLuong(kyLuong);
       } else {
         data = await getPLByKyLuongCN(kyLuong, chiNhanh.MaCN);
@@ -116,8 +118,9 @@ export function PayrollPage() {
   const fetchBLByCN = async (chiNhanh = selectedChiNhanh) => {
     try {
       let data = [];
-
-      if (chiNhanh === "Tổng hợp") {
+      if (user.MaVaiTro === 1) {
+        data = await getBLByCN(user.MaCN);
+      } else if (chiNhanh === "Tổng hợp") {
         data = await getBLTotal();
       } else {
         data = await getBLByCN(chiNhanh.MaCN);
@@ -146,9 +149,7 @@ export function PayrollPage() {
 
   // Fetch BL when selected chi nhánh changes
   useEffect(() => {
-    if (user.MaVaiTro === 1) {
-      fetchBLByCN(user.MaCN);
-    } else if (selectedChiNhanh !== undefined) {
+    if (selectedChiNhanh !== undefined) {
       fetchBLByCN(selectedChiNhanh);
       if (selectedPayroll) {
         fetchPhieuLuongs(selectedChiNhanh, selectedPayroll.KyLuong);
