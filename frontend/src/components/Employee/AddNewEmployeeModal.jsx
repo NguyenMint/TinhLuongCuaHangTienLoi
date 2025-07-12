@@ -11,12 +11,12 @@ export function AddEmployeeModal({
   getAllEmployees,
   chiNhanhs,
 }) {
+  const user = JSON.parse(localStorage.getItem("user"));
   const [form, setForm] = useState({
     HoTen: "",
-    GioiTinh: "",
+    GioiTinh: "Nam",
     Email: "",
     SoDienThoai: "",
-    GioiTinh: "Nam",
     NgaySinh: "",
     DiaChi: "",
     CCCD: "",
@@ -25,7 +25,7 @@ export function AddEmployeeModal({
     STK: "",
     BacLuong: 1,
     LuongCoBanHienTai: "",
-    LuongTheoGioHienTai:"",
+    LuongTheoGioHienTai: "",
     SoNgayNghiPhep: 0,
     MaVaiTro: "2",
     MaCN: "1",
@@ -34,15 +34,17 @@ export function AddEmployeeModal({
   const [thangLuong, setThangLuong] = useState([]);
   const [mauLuong, setMauLuong] = useState([]);
   const [quanLys, setQuanLys] = useState([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
-      const { BacLuong, LuongCoBanHienTai,LuongTheoGioHienTai } = JSON.parse(value);
+      const { BacLuong, LuongCoBanHienTai, LuongTheoGioHienTai } =
+        JSON.parse(value);
       setForm((prev) => ({
         ...prev,
         BacLuong,
         LuongCoBanHienTai,
-        LuongTheoGioHienTai
+        LuongTheoGioHienTai,
       }));
       return;
     }
@@ -50,10 +52,14 @@ export function AddEmployeeModal({
       const { LuongTheoGio } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
-        LuongCoBanHienTai:0,
-        LuongTheoGioHienTai: LuongTheoGio
+        LuongTheoGioHienTai: LuongTheoGio,
       }));
       return;
+    }
+    if (name === "SoDienThoai" || name === "CCCD" || name === "STK") {
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
     }
     setForm((prev) => ({
       ...prev,
@@ -90,7 +96,13 @@ export function AddEmployeeModal({
     }
     if (form.LoaiNV === "PartTime") {
       formData.set("BacLuong", 0);
+      formData.set("LuongCoBanHienTai", 0);
       formData.set("MaVaiTro", 2);
+    }
+    if (user.MaVaiTro === 1) {
+      formData.set("MaVaiTro", 2);
+      formData.set("MaCN", user.MaCN);
+      formData.set("QuanLyBoi", user.MaTK);
     }
     const result = await createEmployee(formData);
     if (!result.success) {
@@ -132,7 +144,7 @@ export function AddEmployeeModal({
   }, []);
   useEffect(() => {
     fetchAllQuanLyByChiNhanh();
-  }, [form.MaCN]);
+  }, [form.MaCN, fetchAllQuanLyByChiNhanh]);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
       <form
@@ -225,7 +237,7 @@ export function AddEmployeeModal({
             <label className="block mb-1 font-medium">Avatar</label>
             <input type="file" name="avatar"></input>
           </div>
-          {form.LoaiNV === "FullTime" && (
+          {form.LoaiNV === "FullTime" && user.MaVaiTro === 3 && (
             <div>
               <label className="block mb-1 font-medium">Chức vụ</label>
               <select
@@ -252,19 +264,21 @@ export function AddEmployeeModal({
             </select>
           </div>
 
-          <div>
-            <label className="block mb-1 font-medium">Chi nhánh</label>
-            <select
-              name="MaCN"
-              value={form.MaCN}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              {chiNhanhs.map((cn) => (
-                <option value={cn.MaCN}>{cn.TenChiNhanh}</option>
-              ))}
-            </select>
-          </div>
+          {user.MaVaiTro === 3 && (
+            <div>
+              <label className="block mb-1 font-medium">Chi nhánh</label>
+              <select
+                name="MaCN"
+                value={form.MaCN}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              >
+                {chiNhanhs.map((cn) => (
+                  <option value={cn.MaCN}>{cn.TenChiNhanh}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="block mb-1 font-medium">Tên ngân hàng</label>
             <input
@@ -306,7 +320,7 @@ export function AddEmployeeModal({
                       value={JSON.stringify({
                         BacLuong: thangluong.BacLuong,
                         LuongCoBanHienTai: thangluong.LuongCoBan,
-                        LuongTheoGioHienTai: thangLuong.LuongTheoGio
+                        LuongTheoGioHienTai: thangLuong.LuongTheoGio,
                       })}
                     >
                       Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}
@@ -326,14 +340,14 @@ export function AddEmployeeModal({
                 className="w-full border rounded px-3 py-2"
                 required
               >
-                <option value="">Chọn mẫu lương</option>
+                <option value={""}>Chọn mẫu lương</option>
                 {mauLuong.map((mauluong) => (
                   <option
                     value={JSON.stringify({
                       LuongTheoGio: mauluong.LuongTheoGio,
                     })}
                   >
-                   Lương theo giờ: {formatCurrency(mauluong.LuongTheoGio)}
+                    Lương theo giờ: {formatCurrency(mauluong.LuongTheoGio)}
                   </option>
                 ))}
               </select>
@@ -352,7 +366,7 @@ export function AddEmployeeModal({
               min={0}
             />
           </div>
-          {form.MaVaiTro === "2" && (
+          {form.MaVaiTro === "2" && user.MaVaiTro === 3 && (
             <div>
               <label className="block mb-1 font-medium">Quản lý bởi</label>
               <select

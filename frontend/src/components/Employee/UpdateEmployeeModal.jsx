@@ -12,13 +12,13 @@ export function UpdateEmployeeModal({
   employee,
   refreshEmployeeData,
 }) {
+  const currentUser = JSON.parse(localStorage.getItem("user"));
   const [form, setForm] = useState({
     MaTK: employee.MaTK,
     HoTen: employee.HoTen,
     GioiTinh: employee.GioiTinh,
     Email: employee.Email,
     SoDienThoai: employee.SoDienThoai,
-    GioiTinh: employee.GioiTinh,
     NgaySinh: employee.NgaySinh,
     DiaChi: employee.DiaChi,
     CCCD: employee.CCCD,
@@ -55,11 +55,15 @@ export function UpdateEmployeeModal({
       const { LuongTheoGio } = JSON.parse(value);
       setForm((prev) => ({
         ...prev,
-        LuongCoBanHienTai: 0,
         LuongTheoGioHienTai: LuongTheoGio,
         ThangLuong: value,
       }));
       return;
+    }
+    if (name === "SoDienThoai" || name === "CCCD" || name === "STK") {
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
     }
     setForm((prev) => ({
       ...prev,
@@ -96,34 +100,27 @@ export function UpdateEmployeeModal({
     if (form.LoaiNV === "PartTime") {
       formData.set("BacLuong", 0);
       formData.set("MaVaiTro", 2);
+      formData.set("LuongCoBanHienTai",0);
     }
     const result = await updateEmployee(formData);
     if (!result.success) {
       alert(result.message || "Update nhân viên thất bại.");
       return;
     }
-
-    // Kiểm tra nếu đang update chính mình thì cập nhật localStorage
-    const currentUser = JSON.parse(localStorage.getItem("user"));
     if (currentUser && currentUser.MaTK === employee.MaTK) {
-      // Cập nhật localStorage với thông tin mới
       const updatedUser = {
         ...currentUser,
         ...result.data,
-        // Giữ lại các field từ JWT token
         TenChiNhanh: result.data.MaCN_chi_nhanh?.TenChiNhanh,
         DiaChiCN: result.data.MaCN_chi_nhanh?.DiaChi,
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      // Thông báo cho user biết thông tin đã được cập nhật
       alert(
         "Update nhân viên thành công! Thông tin cá nhân của bạn đã được cập nhật."
       );
     } else {
       alert("Update nhân viên thành công!");
     }
-
     refreshEmployeeData();
     setShowModalUpdate(false);
   };
@@ -159,7 +156,6 @@ export function UpdateEmployeeModal({
     fetchAllQuanLyByChiNhanh();
   }, [form.MaCN]);
   const [isThangLuongInitialized, setIsThangLuongInitialized] = useState(false);
-
   useEffect(() => {
     if (!isThangLuongInitialized) {
       if (form.LoaiNV === "FullTime" && thangLuong.length > 0) {
@@ -195,7 +191,6 @@ export function UpdateEmployeeModal({
         }
       }
     }
-    // eslint-disable-next-line
   }, [thangLuong, mauLuong, form.LoaiNV]);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -287,7 +282,7 @@ export function UpdateEmployeeModal({
             <label className="block mb-1 font-medium">Avatar</label>
             <input type="file" name="avatar"></input>
           </div>
-          {form.LoaiNV === "FullTime" && (
+          {form.LoaiNV === "FullTime" && currentUser.MaVaiTro === 3 && (
             <div>
               <label className="block mb-1 font-medium">Chức vụ</label>
               <select
@@ -314,19 +309,21 @@ export function UpdateEmployeeModal({
             </select>
           </div>
 
-          <div>
-            <label className="block mb-1 font-medium">Chi nhánh</label>
-            <select
-              name="MaCN"
-              value={form.MaCN}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-            >
-              {chiNhanhs.map((cn) => (
-                <option value={cn.MaCN}>{cn.TenChiNhanh}</option>
-              ))}
-            </select>
-          </div>
+          {currentUser.MaVaiTro === 3 && (
+            <div>
+              <label className="block mb-1 font-medium">Chi nhánh</label>
+              <select
+                name="MaCN"
+                value={form.MaCN}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+              >
+                {chiNhanhs.map((cn) => (
+                  <option value={cn.MaCN}>{cn.TenChiNhanh}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="block mb-1 font-medium">Tên ngân hàng</label>
             <input
@@ -412,7 +409,7 @@ export function UpdateEmployeeModal({
               min={0}
             />
           </div>
-          {form.MaVaiTro === "2" && (
+          {form.MaVaiTro === "2" && currentUser.MaVaiTro===3 (
             <div>
               <label className="block mb-1 font-medium">Quản lý bởi</label>
               <select
