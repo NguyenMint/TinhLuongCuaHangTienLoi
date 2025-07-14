@@ -19,18 +19,19 @@ export function AllowanceCoefficientPage() {
     try {
       const response = await getHeSoPhuCap();
       const { cuoiTuan, ngayThuong, ngayLe } = response;
+      //console.log(groupByNgayThuongVaCuoiTuan(cuoiTuan,"Cuối tuần"))
       const rows = [
-        ...groupByLoaiNgay(cuoiTuan, "Cuối tuần"),
-        ...groupByLoaiNgay(ngayThuong, "Ngày thường"),
+        ...groupByNgayThuongVaCuoiTuan(cuoiTuan, "Cuối tuần"),
+        ...groupByNgayThuongVaCuoiTuan(ngayThuong, "Ngày thường"),
         ...groupNgayLe(ngayLe),
       ];
       setData(rows);
-      console.log(rows);
+      //console.log(rows);
     } catch (error) {
       console.error("Lỗi lấy hệ số phụ cấp:", error);
     }
   };
-  function groupByLoaiNgay(arr, loaiNgay) {
+  function groupByNgayThuongVaCuoiTuan(arr, loaiNgay) {
     if (!arr || arr.length === 0) return [];
     const caThuong = arr.find((item) => !item.isCaDem);
     const caDem = arr.find((item) => item.isCaDem);
@@ -128,7 +129,6 @@ export function AllowanceCoefficientPage() {
                           onClick={() => {
                             setShowModalUpdate(true);
                             setSelectedAllowanceCoefficient(coefficient);
-                            console.log(coefficient);
                           }}
                         />
                         <Trash2
@@ -139,8 +139,6 @@ export function AllowanceCoefficientPage() {
                               MaHSNCaDem:coefficient.caDem.MaHSN,
                               MaHSNCaThuong:coefficient.caThuong.MaHSN
                             });
-                            console.log(coefficient.caDem.MaHSN,
-                              coefficient.caThuong.MaHSN);
                           }}
                         />
                       </td>

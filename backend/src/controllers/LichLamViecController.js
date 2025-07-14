@@ -83,7 +83,6 @@ class LichLamViecController {
         TrangThai: { [Op.in]: ["Đã Đăng Ký", "Chuyển Ca"] },
       };
       if (NgayLam) {
-        // Lấy ngày hôm trước
         const prevDate = new Date(NgayLam);
         prevDate.setDate(prevDate.getDate() - 1);
         const prevDateStr = prevDate.toISOString().slice(0, 10);
@@ -91,14 +90,13 @@ class LichLamViecController {
           { NgayLam: NgayLam },
           {
             NgayLam: prevDateStr,
-            // Điều kiện ca qua đêm: giờ kết thúc < giờ bắt đầu
             "$MaCaLam_ca_lam.ThoiGianKetThuc$": {
               [Op.lt]: db.sequelize.col("MaCaLam_ca_lam.ThoiGianBatDau"),
             },
           },
         ];
       }
-      const caLam = await LichLamViec.findAll({
+      const caLamNV = await LichLamViec.findAll({
         where,
         include: [
           { model: db.CaLam, as: "MaCaLam_ca_lam" },
@@ -108,7 +106,7 @@ class LichLamViecController {
           },
         ],
       });
-      res.status(200).json(caLam);
+      res.status(200).json(caLamNV);
     } catch (error) {
       console.log("ERROR: " + error);
       res.status(500).json({ message: "Internal server error" });

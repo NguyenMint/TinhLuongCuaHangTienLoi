@@ -54,7 +54,7 @@ export const updateChiNhanh = async (chiNhanhData) => {
     if (error.response?.status === 409 || error.response?.status === 404) {
       return { success: false, message: error.response.data.message };
     }
-    console.error("Lỗi thêm chi nhánh:", error);
+    console.error("Lỗi sửa chi nhánh:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
@@ -74,7 +74,7 @@ export const deleteChiNhanh = async (maCN) => {
     if (error.response?.status === 404) {
       return { success: false, message: error.response.data.message };
     }
-    console.error("Lỗi thêm chi nhánh:", error);
+    console.error("Lỗi xóa chi nhánh:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };

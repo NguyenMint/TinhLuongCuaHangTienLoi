@@ -114,7 +114,6 @@ async function createBL(MaTK, Thang, Nam) {
 
     const ThuePhaiDong = tinhThueTNCN(ThuNhapChiuThue);
     const LuongThucNhan = TongLuong - ThuePhaiDong;
-
     const bangLuongExist = await BangLuong.findOne({
       where: {
         MaTK,

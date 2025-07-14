@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createThangLuong } from "../../api/apiThangLuong";
 import { formatCurrency } from "../../utils/format";
-export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
+export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuongFullTime, getAllThangLuongPartTime }) {
   const [form, setForm] = useState({
     LuongCoBan: 0,
     LuongTheoGio: 0,
@@ -67,7 +67,8 @@ export function AddSalaryStructureForm({ setShowModalAdd, getAllThangLuong }) {
         return;
       }
       alert("Thêm thang lương thành công!");
-      getAllThangLuong();
+      getAllThangLuongFullTime();
+      getAllThangLuongPartTime();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
       alert("Lỗi không xác định. Vui lòng thử lại.");

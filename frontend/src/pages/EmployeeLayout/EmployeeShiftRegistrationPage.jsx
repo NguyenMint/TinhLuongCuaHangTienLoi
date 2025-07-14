@@ -49,7 +49,7 @@ export const EmployeeShiftRegistrationPage = () => {
   const handleHuyDangKy = async () =>{
     const response = await huyDangKyCa(selectedLLV.MaLLV);
     if(!response.success){
-        alert(response.message || "Hủy đăng ký ca thất bạt");
+        alert(response.message || "Hủy đăng ký ca thất bại");
         setShowControl(false);
         return;
     }

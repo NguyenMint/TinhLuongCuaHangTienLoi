@@ -9,10 +9,7 @@ const LichLamViec = db.LichLamViec;
 const CaLam = db.CaLam;
 const HeSoPhuCap = db.HeSoPhuCap;
 const { Op, where } = require("sequelize");
-const {
-  tinhTongGioLamCaLam,
-  isWeekend,
-} = require("../util/util");
+const { tinhTongGioLamCaLam, isWeekend } = require("../util/util");
 exports.createSalaryDetail = async ({ MaChamCong }) => {
   try {
     const chamCong = await ChamCong.findByPk(MaChamCong, {
@@ -107,14 +104,14 @@ exports.createSalaryDetail = async ({ MaChamCong }) => {
     });
     let TienPhuCap = 0;
     khenThuongs.forEach((khen) => {
-      TienPhuCap += khen.MucThuongPhat;
+      TienPhuCap += parseFloat(khen.MucThuongPhat);
     });
     const kyLuats = await KhenThuongKyLuat.findAll({
       where: { MaLLV: chamCong.MaLLV, ThuongPhat: false },
     });
     let TienPhat = 0;
     kyLuats.forEach((khen) => {
-      TienPhat += khen.MucThuongPhat;
+      TienPhat += parseFloat(khen.MucThuongPhat);
     });
     const tongtien =
       parseFloat(TienLuongCa) + parseFloat(TienPhuCap) - parseFloat(TienPhat);
@@ -186,8 +183,8 @@ exports.getByNhanVienAndNgay = async (req, res) => {
                 },
                 {
                   model: KhenThuongKyLuat,
-                  as:"khen_thuong_ky_luats"
-                }
+                  as: "khen_thuong_ky_luats",
+                },
               ],
             },
           ],
@@ -195,8 +192,7 @@ exports.getByNhanVienAndNgay = async (req, res) => {
       ],
     });
 
-
-    res.status(200).json({ chiTietBangLuong });
+    res.status(200).json(chiTietBangLuong);
   } catch (error) {
     console.log("ERROR: " + error);
     res.status(500).json({ message: "Internal server error" });

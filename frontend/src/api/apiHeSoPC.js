@@ -32,7 +32,7 @@ export const createHeSoPhuCap = async (phuCapData) => {
     if (error.response.status === 409) {
       return { success: false, message: error.response.data.message };
     }
-    console.error("Lỗi lấy hệ số phụ cấp:", error);
+    console.error("Lỗi thêm hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
 };
@@ -53,7 +53,7 @@ export const updateHeSoPhuCap = async (phuCapData) => {
     if (error.response.status === 404) {
       return { success: false, message: error.response.data.message };
     }
-    console.error("Lỗi lấy hệ số phụ cấp:", error);
+    console.error("Lỗi sửa hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
 };
@@ -74,7 +74,7 @@ export const deleteHeSoPhuCap = async (maHSN) => {
     if (error.response && error.response.status === 404) {
       return { success: false, message: error.response.data.message };
     }
-    console.error("Lỗi lấy hệ số phụ cấp:", error);
+    console.error("Lỗi xóa hệ số phụ cấp:", error);
     return { message: "Lỗi kết nối đến server" };
   }
 };

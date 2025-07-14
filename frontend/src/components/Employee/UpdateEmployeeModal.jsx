@@ -42,6 +42,7 @@ export function UpdateEmployeeModal({
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
       const { BacLuong, LuongCoBanHienTai, LuongTheoGioHienTai } =
         JSON.parse(value);
+        console.log(LuongTheoGioHienTai);
       setForm((prev) => ({
         ...prev,
         BacLuong,

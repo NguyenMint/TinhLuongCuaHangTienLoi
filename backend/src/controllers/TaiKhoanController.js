@@ -124,9 +124,7 @@ class TaiKhoanController {
   }
   async create(req, res) {
     try {
-      console.log(req.body);
       const { CCCD, STK, Email, SoNgayNghiPhep, LoaiNV, MaVaiTro } = req.body;
-
       const deleteUploadedFile = () => {
         if (req.file) {
           const filePath = path.join(
@@ -275,7 +273,6 @@ class TaiKhoanController {
       if (!isMatch) {
         return res.status(400).json({ message: "Mật khẩu không đúng" });
       }
-      // Tạo token
       const payload = {
         MaTK: user.MaTK,
         Email: user.Email,
@@ -334,7 +331,7 @@ class TaiKhoanController {
       const { Password, NewPassword } = req.body;
       const taiKhoan = await TaiKhoan.findByPk(req.params.MaTK);
       if (!taiKhoan) {
-        return res.status(404).json({ messeage: "Tai khoản không tồn tại" });
+        return res.status(404).json({ messeage: "Tài khoản không tồn tại" });
       }
       const isMatch = await bcrypt.compare(Password, taiKhoan.Password);
       if (!isMatch) {

@@ -40,6 +40,7 @@ export function AddEmployeeModal({
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
       const { BacLuong, LuongCoBanHienTai, LuongTheoGioHienTai } =
         JSON.parse(value);
+        console.log(LuongTheoGioHienTai);
       setForm((prev) => ({
         ...prev,
         BacLuong,
@@ -124,7 +125,6 @@ export function AddEmployeeModal({
   const fetchAllThangLuongPartTime = async () => {
     try {
       const response = await getAllThangLuongPartTime();
-      console.log(response);
       setMauLuong(response);
     } catch (error) {
       console.error("Lỗi khi lấy Tháng lương:", error);
@@ -320,7 +320,7 @@ export function AddEmployeeModal({
                       value={JSON.stringify({
                         BacLuong: thangluong.BacLuong,
                         LuongCoBanHienTai: thangluong.LuongCoBan,
-                        LuongTheoGioHienTai: thangLuong.LuongTheoGio,
+                        LuongTheoGioHienTai: thangluong.LuongTheoGio,
                       })}
                     >
                       Bậc lương: {thangluong.BacLuong}, Lương cơ bản:{" "}
