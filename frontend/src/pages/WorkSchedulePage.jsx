@@ -1,13 +1,12 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  FileIcon,
   BellIcon,
 } from "lucide-react";
 import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
-import { format, addWeeks, subWeeks } from "date-fns";
+import { format, addWeeks, subWeeks, isBefore, startOfDay } from "date-fns";
 import Search from "../components/search.jsx";
 import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
 import {
@@ -93,6 +92,15 @@ export const WorkSchedule = () => {
   };
 
   const handleAddShift = (employee, date) => {
+    // Check if the date is in the past
+    const today = startOfDay(new Date());
+    const selectedDate = startOfDay(new Date(date));
+
+    if (isBefore(selectedDate, today)) {
+      alert("Không thể thêm ca làm việc cho ngày đã qua.");
+      return;
+    }
+
     setSelectedEmployee(employee);
     setSelectedDate(date);
     setIsModalOpen(true);
@@ -183,7 +191,7 @@ export const WorkSchedule = () => {
       }
     }
     setFilteredEmployees(filtered);
-  }, [employees, selectedChiNhanh]);
+  }, [employees, selectedChiNhanh, user.MaCN, user.MaVaiTro]);
 
   const handleDeleteShift = async (employee, date, shift) => {
     if (
