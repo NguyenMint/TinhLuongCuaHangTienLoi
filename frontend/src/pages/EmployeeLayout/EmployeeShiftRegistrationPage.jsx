@@ -42,7 +42,7 @@ export const EmployeeShiftRegistrationPage = () => {
     const selectedDate = startOfDay(new Date(day));
 
     if (isBefore(selectedDate, today)) {
-      alert("Không thể thêm ca làm việc cho ngày đã qua.");
+      alert("Không thể đăng ký ca làm việc cho ngày đã qua.");
       return;
     }
     const formData = {
