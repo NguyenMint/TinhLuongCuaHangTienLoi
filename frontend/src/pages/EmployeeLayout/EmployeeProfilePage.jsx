@@ -6,9 +6,9 @@ import { fetchNhanVien } from "../../api/apiTaiKhoan";
 export function EmployeeProfilePage() {
   const [user,setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().slice(0,10)
   );
-  const [salaryData, setSalaryData] = useState(null);
+  const [salaryData, setSalaryData] = useState([]);
   const [loading, setLoading] = useState(false);
   const fetchSalaryData = async (date) => {
     setLoading(true);
@@ -143,7 +143,7 @@ export function EmployeeProfilePage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             <span className="ml-2 text-gray-600">Đang tải dữ liệu...</span>
           </div>
-        ) : salaryData?.chiTietBangLuong?.length > 0 ? (
+        ) : salaryData.length > 0 ? (
           <div>
             <div className="bg-blue-50 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-lg text-blue-800 mb-2">
@@ -153,7 +153,7 @@ export function EmployeeProfilePage() {
                 Tổng giờ làm việc:{" "}
                 <span className="font-medium">
                   {
-                    calculateDailySummary(salaryData.chiTietBangLuong)
+                    calculateDailySummary(salaryData)
                       .tongGioLam
                   }{" "}
                   giờ
@@ -162,7 +162,7 @@ export function EmployeeProfilePage() {
             </div>
             {/* Chi tiết từng ca làm */}
             <div className="space-y-4">
-              {salaryData.chiTietBangLuong.map((chiTiet, index) => (
+              {salaryData.map((chiTiet, index) => (
                 <div
                   key={chiTiet.MaCTBL}
                   className="bg-white rounded-lg shadow p-4"
@@ -331,7 +331,7 @@ export function EmployeeProfilePage() {
                     </p>
                     <p className="text-lg font-bold text-green-800">
                       {formatCurrency(
-                        calculateDailySummary(salaryData.chiTietBangLuong)
+                        calculateDailySummary(salaryData)
                           .tongLuong
                       )}
                     </p>
@@ -348,7 +348,7 @@ export function EmployeeProfilePage() {
                     </p>
                     <p className="text-lg font-bold text-blue-800">
                       {formatCurrency(
-                        calculateDailySummary(salaryData.chiTietBangLuong)
+                        calculateDailySummary(salaryData)
                           .tongPhuCap
                       )}
                     </p>
@@ -365,7 +365,7 @@ export function EmployeeProfilePage() {
                     </p>
                     <p className="text-lg font-bold text-red-800">
                       {formatCurrency(
-                        calculateDailySummary(salaryData.chiTietBangLuong)
+                        calculateDailySummary(salaryData)
                           .tongPhat
                       )}
                     </p>
@@ -380,7 +380,7 @@ export function EmployeeProfilePage() {
                 <span>Tổng thu nhập trong ngày:</span>
                 <span className="text-green-600">
                   {formatCurrency(
-                    calculateDailySummary(salaryData.chiTietBangLuong).tongThu
+                    calculateDailySummary(salaryData).tongThu
                   )}
                 </span>
               </div>

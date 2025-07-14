@@ -11,7 +11,7 @@ export const getAllThangLuong = async () => {
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+    console.error("Lỗi lấy thang lương:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
@@ -27,7 +27,7 @@ export const getAllThangLuongFullTime = async () => {
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+    console.error("Lỗi lấy thang lương fulltime:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
@@ -43,7 +43,7 @@ export const getAllThangLuongPartTime = async () => {
     );
     return response.data;
   } catch (error) {
-    console.error("Lỗi lấy ĐK Ca theo nhân viên:", error);
+    console.error("Lỗi lấy thang lương partTime:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
@@ -87,7 +87,7 @@ export const updateThangLuong = async (thangLuongData) => {
     } else if (error.response.status === 404) {
       return { success: false, message: "Thang lương không tồn tại" };
     }
-    console.error("Lỗi tạo Thang lương:", error);
+    console.error("Lỗi chỉnh sửa Thang lương:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
@@ -107,7 +107,7 @@ export const deleteThangLuong = async (MaThangLuong) => {
     if (error.response?.status === 404) {
       return { success: false, message: "Thang lương không tồn tại" };
     }
-    console.error("Lỗi tạo Ca làm:", error);
+    console.error("Lỗi xóa thang lương:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };

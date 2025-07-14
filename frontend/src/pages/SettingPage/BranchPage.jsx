@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 import { getChiNhanh } from "../../api/apiChiNhanh";
 import { AddBranchForm } from "../../components/Branch/AddNewBranchModal";
@@ -7,7 +6,6 @@ import { UpdateBranchForm } from "../../components/Branch/UpdateBranchModal";
 import { ConfirmDeleteModal } from "../../components/ModalDelete";
 import { deleteChiNhanh } from "../../api/apiChiNhanh";
 export function BranchPage() {
-  const navigate = useNavigate();
   const [data, setData] = useState();
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);

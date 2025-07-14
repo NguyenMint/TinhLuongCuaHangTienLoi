@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import { getAllThangLuong } from "../../api/apiThangLuong.js";
+import { getAllThangLuongFullTime, getAllThangLuongPartTime } from "../../api/apiThangLuong.js";
 import { AddSalaryStructureForm } from "../../components/SalaryStructure/AddNewSalaryStructureModal.jsx";
 import { UpdateSalaryStructureForm } from "../../components/SalaryStructure/UpdateSalaryStructureModal.jsx";
 import { ConfirmDeleteModal } from "../../components/ModalDelete.jsx";
 import { deleteThangLuong } from "../../api/apiThangLuong.js"; 
 import { formatCurrency } from "../../utils/format";
 export function SalaryStructure() {
-  const [data, setData] = useState([]);
+  const [fullTime, setFullTime] = useState([]);
+  const [partTime, setPartTime] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [selectedSalaryStructure, setSelectedSalaryStructure] = useState(null);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [maThangLuong, setMaThangLuong] = useState(null);
-  const fetchAllThangLuong = async () => {
+  const fetchAllThangLuongFullTime = async () => {
     try {
-      const response = await getAllThangLuong();
-      setData(response);
+      const response = await getAllThangLuongFullTime();
+      setFullTime(response);
+    } catch (error) {
+      console.error("Lỗi lấy dữ liệu thang lương:", error);
+    }
+  };
+  const fetchAllThangLuongPartTime = async () => {
+    try {
+      const response = await getAllThangLuongPartTime();
+      setPartTime(response);
     } catch (error) {
       console.error("Lỗi lấy dữ liệu thang lương:", error);
     }
@@ -29,7 +38,8 @@ export function SalaryStructure() {
           return;
         }
         alert("Xóa thang lương thành công!");
-        fetchAllThangLuong();
+        fetchAllThangLuongFullTime();
+        fetchAllThangLuongPartTime();
       } catch (error) {
         console.error("Lỗi không xác định:", error);
         alert("Lỗi không xác định. Vui lòng thử lại.");
@@ -37,10 +47,9 @@ export function SalaryStructure() {
       setShowModalDelete(false);
     }
   useEffect(() => {
-    fetchAllThangLuong();
+    fetchAllThangLuongFullTime();
+    fetchAllThangLuongPartTime();
   }, []);
-  const fullTime = data.filter((item) => item.LoaiNV === "FullTime");
-  const partTime = data.filter((item) => item.LoaiNV === "PartTime");
   return (
     <div>
       <div className="p-6 bg-gray-100 min-h-screen">
@@ -162,13 +171,15 @@ export function SalaryStructure() {
       {showModalAdd && (
         <AddSalaryStructureForm
           setShowModalAdd={setShowModalAdd}
-          getAllThangLuong={fetchAllThangLuong}
+          getAllThangLuongFullTime={fetchAllThangLuongFullTime}
+          getAllThangLuongPartTime={fetchAllThangLuongPartTime}
         ></AddSalaryStructureForm>
       )}
       {showModalUpdate && (
         <UpdateSalaryStructureForm
           setShowModalUpdate={setShowModalUpdate}
-          getAllThangLuong={fetchAllThangLuong}
+          getAllThangLuongFullTime={fetchAllThangLuongFullTime}
+          getAllThangLuongPartTime={fetchAllThangLuongPartTime}
           salaryStructure={selectedSalaryStructure}
         ></UpdateSalaryStructureForm>
       )}

@@ -3,7 +3,7 @@ import { xinNghiPhep, getDonXinNghiByNV } from "../../api/apiNgayNghiPhep";
 import { fetchNhanVien } from "../../api/apiTaiKhoan";
 
 export function LeaveRequestForm() {
-  const [user,setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [form, setForm] = useState({
     NgayBatDau: "",
     NgayKetThuc: "",
@@ -14,6 +14,16 @@ export function LeaveRequestForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (new Date(form.NgayKetThuc) <= new Date(form.NgayBatDau)) {
+        alert("Ngày kết thúc phải sau ngày bắt đầu!");
+        return;
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (new Date(form.NgayBatDau) < today || new Date(form.NgayKetThuc) < today) {
+        alert("Ngày bắt đầu hoặc ngày kết thúc không được ở quá khứ!");
+        return;
+      }
       const response = await xinNghiPhep(form);
       if (!response.success) {
         alert(response.message);

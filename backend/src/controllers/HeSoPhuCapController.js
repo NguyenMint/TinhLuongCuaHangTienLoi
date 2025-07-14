@@ -53,6 +53,16 @@ class HeSoPhuCapController {
         }
         Ngay = null;
       }
+      if(LoaiNgay === "Ngày lễ"){
+        const existNgay = await HeSoPhuCap.findOne({
+          where:{Ngay}
+        });
+        if (existNgay) {
+          return res
+            .status(409)
+            .json({ message: "Đã có hệ số phụ cấp cho ngày lễ này rồi" });
+        }
+      }
       const admin = await TaiKhoan.findOne({ where: { MaVaiTro: 3 } });
       const MaTK = admin.MaTK;
       const heSoPhuCapCaDem = await HeSoPhuCap.create({

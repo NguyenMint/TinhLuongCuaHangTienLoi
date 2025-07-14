@@ -1,8 +1,8 @@
 // EmployeeShiftRegistration.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { format, addDays, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import { vi } from "date-fns/locale";
-import { ChevronLeftIcon, ChevronRightIcon, Trash2 } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 export const ShiftRegistration = ({
   currentDate,
@@ -13,7 +13,6 @@ export const ShiftRegistration = ({
   setSelectedLLV
 }) => {
   const [selectedDate, setSelectedDate] = useState(currentDate);
-
   const startDate = startOfWeek(selectedDate, {
     weekStartsOn: 1,
   });
@@ -22,7 +21,7 @@ export const ShiftRegistration = ({
   const monthYear = format(selectedDate, "MM.yyyy");
   const weekLabel = `Tuần ${weekNumber} - Th.${monthYear}`;
 
-  // Hàm xác định màu nền cho ca làm việc
+ 
   const getShiftBgColor = (shift) => {
     if (shift.TrangThai === "Đã Đăng Ký") return "bg-green-200";
     if (shift.TrangThai === "Hủy Ca" || shift.TrangThai === "Từ Chối")
@@ -32,7 +31,7 @@ export const ShiftRegistration = ({
     return "bg-white hover:bg-gray-50";
   };
 
-  // Hàm xử lý chuyển tuần
+
   const handlePreviousWeek = () => {
     setSelectedDate(subWeeks(selectedDate, 1));
   };
@@ -45,7 +44,7 @@ export const ShiftRegistration = ({
     setSelectedDate(new Date());
   };
 
-  // Hàm kiểm tra trạng thái đăng ký ca cho một ngày cụ thể
+  
   const getShiftForDay = (day, maCa) => {
     const dateKey = format(day, "yyyy-MM-dd");
     const shiftForDay = lichLamViec.find(
@@ -82,7 +81,6 @@ export const ShiftRegistration = ({
         </div>
       </div>
 
-      {/* Bảng lịch làm việc */}
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>

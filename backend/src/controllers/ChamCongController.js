@@ -31,14 +31,13 @@ class ChamCongController {
         const [gioVao, phutVao] = timeStr.split(":").map(Number);
         return gioVao * 60 + phutVao;
       };
-      if (GioVao) {
+      if (GioVao) { 
         const vaoChuan = timeToMinutes(ThoiGianBatDau);
         const vaoThucTe = timeToMinutes(GioVao);
         if (vaoThucTe - vaoChuan > 10) {
           DiTre = vaoThucTe - vaoChuan;
         }
       }
-
       const isNextDay = (afterDate, beforeDate) => {
         const d1 = new Date(afterDate);
         const d2 = new Date(beforeDate);
@@ -60,9 +59,7 @@ class ChamCongController {
           VeSom = raChuan - raThucTe;
         }
       }
-
       const existing = await ChamCong.findOne({ where: { MaLLV } });
-
       if (existing) {
         await existing.update({
           GioRa: GioRa || existing.GioRa,

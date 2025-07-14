@@ -30,8 +30,8 @@ export const createCaLam = async (caLamData) => {
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if (error.response?.status === 409) {
-      return { success: false, message: "Tên ca làm đã tồn tại" };
+    if (error.response.status === 409) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi tạo Ca làm:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
@@ -51,10 +51,8 @@ export const updateCaLam = async (caLamData) => {
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if (error.response.status === 404) {
-      return { success: false, message: "Ca làm không tồn tại" };
-    } else if (error.response.status === 409) {
-      return { success: false, message: "Tên ca làm đã tồn tại" };
+    if (error.response.status === 404 || error.response.status === 409) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi tạo Ca làm:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
@@ -73,8 +71,8 @@ export const deleteCaLam = async (MaCaLam) => {
     );
     return { success: true, data: response.data.message };
   } catch (error) {
-    if (error.response?.status === 404) {
-      return { success: false, message: "Ca làm không tồn tại" };
+    if (error.response.status === 404) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi tạo Ca làm:", error);
     return { success: false, message: "Lỗi kết nối đến server" };
