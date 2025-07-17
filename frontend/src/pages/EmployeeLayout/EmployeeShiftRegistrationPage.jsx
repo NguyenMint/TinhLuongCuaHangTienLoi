@@ -3,7 +3,6 @@ import { ShiftRegistration } from "../../components/Employee/ShiftRegistration";
 import { ControlRegistrationModal } from "../../components/Employee/ControlRegistrationModal";
 import { fetchCaLam } from "../../api/apiCaLam";
 import { format, isBefore, startOfDay } from "date-fns";
-
 import {
   getAllLLVByNhanVien,
   dangKyCa,
@@ -40,7 +39,6 @@ export const EmployeeShiftRegistrationPage = () => {
     const NgayLam = format(day, "yyyy-MM-dd");
     const today = startOfDay(new Date());
     const selectedDate = startOfDay(new Date(day));
-
     if (isBefore(selectedDate, today)) {
       alert("Không thể đăng ký ca làm việc cho ngày đã qua.");
       return;

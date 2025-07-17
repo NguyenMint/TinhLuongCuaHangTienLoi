@@ -91,7 +91,7 @@ function App() {
         <Route
           path="/settings"
           element={
-            <ProtectedRoute allowedRoles={[3, 1]}>
+            <ProtectedRoute allowedRoles={[3]}>
               <MainLayout>
                 <SettingsPage />
               </MainLayout>
@@ -101,7 +101,7 @@ function App() {
         <Route
           path="/settings/shift"
           element={
-            <ProtectedRoute allowedRoles={[3, 1]}>
+            <ProtectedRoute allowedRoles={[3]}>
               <MainLayout>
                 <ShiftPage />
               </MainLayout>
@@ -111,7 +111,7 @@ function App() {
         <Route
           path="/settings/salary-structure"
           element={
-            <ProtectedRoute allowedRoles={[3, 1]}>
+            <ProtectedRoute allowedRoles={[3]}>
               <MainLayout>
                 <SalaryStructure />
               </MainLayout>
@@ -121,7 +121,7 @@ function App() {
         <Route
           path="/settings/allowance-coefficient"
           element={
-            <ProtectedRoute allowedRoles={[3, 1]}>
+            <ProtectedRoute allowedRoles={[3]}>
               <MainLayout>
                 <AllowanceCoefficientPage />
               </MainLayout>
@@ -131,7 +131,7 @@ function App() {
         <Route
           path="/settings/branch"
           element={
-            <ProtectedRoute allowedRoles={[3, 1]}>
+            <ProtectedRoute allowedRoles={[3]}>
               <MainLayout>
                 <BranchPage/>
               </MainLayout>

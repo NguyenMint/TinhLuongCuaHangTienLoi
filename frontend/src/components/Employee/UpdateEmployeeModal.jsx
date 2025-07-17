@@ -42,7 +42,6 @@ export function UpdateEmployeeModal({
     if (name === "ThangLuong" && form.LoaiNV === "FullTime") {
       const { BacLuong, LuongCoBanHienTai, LuongTheoGioHienTai } =
         JSON.parse(value);
-        console.log(LuongTheoGioHienTai);
       setForm((prev) => ({
         ...prev,
         BacLuong,
@@ -88,7 +87,6 @@ export function UpdateEmployeeModal({
       alert("Vui lòng điền đầy đủ thông tin!");
       return;
     }
-
     const avatarInput = document.querySelector('input[name="avatar"]');
     const avatarFile = avatarInput && avatarInput.files[0];
     const formData = new FormData();
@@ -156,9 +154,7 @@ export function UpdateEmployeeModal({
   useEffect(() => {
     fetchAllQuanLyByChiNhanh();
   }, [form.MaCN]);
-  const [isThangLuongInitialized, setIsThangLuongInitialized] = useState(false);
   useEffect(() => {
-    if (!isThangLuongInitialized) {
       if (form.LoaiNV === "FullTime" && thangLuong.length > 0) {
         const current = thangLuong.find(
           (tl) =>
@@ -174,7 +170,6 @@ export function UpdateEmployeeModal({
               LuongTheoGioHienTai: current.LuongTheoGio,
             }),
           }));
-          setIsThangLuongInitialized(true);
         }
       }
       if (form.LoaiNV === "PartTime" && mauLuong.length > 0) {
@@ -188,9 +183,7 @@ export function UpdateEmployeeModal({
               LuongTheoGio: current.LuongTheoGio,
             }),
           }));
-          setIsThangLuongInitialized(true);
         }
-      }
     }
   }, [thangLuong, mauLuong, form.LoaiNV]);
   return (
@@ -297,7 +290,9 @@ export function UpdateEmployeeModal({
               </select>
             </div>
           )}
-          <div>
+          {
+            employee.MaVaiTro===2 && 
+            <div>
             <label className="block mb-1 font-medium">Loại NV</label>
             <select
               name="LoaiNV"
@@ -309,6 +304,7 @@ export function UpdateEmployeeModal({
               <option value="PartTime">PartTime</option>
             </select>
           </div>
+          }
 
           {currentUser.MaVaiTro === 3 && (
             <div>
