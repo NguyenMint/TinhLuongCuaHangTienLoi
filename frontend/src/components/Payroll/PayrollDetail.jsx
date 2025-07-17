@@ -30,7 +30,7 @@ export function PayrollDetail({
         horizontal: "center",
         vertical: "middle",
       };
-      worksheet.mergeCells("A2:I2");
+      worksheet.mergeCells("A2:K2");
       const periodRow = worksheet.getRow(2);
       periodRow.height = 25;
       periodRow.getCell(1).value = `Kỳ lương: ${payroll.KyLuong}`;
