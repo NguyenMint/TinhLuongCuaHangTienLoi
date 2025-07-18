@@ -8,7 +8,7 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [detailData, setDetailData] = useState([]);
   const [expandedDetails, setExpandedDetails] = useState({});
-
+  
   // Hàm mở modal và lấy dữ liệu chi tiết
   const openDetailModal = async (employee) => {
     setShowModal(true);
