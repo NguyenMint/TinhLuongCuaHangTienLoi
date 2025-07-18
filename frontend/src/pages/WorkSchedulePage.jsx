@@ -191,7 +191,7 @@ export const WorkSchedule = () => {
       }
     }
     setFilteredEmployees(filtered);
-  }, [employees, selectedChiNhanh, user.MaCN, user.MaVaiTro]);
+  }, [employees, selectedChiNhanh, user.MaCN, user.MaVaiTro, searchEmployee]);
 
   const handleDeleteShift = async (employee, date, shift) => {
     if (
