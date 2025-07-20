@@ -115,3 +115,15 @@ export const update_chamcong = async (
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+
+export const getTimeServer = async () => {
+  try {
+    const response = await axios.get(
+      "https://timeapi.io/api/time/current/zone?timeZone=Asia%2FHo_Chi_Minh"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy thời gian:", error);
+    return { message: "Lỗi kết nối đến server" };
+  }
+};

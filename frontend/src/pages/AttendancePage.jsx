@@ -5,7 +5,7 @@ import { fetchCaLam } from "../api/apiCaLam";
 import { fetchLLVDaDangKy } from "../api/apiLichLamViec.js";
 import { addWeeks, format, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { chamCong, update_chamcong } from "../api/apiChamCong";
+import { chamCong, update_chamcong, getTimeServer } from "../api/apiChamCong";
 import { createKTKL } from "../api/apiKTKL";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
@@ -16,6 +16,7 @@ export function AttendancePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [lichLamViecs, setLichLamViecs] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [loading, setLoading] = useState(true);
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [filteredLLVs, setFilteredLLVs] = useState([]);
@@ -35,6 +36,22 @@ export function AttendancePage() {
     violations: [],
     rewards: [],
   });
+
+  // Function to get server time
+  const getServerTimeData = async () => {
+    try {
+      const res = await getTimeServer();
+      const serverDateTime = new Date(res.dateTime);
+      setCurrentDate(serverDateTime);
+      setLoading(false);
+    } catch (error) {
+      console.log("Lỗi khi lấy thời gian server: ", error);
+      // Fallback to system time if server time fails
+      const fallbackTime = new Date();
+      setCurrentDate(fallbackTime);
+      setLoading(false);
+    }
+  };
 
   const getAllCaLam = async () => {
     try {
@@ -64,6 +81,8 @@ export function AttendancePage() {
   };
 
   useEffect(() => {
+    // Initialize with server time first
+    getServerTimeData();
     getAllCaLam();
     getAllLichLamViec();
     fetchChiNhanh();
@@ -77,8 +96,16 @@ export function AttendancePage() {
     setCurrentDate(addWeeks(currentDate, 1));
   };
 
-  const handleThisWeek = () => {
-    setCurrentDate(new Date());
+  const handleThisWeek = async () => {
+    // Get fresh server time when clicking "This Week"
+    try {
+      const res = await getTimeServer();
+      const serverDateTime = new Date(res.dateTime);
+      setCurrentDate(serverDateTime);
+    } catch (error) {
+      console.log("Lỗi khi lấy thời gian server: ", error);
+      setCurrentDate(new Date());
+    }
   };
 
   const handleShiftClick = (shift) => {
@@ -90,7 +117,9 @@ export function AttendancePage() {
     let filtered = Array.isArray(lichLamViecs) ? [...lichLamViecs] : [];
 
     if (user.MaVaiTro === 1) {
-      filtered = filtered.filter((emp) => emp.MaTK_tai_khoan.MaCN === Number(user.MaCN));
+      filtered = filtered.filter(
+        (emp) => emp.MaTK_tai_khoan.MaCN === Number(user.MaCN)
+      );
     } else if (selectedChiNhanh) {
       filtered = filtered.filter(
         (emp) => emp.MaTK_tai_khoan.MaCN === Number(selectedChiNhanh.MaCN)
@@ -178,6 +207,15 @@ export function AttendancePage() {
     setShifts(shifts.filter((shift) => shift.id !== shiftId));
     setIsModalOpen(false);
   };
+
+  // Show loading while fetching server time
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+        <span>Đang tải dữ liệu...</span>
+      </div>
+    );
+  }
 
   const weekNumber = Math.ceil(currentDate.getDate() / 7);
   const monthYear = format(currentDate, "MM.yyyy");
