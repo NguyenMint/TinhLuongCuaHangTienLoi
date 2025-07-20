@@ -1,28 +1,47 @@
 import { useEffect, useState } from "react";
 import { UserIcon, AlertCircle } from "lucide-react";
 import { fetchLLVByNhanVien } from "../../api/apiLichLamViec";
-import { chamCongVao, chamCongRa } from "../../api/apiChamCong";
+import { chamCongVao, chamCongRa, getTimeServer } from "../../api/apiChamCong";
 import { formatDate, formatTime } from "../../utils/format";
 import { fetchNhanVien } from "../../api/apiTaiKhoan";
+
 export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-  const [now, setNow] = useState(new Date());
-  const ngay = now.toISOString().slice(0, 10);
-  // const tomorrow = new Date();
-  // tomorrow.setDate(tomorrow.getDate() + 1);
-  // const ngay = tomorrow.toISOString().slice(0, 10);
-  const timeStr = now.toLocaleTimeString("vi-VN", {
+  const [serverTime, setServerTime] = useState(new Date());
+  const [loading, setLoading] = useState(true);
+
+  // Use server time instead of system time
+  const ngay = serverTime.toISOString().slice(0, 10);
+
+  const timeStr = serverTime.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   });
-  const gioHienTai = now.toLocaleTimeString("vi-VN", {
+
+  const gioHienTai = serverTime.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
   });
+
+  // Function to get server time
+  const getServerTime = async () => {
+    try {
+      const res = await getTimeServer();
+      const serverDateTime = new Date(res.dateTime);
+      setServerTime(serverDateTime);
+      setLoading(false);
+    } catch (error) {
+      console.log("Lỗi khi lấy thời gian server: ", error);
+      // Fallback to system time if server time fails
+      setServerTime(new Date());
+      setLoading(false);
+    }
+  };
+
   const refeshInfo = async () => {
     try {
       const res = await fetchNhanVien(user.MaTK);
@@ -31,44 +50,87 @@ export function EmployeeHomePage() {
       console.log("Lỗi: ", error);
     }
   };
+
   useEffect(() => {
-    getDKCByNhanVien(); 
+    // Initialize with server time
+    getServerTime();
     refeshInfo();
+
+    // Update server time every minute
     const interval = setInterval(() => {
-      setNow(new Date());
+      getServerTime();
     }, 60000); // 60000ms = 1 phút
+
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // Fetch shifts when server time is loaded
+    if (!loading) {
+      getDKCByNhanVien();
+    }
+  }, [serverTime, loading]);
+
   const getDKCByNhanVien = async () => {
     const manv = user.MaTK;
     const response = await fetchLLVByNhanVien(manv, ngay);
     setShifts(response);
   };
+
   const ChamCongVao = async (MaLLV) => {
-    const gioVao = gioHienTai;
-    //const gioVao = "6:35:00";
-    const response = await chamCongVao(ngay, gioVao, MaLLV, false);
-    if (!response.success) {
-      alert(response.message || "Chấm công thất bại");
+    // Get fresh server time before attendance
+    try {
+      const res = await getTimeServer();
+      const currentServerTime = new Date(res.dateTime);
+      const gioVao = currentServerTime.toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      
+      const response = await chamCongVao(ngay, gioVao, MaLLV, false);
+      if (!response.success) {
+        alert(response.message || "Chấm công thất bại");
+      }
+      getDKCByNhanVien();
+    } catch (error) {
+      console.log("Lỗi khi chấm công vào: ", error);
+      alert("Không thể lấy thời gian từ server");
     }
-    getDKCByNhanVien();
   };
+
   const ChamCongRa = async (MaLLV) => {
-    //const gioRa = gioHienTai;
-    const gioRa = "22:09:00";
-    const response = await chamCongRa(ngay, gioRa, MaLLV, false);
-    if (!response.success) {
-      alert(response.message || "Chấm công thất bại");
+    // Get fresh server time before attendance
+    try {
+      const res = await getTimeServer();
+      const currentServerTime = new Date(res.dateTime);
+      const gioRa = currentServerTime.toLocaleTimeString("vi-VN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+      
+      const response = await chamCongRa(ngay, gioRa, MaLLV, false);
+      if (!response.success) {
+        alert(response.message || "Chấm công thất bại");
+      }
+      getDKCByNhanVien();
+    } catch (error) {
+      console.log("Lỗi khi chấm công ra: ", error);
+      alert("Không thể lấy thời gian từ server");
     }
-    getDKCByNhanVien();
   };
-  if (shifts === null) {
+
+  if (shifts === null || loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <span>Đang tải dữ liệu...</span>
       </div>
     );
   }
+
   return (
     <div className="pt-16 px-4 mb-16">
       <div className="flex items-center gap-6 bg-white rounded-xl shadow p-6 mb-6">
@@ -94,7 +156,7 @@ export function EmployeeHomePage() {
       </div>
 
       <div className="flex flex-col items-center mb-6">
-        <div className="text-gray-500 text-base">{formatDate(now)}</div>
+        <div className="text-gray-500 text-base">{formatDate(serverTime)}</div>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-6xl font-extrabold tracking-widest">
             {timeStr}
