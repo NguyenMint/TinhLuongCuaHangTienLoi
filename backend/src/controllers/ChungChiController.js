@@ -62,7 +62,7 @@ class ChungChiController {
             fs.unlinkSync(oldFilePath);
           }
         }
-        updateData.FileCC = `${req.file.filename}`;
+        updateData.FileCC = `uploads/chungchi/${req.file.filename}`;
       }
 
       await chungChi.update(updateData);
