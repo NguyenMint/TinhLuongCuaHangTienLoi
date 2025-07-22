@@ -43,18 +43,19 @@ class HopDongController {
       let updateData = { ...req.body };
 
       if (req.file) {
-        // Delete old file if exists
         if (hopdong.File) {
           const oldFilePath = path.join(
             __dirname,
-            "../../uploads/hopdong",
+            "../../",
             hopdong.File
           );
+          console.log(oldFilePath);
+          
           if (fs.existsSync(oldFilePath)) {
             fs.unlinkSync(oldFilePath);
           }
         }
-        updateData.File = `${req.File.name}`;
+        updateData.File = `uploads/hopdong/${req.file.filename}`;
       }
 
       await hopdong.update(updateData);

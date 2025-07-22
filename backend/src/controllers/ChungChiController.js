@@ -55,7 +55,7 @@ class ChungChiController {
         if (chungChi.FileCC) {
           const oldFilePath = path.join(
             __dirname,
-            "../../uploads/chungchi",
+            "../../",
             chungChi.FileCC
           );
           if (fs.existsSync(oldFilePath)) {
