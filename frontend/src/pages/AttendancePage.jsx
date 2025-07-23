@@ -16,7 +16,7 @@ export function AttendancePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [lichLamViecs, setLichLamViecs] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [chinhanhs, setChiNhanhs] = useState([]);
   const [selectedChiNhanh, setSelectedChiNhanh] = useState("");
   const [filteredLLVs, setFilteredLLVs] = useState([]);
@@ -37,21 +37,20 @@ export function AttendancePage() {
     rewards: [],
   });
 
-  // Function to get server time
-  const getServerTimeData = async () => {
-    try {
-      const res = await getTimeServer();
-      const serverDateTime = new Date(res.dateTime);
-      setCurrentDate(serverDateTime);
-      setLoading(false);
-    } catch (error) {
-      console.log("Lỗi khi lấy thời gian server: ", error);
-      // Fallback to system time if server time fails
-      const fallbackTime = new Date();
-      setCurrentDate(fallbackTime);
-      setLoading(false);
-    }
-  };
+  // const getServerTimeData = async () => {
+  //   try {
+  //     const res = await getTimeServer();
+  //     const serverDateTime = new Date(res.dateTime);
+  //     setCurrentDate(serverDateTime);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.log("Lỗi khi lấy thời gian server: ", error);
+  //     // Fallback to system time if server time fails
+  //     const fallbackTime = new Date();
+  //     setCurrentDate(fallbackTime);
+  //     setLoading(false);
+  //   }
+  // };
 
   const getAllCaLam = async () => {
     try {
@@ -81,11 +80,11 @@ export function AttendancePage() {
   };
 
   useEffect(() => {
-    // Initialize with server time first
-    getServerTimeData();
+    setLoading(true);
     getAllCaLam();
     getAllLichLamViec();
     fetchChiNhanh();
+    setLoading(false);
   }, []);
 
   const handlePreviousWeek = () => {
@@ -97,11 +96,8 @@ export function AttendancePage() {
   };
 
   const handleThisWeek = async () => {
-    // Get fresh server time when clicking "This Week"
     try {
-      const res = await getTimeServer();
-      const serverDateTime = new Date(res.dateTime);
-      setCurrentDate(serverDateTime);
+      setCurrentDate(new Date());
     } catch (error) {
       console.log("Lỗi khi lấy thời gian server: ", error);
       setCurrentDate(new Date());
@@ -208,7 +204,7 @@ export function AttendancePage() {
     setIsModalOpen(false);
   };
 
-  // Show loading while fetching server time
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex justify-center items-center">
