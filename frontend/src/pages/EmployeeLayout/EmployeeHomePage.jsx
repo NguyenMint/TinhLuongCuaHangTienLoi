@@ -54,8 +54,8 @@ export function EmployeeHomePage() {
     getDKCByNhanVien();
   };
   const ChamCongRa = async (MaLLV) => {
-    //const gioRa = gioHienTai;
-    const gioRa = "22:09:00";
+    const gioRa = gioHienTai;
+    //const gioRa = "22:09:00";
     const response = await chamCongRa(ngay, gioRa, MaLLV, false);
     if (!response.success) {
       alert(response.message || "Chấm công thất bại");

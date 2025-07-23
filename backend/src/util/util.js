@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+ const { Op } = require("sequelize");
 
 function getSoNgayTrongThang(thoigian) {
   const [nam, thang] = thoigian.split("-").map(Number);
