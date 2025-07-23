@@ -19,14 +19,12 @@ export function AllowanceCoefficientPage() {
     try {
       const response = await getHeSoPhuCap();
       const { cuoiTuan, ngayThuong, ngayLe } = response;
-      //console.log(groupByNgayThuongVaCuoiTuan(cuoiTuan,"Cuối tuần"))
       const rows = [
         ...groupByNgayThuongVaCuoiTuan(cuoiTuan, "Cuối tuần"),
         ...groupByNgayThuongVaCuoiTuan(ngayThuong, "Ngày thường"),
         ...groupNgayLe(ngayLe),
       ];
       setData(rows);
-      //console.log(rows);
     } catch (error) {
       console.error("Lỗi lấy hệ số phụ cấp:", error);
     }
