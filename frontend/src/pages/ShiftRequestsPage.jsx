@@ -63,7 +63,7 @@ export function ShiftRequests() {
       const data = await getChiNhanh();
       setChiNhanhs(data);
     } catch (error) {
-      console.error("Lỗi khi lấy Nhân viên:", error);
+      console.error("Lỗi khi lấy Chi nhánh:", error);
     }
   };
   useEffect(() => {

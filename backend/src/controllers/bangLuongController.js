@@ -563,9 +563,13 @@ class bangLuongController {
             model: ChiTietBangLuong,
             as: "chi_tiet_bang_luongs",
             attributes: [
-              "Ngay",
+                           "Ngay",
               "GioLamViec",
               "LuongMotGio",
+              "HeSoLuong",
+              "isNgayLe",
+              "isCuoiTuan",
+              "isCaDem",
               "TienLuongCa",
               "TienPhuCap",
               "TienPhat",
@@ -593,10 +597,22 @@ class bangLuongController {
             Ngay: detail.Ngay,
             GioLamViec: detail.GioLamViec,
             LuongMotGio: detail.LuongMotGio,
+            HeSoLuong: detail.HeSoLuong,
+            isNgayLe: detail.isNgayLe,
+            isCuoiTuan: detail.isCuoiTuan,
+            isCaDem: detail.isCaDem,
             TienLuongCa: detail.TienLuongCa,
             TienPhuCap: detail.TienPhuCap,
             TienPhat: detail.TienPhat,
             tongtien: detail.tongtien,
+            detailsThuongPhat:
+              detail.cham_congs?.[0]?.MaLLV_lich_lam_viec?.khen_thuong_ky_luats?.map(
+                (ktkl) => ({
+                  ThuongPhat: ktkl.ThuongPhat,
+                  LyDo: ktkl.LyDo,
+                  MucThuongPhat: ktkl.MucThuongPhat,
+                })
+              ) || [],
           })),
         })),
       };

@@ -55,14 +55,14 @@ class ChungChiController {
         if (chungChi.FileCC) {
           const oldFilePath = path.join(
             __dirname,
-            "../../uploads/chungchi",
+            "../../",
             chungChi.FileCC
           );
           if (fs.existsSync(oldFilePath)) {
             fs.unlinkSync(oldFilePath);
           }
         }
-        updateData.FileCC = `${req.file.filename}`;
+        updateData.FileCC = `uploads/chungchi/${req.file.filename}`;
       }
 
       await chungChi.update(updateData);
