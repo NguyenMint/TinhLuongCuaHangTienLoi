@@ -8,39 +8,22 @@ import { fetchNhanVien } from "../../api/apiTaiKhoan";
 export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-  const [serverTime, setServerTime] = useState(new Date());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const NgayHienTai = new Date();
+  const ngay = NgayHienTai.toISOString().slice(0, 10);
 
-  // Use server time instead of system time
-  const ngay = serverTime.toISOString().slice(0, 10);
-
-  const timeStr = serverTime.toLocaleTimeString("vi-VN", {
+  const timeStr = NgayHienTai.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   });
 
-  const gioHienTai = serverTime.toLocaleTimeString("vi-VN", {
+  const gioHienTai = NgayHienTai.toLocaleTimeString("vi-VN", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
   });
-
-  // Function to get server time
-  const getServerTime = async () => {
-    try {
-      const res = await getTimeServer();
-      const serverDateTime = new Date(res.dateTime);
-      setServerTime(serverDateTime);
-      setLoading(false);
-    } catch (error) {
-      console.log("Lỗi khi lấy thời gian server: ", error);
-      // Fallback to system time if server time fails
-      setServerTime(new Date());
-      setLoading(false);
-    }
-  };
 
   const refeshInfo = async () => {
     try {
@@ -52,29 +35,25 @@ export function EmployeeHomePage() {
   };
 
   useEffect(() => {
-    // Initialize with server time
-    getServerTime();
     refeshInfo();
-
-    // Update server time every minute
-    const interval = setInterval(() => {
-      getServerTime();
-    }, 60000); // 60000ms = 1 phút
+    const interval = setInterval(() => {}, 60000); // 60000ms = 1 phút
 
     return () => clearInterval(interval);
   }, []);
-
   useEffect(() => {
-    // Fetch shifts when server time is loaded
-    if (!loading) {
-      getDKCByNhanVien();
-    }
-  }, [serverTime, loading]);
+    getDKCByNhanVien();
+  }, []);
 
   const getDKCByNhanVien = async () => {
-    const manv = user.MaTK;
-    const response = await fetchLLVByNhanVien(manv, ngay);
-    setShifts(response);
+    setLoading(true);
+    try {
+      const manv = user.MaTK;
+      const response = await fetchLLVByNhanVien(manv, ngay);
+      setShifts(response);
+    } catch (error) {
+      console.log("Lỗi lấy ca làm", error);
+    }
+    setLoading(false);
   };
 
   const ChamCongVao = async (MaLLV) => {
@@ -82,13 +61,7 @@ export function EmployeeHomePage() {
     try {
       const res = await getTimeServer();
       const currentServerTime = new Date(res.dateTime);
-      const gioVao = currentServerTime.toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-      
+      const gioVao = gioHienTai;
       const response = await chamCongVao(ngay, gioVao, MaLLV, false);
       if (!response.success) {
         alert(response.message || "Chấm công thất bại");
@@ -101,17 +74,8 @@ export function EmployeeHomePage() {
   };
 
   const ChamCongRa = async (MaLLV) => {
-    // Get fresh server time before attendance
     try {
-      const res = await getTimeServer();
-      const currentServerTime = new Date(res.dateTime);
-      const gioRa = currentServerTime.toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-      
+      const gioRa = gioHienTai();
       const response = await chamCongRa(ngay, gioRa, MaLLV, false);
       if (!response.success) {
         alert(response.message || "Chấm công thất bại");
@@ -156,7 +120,7 @@ export function EmployeeHomePage() {
       </div>
 
       <div className="flex flex-col items-center mb-6">
-        <div className="text-gray-500 text-base">{formatDate(serverTime)}</div>
+        <div className="text-gray-500 text-base">{formatDate(NgayHienTai)}</div>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-6xl font-extrabold tracking-widest">
             {timeStr}
