@@ -5,6 +5,7 @@ import ViolationsTab from "./TabContent/ViolationsTab";
 import RewardsTab from "./TabContent/RewardsTab";
 import { CircleUserRound, IdCard, X } from "lucide-react";
 import { formatDate } from "../../utils/format.js";
+import { getNghiThaiSanByMaTK } from "../../api/apiNghiThaiSan";
 
 const ShiftModal = ({
   shift,
@@ -23,6 +24,8 @@ const ShiftModal = ({
     violations: shift.violations || [],
     rewards: shift.rewards || [],
   });
+  const [quyenLoiThaiSan, setQuyenLoiThaiSan] = useState(false);
+  const [vuot30p, setVuot30p] = useState(0);
 
   // Memoize formData fields to stabilize dependencies
   const formDataDeps = useMemo(
@@ -73,6 +76,31 @@ const ShiftModal = ({
     });
   }, [formDataDeps, setDataUpdate]);
 
+  useEffect(() => {
+    async function checkThaiSan() {
+      if (!formData.MaTK_tai_khoan?.MaTK || !formData.NgayLam) return;
+      const res = await getNghiThaiSanByMaTK(formData.MaTK_tai_khoan.MaTK);
+      const today = new Date(formData.NgayLam);
+      const nts = res.data.find(nts => {
+        if (nts.TrangThai === "Đang nghĩ" || nts.TrangThai === "Đã duyệt") {
+          const start = new Date(nts.NgayBatDau);
+          const end = new Date(nts.NgayKetThuc);
+          return today >= start && today <= end;
+        }
+        return false;
+      });
+      if (nts) {
+        setQuyenLoiThaiSan(true);
+        const veSom = formData.cham_congs[0]?.VeSom || 0;
+        setVuot30p(veSom > 30 ? veSom - 30 : 0);
+      } else {
+        setQuyenLoiThaiSan(false);
+        setVuot30p(0);
+      }
+    }
+    checkThaiSan();
+  }, [formData.MaTK_tai_khoan?.MaTK, formData.NgayLam, formData.cham_congs]);
+
   const tabs = [
     { id: "checkin", label: "Chấm công" },
     { id: "history", label: "Lịch sử chấm công" },
@@ -93,10 +121,10 @@ const ShiftModal = ({
 
   const getStatusBadge = () => {
     const chamCong = formData.cham_congs[0];
-    if (chamCong?.DiTre > 0 && chamCong?.VeSom > 0) {
+    if (chamCong?.DiTre > 0 && ((quyenLoiThaiSan && vuot30p > 0) || (!quyenLoiThaiSan && chamCong?.VeSom > 0))) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-          Đi muộn / Về sớm
+          Đi muộn / Về sớm{quyenLoiThaiSan && vuot30p > 0 ? ` (${vuot30p} phút vượt quyền lợi)` : ""}
         </span>
       );
     } else if (chamCong?.DiTre > 0) {
@@ -105,10 +133,10 @@ const ShiftModal = ({
           Đi muộn
         </span>
       );
-    } else if (chamCong?.VeSom > 0) {
+    } else if ((quyenLoiThaiSan && vuot30p > 0) || (!quyenLoiThaiSan && chamCong?.VeSom > 0)) {
       return (
         <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-          Về sớm
+          Về sớm{quyenLoiThaiSan && vuot30p > 0 ? ` (${vuot30p} phút vượt quyền lợi)` : ""}
         </span>
       );
     } else if (formData.attendanceType === "absent-approved") {

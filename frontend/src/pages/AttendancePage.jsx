@@ -37,20 +37,6 @@ export function AttendancePage() {
     rewards: [],
   });
 
-  // const getServerTimeData = async () => {
-  //   try {
-  //     const res = await getTimeServer();
-  //     const serverDateTime = new Date(res.dateTime);
-  //     setCurrentDate(serverDateTime);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.log("Lỗi khi lấy thời gian server: ", error);
-  //     // Fallback to system time if server time fails
-  //     const fallbackTime = new Date();
-  //     setCurrentDate(fallbackTime);
-  //     setLoading(false);
-  //   }
-  // };
 
   const getAllCaLam = async () => {
     try {
@@ -179,7 +165,7 @@ export function AttendancePage() {
           );
         }
       }
-
+      console.log(dataUpdate);
       await update_chamcong(
         dataUpdate.GioVao,
         dataUpdate.GioRa,
