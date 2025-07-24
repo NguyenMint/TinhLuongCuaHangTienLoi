@@ -2,6 +2,7 @@ const { where } = require("sequelize");
 const db = require("../models");
 const { createSalaryDetail } = require("./chiTietBangLuongController");
 const ChamCong = db.ChamCong;
+const { NghiThaiSan } = db;
 class ChamCongController {
   async chamcong(req, res) {
     try {
@@ -55,7 +56,21 @@ class ChamCongController {
             raThucTe += 24 * 60;
           }
         }
-        if (raChuan - raThucTe > 10) {
+        // Kiểm tra quyền lợi thai sản
+        const nts = await NghiThaiSan.findOne({
+          where: {
+            MaTK: lichLamViec.MaTK,
+            TrangThai: ["Đang nghĩ", "Đã duyệt"],
+            NgayBatDau: { [db.Sequelize.Op.lte]: NgayChamCong },
+            NgayKetThuc: { [db.Sequelize.Op.gte]: NgayChamCong },
+          },
+        });
+        if (nts ) {
+          VeSom = 0; 
+          if(raChuan - raThucTe > 30){
+            VeSom = raChuan - raThucTe - 30;
+          }
+        } else if (raChuan - raThucTe > 10) {
           VeSom = raChuan - raThucTe;
         }
       }
