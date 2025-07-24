@@ -50,6 +50,8 @@ function initModels(sequelize) {
   LichLamViec.hasMany(ChamCong, { as: "cham_congs", foreignKey: "MaLLV"});
   KhenThuongKyLuat.belongsTo(LichLamViec, { as: "MaLLV_lich_lam_viec", foreignKey: "MaLLV"});
   LichLamViec.hasMany(KhenThuongKyLuat, { as: "khen_thuong_ky_luats", foreignKey: "MaLLV"});
+  LichLamViec.belongsTo(LichLamViec, { as: "MaLLVCu_lich_lam_viec", foreignKey: "MaLLVCu"});
+  LichLamViec.hasMany(LichLamViec, { as: "lich_lam_viecs", foreignKey: "MaLLVCu"});
   BangLuong.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});
   TaiKhoan.hasMany(BangLuong, { as: "bang_luongs", foreignKey: "MaTK"});
   ChungChi.belongsTo(TaiKhoan, { as: "MaTK_tai_khoan", foreignKey: "MaTK"});

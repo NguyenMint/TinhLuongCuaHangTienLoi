@@ -24,13 +24,21 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     TrangThai: {
-      type: DataTypes.ENUM('Đã Đăng Ký','Chờ Xác Nhận','Từ Chối','Hủy Ca','Chuyển Ca'),
+      type: DataTypes.ENUM('Đã Đăng Ký','Chờ Xác Nhận','Từ Chối','Hủy Ca','Chuyển Ca','Chờ Duyệt Chuyển Ca'),
       allowNull: false,
       defaultValue: "Chờ Xác Nhận"
     },
     NgayLam: {
       type: DataTypes.DATEONLY,
       allowNull: false
+    },
+    MaLLVCu: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'lich_lam_viec',
+        key: 'MaLLV'
+      }
     }
   }, {
     sequelize,
@@ -57,6 +65,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaCaLam" },
+        ]
+      },
+      {
+        name: "MaLLVCu",
+        using: "BTREE",
+        fields: [
+          { name: "MaLLVCu" },
         ]
       },
     ]

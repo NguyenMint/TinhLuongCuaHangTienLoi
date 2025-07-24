@@ -53,7 +53,7 @@ const ApproveShift = ({ currentDate, onShiftClick, dangKyCas, shifts }) => {
                 >
                   <div className="font-medium text-center text-sm flex flex-col">
                     <span>{dayShift.MaTK_tai_khoan.HoTen}</span>
-                    <span className={`${getShiftColor(dayShift)}`}>{dayShift.TrangThai}</span>
+                    <span className={`${getShiftColor(dayShift)} text-xs mt-1`}>{dayShift.TrangThai}</span>
                   </div>
                 </div>
               );
