@@ -81,7 +81,7 @@ const ShiftModal = ({
       if (!formData.MaTK_tai_khoan?.MaTK || !formData.NgayLam) return;
       const res = await getNghiThaiSanByMaTK(formData.MaTK_tai_khoan.MaTK);
       const today = new Date(formData.NgayLam);
-      const nts = res.data.find(nts => {
+      const nts = res.data.find((nts) => {
         if (nts.TrangThai === "Đang nghĩ" || nts.TrangThai === "Đã duyệt") {
           const start = new Date(nts.NgayBatDau);
           const end = new Date(nts.NgayKetThuc);
@@ -116,15 +116,32 @@ const ShiftModal = ({
   };
 
   const handleSave = () => {
+    setDataUpdate((prev) => ({
+      ...prev,
+      GioVao:
+        formData.cham_congs[0]?.GioVao ||
+        formData.MaCaLam_ca_lam.ThoiGianBatDau,
+      GioRa:
+        formData.cham_congs[0]?.GioRa ||
+        formData.MaCaLam_ca_lam.ThoiGianKetThuc,
+      MaChamCong: formData.cham_congs[0]?.MaChamCong,
+      DiTre: formData.cham_congs[0]?.DiTre || 0,
+      VeSom: formData.cham_congs[0]?.VeSom || 0,
+      MaLLV: formData.MaLLV,
+      NgayLam: formData.NgayLam,
+      MaTK: formData.MaTK_tai_khoan.MaTK,
+      violations: formData.violations || [],
+      rewards: formData.rewards || [],
+    }));
     onSave(formData);
   };
 
   const getStatusBadge = () => {
     const chamCong = formData.cham_congs[0];
-    if (chamCong?.DiTre > 0 && ((quyenLoiThaiSan && vuot30p > 0) || (!quyenLoiThaiSan && chamCong?.VeSom > 0))) {
+    if (chamCong?.DiTre > 0 && chamCong?.VeSom > 0) {
       return (
         <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-          Đi muộn / Về sớm{quyenLoiThaiSan && vuot30p > 0 ? ` (${vuot30p} phút vượt quyền lợi)` : ""}
+          Đi muộn / Về sớm
         </span>
       );
     } else if (chamCong?.DiTre > 0) {
@@ -133,10 +150,10 @@ const ShiftModal = ({
           Đi muộn
         </span>
       );
-    } else if ((quyenLoiThaiSan && vuot30p > 0) || (!quyenLoiThaiSan && chamCong?.VeSom > 0)) {
+    } else if (chamCong?.VeSom > 0) {
       return (
         <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">
-          Về sớm{quyenLoiThaiSan && vuot30p > 0 ? ` (${vuot30p} phút vượt quyền lợi)` : ""}
+          Về sớm
         </span>
       );
     } else if (formData.attendanceType === "absent-approved") {
