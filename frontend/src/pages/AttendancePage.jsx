@@ -165,7 +165,6 @@ export function AttendancePage() {
           );
         }
       }
-      console.log(dataUpdate);
       await update_chamcong(
         dataUpdate.GioVao,
         dataUpdate.GioRa,
