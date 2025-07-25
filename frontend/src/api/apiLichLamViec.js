@@ -100,6 +100,65 @@ export const huyDangKyCa = async (MaLLV) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const xinChuyenCa = async (formData)=>{
+  try {
+    const response = await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/xinChuyenCa`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+     if (error.response.status === 409 || error.response.status === 400) {
+      return { success: false, message: error.response.data.message };
+    } 
+    console.error("Lỗi xóa ĐK Ca:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+}
+export const huyXinChuyenCa = async (MaLLV) => {
+  try {
+    const response = await axios.delete(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/huyXinChuyenCa/${MaLLV}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return { success: true, data: response.data.message };
+  } catch (error) {
+    if (error.response.status === 404 || error.response.status === 400) {
+      return { success: false, message: error.response.data.message };
+    } 
+    console.error("Lỗi xóa ĐK Ca:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
+export const duyetXinChuyenCa = async (MaLLV, TrangThai) => {
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/lichlamviec/duyetChuyenCa`,
+      { MaLLV, TrangThai },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    if (error.response.status === 404) {
+      return { success: false, message: error.response.data.message };
+    }
+    console.error("Lỗi duyệt chuyển ca:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+}
 export const deleteLichLamViec = async (MaLLV) => {
   try {
     const response = await axios.delete(

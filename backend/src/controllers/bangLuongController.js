@@ -61,10 +61,6 @@ async function createBL(MaTK, Thang, Nam) {
       LuongThang += parseFloat(chitietBL.TienLuongCa);
     });
     TongLuong += TongPhuCap;
-    const taiKhoan = await TaiKhoan.findByPk(MaTK);
-    if (taiKhoan && taiKhoan.LoaiNV === "FullTime") {
-      if (TongGioLamViec >= 24 * 8) LuongThang = taiKhoan.LuongCoBanHienTai;
-    }
     const phuCapTinhThue = await PhuCap.findAll({
       where: {
         MaTK,

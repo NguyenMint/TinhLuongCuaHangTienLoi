@@ -8,6 +8,9 @@ route.get('/getAllDaDangKy',authMiddleware, authorizeRoles(1, 3), LichLamViecCon
 route.get('/getAllCaLamByNhanVien/:MaTK',authMiddleware, LichLamViecController.getAllCaLamByNhanVien);
 route.post('/dangKyCa',authMiddleware, LichLamViecController.dangKyCa);
 route.delete('/huyDangKy/:MaLLV',authMiddleware, LichLamViecController.huyDangKy);
+route.post('/xinChuyenCa',authMiddleware, LichLamViecController.xinChuyenCa);
+route.delete('/huyXinChuyenCa/:MaLLV',authMiddleware, LichLamViecController.huyXinChuyenCa);
+route.put('/duyetChuyenCa',authMiddleware, authorizeRoles(1, 3), LichLamViecController.duyetXinChuyenCa);
 route.get('/',authMiddleware, authorizeRoles(1, 3), LichLamViecController.getAll);
 route.get('/:id',authMiddleware, LichLamViecController.getById);
 route.post('/',authMiddleware, authorizeRoles(1, 3), LichLamViecController.create);

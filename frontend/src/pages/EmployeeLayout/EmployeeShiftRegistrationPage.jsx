@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ShiftRegistration } from "../../components/Employee/ShiftRegistration";
 import { ControlRegistrationModal } from "../../components/Employee/ControlRegistrationModal";
+import { ShiftChangeModal } from "../../components/Shift/ShiftChangeModal";
 import { fetchCaLam } from "../../api/apiCaLam";
-import { format, isBefore, startOfDay } from "date-fns";
+import { format, isBefore, set, startOfDay } from "date-fns";
 import {
   getAllLLVByNhanVien,
   dangKyCa,
+  xinChuyenCa,
   huyDangKyCa,
+  huyXinChuyenCa,
 } from "../../api/apiLichLamViec";
 export const EmployeeShiftRegistrationPage = () => {
   const currentDate = new Date();
@@ -15,6 +18,7 @@ export const EmployeeShiftRegistrationPage = () => {
   const [shifts, setShifts] = useState([]);
   const [showControl, setShowControl] = useState(false);
   const [selectedLLV, setSelectedLLV] = useState(null);
+  const [showLichLamViec, setShowLichLamViec] = useState(false);
   const fetchAllCaLam = async () => {
     try {
       const data = await fetchCaLam();
@@ -56,14 +60,50 @@ export const EmployeeShiftRegistrationPage = () => {
     alert("Đăng ký ca thành công");
     fetchLichLamViecByNhanVien();
   };
+  const handleXinChuyenCa = async (MaCa, day) => {
+    const NgayLam = format(day, "yyyy-MM-dd");
+    const today = startOfDay(new Date());
+    const selectedDate = startOfDay(new Date(day));
+    if (isBefore(selectedDate, today)) {
+      alert("Không thể xin chuyển ca làm việc cho ngày đã qua.");
+      return;
+    }
+    const formData = {
+      MaTK: user.MaTK,
+      MaCaLam: MaCa,
+      NgayLam: NgayLam,
+      MaLLVCu: selectedLLV.MaLLV,
+    };
+    const response = await xinChuyenCa(formData);
+    if (!response.success) {
+      alert(response.message || "Xin chuyển ca làm thất bại");
+      return;
+    }
+    alert("Xin chuyển ca thành công");
+    setShowLichLamViec(false);
+    setShowControl(false);
+    setSelectedLLV(null);
+    fetchLichLamViecByNhanVien();
+  };
   const handleHuyDangKy = async () => {
     const response = await huyDangKyCa(selectedLLV.MaLLV);
-    if(!response.success){
-        alert(response.message || "Hủy đăng ký ca thất bại");
-        setShowControl(false);
-        return;
+    if (!response.success) {
+      alert(response.message || "Hủy đăng ký ca thất bại");
+      setShowControl(false);
+      return;
     }
     alert("Hủy ca thành công");
+    setShowControl(false);
+    fetchLichLamViecByNhanVien();
+  };
+  const handleHuyXinChuyenCa = async () => {
+    const response = await huyXinChuyenCa(selectedLLV.MaLLV);
+    if (!response.success) {
+      alert(response.message || "Hủy đăng ký ca thất bại");
+      setShowControl(false);
+      return;
+    }
+    alert("Hủy chuyển ca thành công");
     setShowControl(false);
     fetchLichLamViecByNhanVien();
   };
@@ -86,6 +126,15 @@ export const EmployeeShiftRegistrationPage = () => {
             lichLamViec={selectedLLV}
             setShowControl={setShowControl}
             onHuyCa={handleHuyDangKy}
+            setShowLichLamViec={setShowLichLamViec}
+            huyXinChuyenCa={handleHuyXinChuyenCa}
+          />
+        )}
+        {showLichLamViec && (
+          <ShiftChangeModal
+            shift={shifts}
+            setShowLichLamViec={setShowLichLamViec}
+            handleXinChuyenCa={handleXinChuyenCa}
           />
         )}
       </div>

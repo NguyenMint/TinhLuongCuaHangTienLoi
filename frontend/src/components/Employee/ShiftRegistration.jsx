@@ -10,7 +10,7 @@ export const ShiftRegistration = ({
   lichLamViec,
   shifts,
   setShowControl,
-  setSelectedLLV
+  setSelectedLLV,
 }) => {
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const startDate = startOfWeek(selectedDate, {
@@ -21,16 +21,18 @@ export const ShiftRegistration = ({
   const monthYear = format(selectedDate, "MM.yyyy");
   const weekLabel = `Tuần ${weekNumber} - Th.${monthYear}`;
 
- 
   const getShiftBgColor = (shift) => {
     if (shift.TrangThai === "Đã Đăng Ký") return "bg-green-200";
     if (shift.TrangThai === "Hủy Ca" || shift.TrangThai === "Từ Chối")
       return "bg-red-200";
-    if (shift.TrangThai === "Chờ Xác Nhận") return "bg-orange-200";
+    if (
+      shift.TrangThai === "Chờ Xác Nhận" ||
+      shift.TrangThai === "Chờ Duyệt Chuyển Ca"
+    )
+      return "bg-orange-200";
     if (shift.TrangThai === "Chuyển Ca") return "bg-yellow-200";
     return "bg-white hover:bg-gray-50";
-  };
-
+  }; 
 
   const handlePreviousWeek = () => {
     setSelectedDate(subWeeks(selectedDate, 1));
@@ -44,7 +46,6 @@ export const ShiftRegistration = ({
     setSelectedDate(new Date());
   };
 
-  
   const getShiftForDay = (day, maCa) => {
     const dateKey = format(day, "yyyy-MM-dd");
     const shiftForDay = lichLamViec.find(
@@ -130,7 +131,9 @@ export const ShiftRegistration = ({
                             }
                           )}`}
                         >
-                          <div className="font-medium">{lichlamviec.TrangThai}</div>
+                          <div className="font-medium">
+                            {lichlamviec.TrangThai}
+                          </div>
                         </div>
                       ) : (
                         <div className="h-full w-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

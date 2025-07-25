@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ApproveTable from "../components/ShiftRequestsPage/ApproveTable.jsx";
 import { fetchCaLam } from "../api/apiCaLam";
-import { fetchLichLamViec, updateLLV } from "../api/apiLichLamViec.js";
+import { duyetXinChuyenCa, fetchLichLamViec, updateLLV } from "../api/apiLichLamViec.js";
 import { addWeeks, format, set, subWeeks } from "date-fns";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "lucide-react";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import ApproveModal from "../components/ShiftRequestsPage/ApproveModal";
-
+import { ApproveShiftChange } from "../components/ShiftRequestsPage/ApproveShiftChange.jsx";
 export function ShiftRequests() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenShiftChange, setIsModalOpenShiftChange] = useState(false);
   const [luongTheoGio, setLuongTheoGio] = useState(0);
   const [isLoadingForLuong, setisLoadingForLuong] = useState(false);
   // const [viewMode, setViewMode] = useState("Xem theo ca");
@@ -84,16 +85,41 @@ export function ShiftRequests() {
 
   const handleShiftClick = (shift) => {
     setSelectedShift(shift);
-    setIsModalOpen(true);
+    if (
+      shift.TrangThai === "Chờ Duyệt Chuyển Ca" ||
+      shift.TrangThai === "Chuyển Ca"
+    ) {
+      setIsModalOpenShiftChange(true);
+    } else {
+      setIsModalOpen(true);
+    }
   };
-
+  const handleAcceptShiftChange = async (MaLLV) => {
+    try {
+      await duyetXinChuyenCa(MaLLV, "Accepted");
+      await getAllDangKyCa();
+      setIsModalOpenShiftChange(false);
+    } catch (error) {
+      console.error("Lỗi khi duyệt chuyển ca:", error);
+    }
+  };
+  const handleDenyShiftChange = async (MaLLV) => {
+    try {
+      await duyetXinChuyenCa(MaLLV, "Denied");
+      await getAllDangKyCa();
+      setIsModalOpenShiftChange(false);
+    } catch (error) {
+      console.error("Lỗi khi duyệt chuyển ca:", error);
+    }
+  };
   useEffect(() => {
     let filtered = Array.isArray(dangKyCas) ? [...dangKyCas] : [];
 
     // Lọc theo chi nhánh
     if (user.MaVaiTro === 1) {
-      filtered = filtered.filter((emp) => emp.MaTK_tai_khoan.MaCN === Number(user.MaCN));
-      
+      filtered = filtered.filter(
+        (emp) => emp.MaTK_tai_khoan.MaCN === Number(user.MaCN)
+      );
     } else {
       // Lọc theo chi nhánh
       if (selectedChiNhanh) {
@@ -118,6 +144,7 @@ export function ShiftRequests() {
     setIsModalOpen(false);
     setLuongTheoGio(0);
     setisLoadingForLuong(false);
+    setIsModalOpenShiftChange(false);
   };
 
   const handleSaveShift = async (MaLLV) => {
@@ -235,6 +262,14 @@ export function ShiftRequests() {
           onDelete={handleDeleteShift}
           dataUpdate={dataUpdate}
           setDataUpdate={setDataUpdate}
+        />
+      )}
+      {isModalOpenShiftChange && selectedShift && (
+        <ApproveShiftChange
+          shift={selectedShift}
+          onClose={handleCloseModal}
+          onAccpet={handleAcceptShiftChange}
+          onDeny={handleDenyShiftChange}
         />
       )}
     </div>
