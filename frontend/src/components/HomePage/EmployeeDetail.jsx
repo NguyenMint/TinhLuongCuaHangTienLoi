@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import {
   updateNgungLamViec,
@@ -10,6 +10,9 @@ import { InfoTab } from "./InfoTab";
 import { PhuCapTab } from "./PhuCapTab";
 import { DependentPersonList } from "./DependentPersonTab/DependentPersonList";
 import { LeaveRequestTab } from "./LeaveRequestHistoryTab/LeaveRequestList";
+import { NghiThaiSanTab } from "./NghiThaiSanTab";
+import { getNghiThaiSanByMaTK } from "../../api/apiNghiThaiSan";
+
 export const EmployeeDetail = ({
   selectedEmployee,
   activeTab,
@@ -22,9 +25,31 @@ export const EmployeeDetail = ({
   onSuccess,
   phuCaps,
   hopDongs,
+  setSelectedEmployee,
 }) => {
-  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
-  const [confirmationCode, setConfirmationCode] = useState("");
+  const [quyenLoiThaiSan, setQuyenLoiThaiSan] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+    async function checkThaiSan() {
+      if (!selectedEmployee) return;
+      const res = await getNghiThaiSanByMaTK(selectedEmployee.MaTK);
+      const today = new Date();
+      const hasThaiSan = res.data.some((nts) => {
+        if (nts.TrangThai === "Đang nghỉ" || nts.TrangThai === "Đã duyệt") {
+          const start = new Date(nts.NgayBatDau);
+          const end = new Date(nts.NgayKetThuc);
+          return today >= start && today <= end;
+        }
+        return false;
+      });
+      if (!ignore) setQuyenLoiThaiSan(hasThaiSan);
+    }
+    checkThaiSan();
+    return () => {
+      ignore = true;
+    };
+  }, [selectedEmployee, showDetail]);
 
   const handleDungLam = async (MaTK) => {
     const confirmed = window.confirm(
@@ -56,6 +81,7 @@ export const EmployeeDetail = ({
 
   const closeDetailModal = () => {
     setShowDetail(false);
+    setSelectedEmployee(null);
     setActiveTab("info"); // Reset to default tab when closing
   };
 
@@ -81,6 +107,13 @@ export const EmployeeDetail = ({
 
           {/* Modal Content */}
           <div className="p-0">
+            {quyenLoiThaiSan && (
+              <div className="bg-pink-100 border-l-4 border-pink-500 text-pink-800 p-4 mb-2 rounded flex items-center">
+                <span className="font-semibold mr-2">Quyền lợi:</span>
+                Trong thời gian nghỉ thai sản, nhân viên được phép về sớm 30
+                phút mỗi ngày.
+              </div>
+            )}
             {/* Tabs */}
             <div className="flex border-b">
               <button
@@ -160,6 +193,20 @@ export const EmployeeDetail = ({
                   <span>Lịch sử nghỉ phép</span>
                 </div>
               </button>
+              {selectedEmployee.GioiTinh == false && (
+                <button
+                  className={`px-4 py-2 text-sm font-medium ${
+                    activeTab === "nghithaisan"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  onClick={() => setActiveTab("nghithaisan")}
+                >
+                  <div className="flex items-center">
+                    <span>Nghỉ thai sản</span>
+                  </div>
+                </button>
+              )}
             </div>
 
             {/* Tab content */}
@@ -201,6 +248,12 @@ export const EmployeeDetail = ({
               {activeTab === "donnghiphep" && (
                 <LeaveRequestTab MaTK={selectedEmployee.MaTK}></LeaveRequestTab>
               )}
+              {activeTab === "nghithaisan" && (
+                <NghiThaiSanTab
+                  selectedEmployee={selectedEmployee}
+                  onSuccess={onSuccess}
+                />
+              )}
             </div>
 
             {/* Action buttons */}
@@ -232,25 +285,6 @@ export const EmployeeDetail = ({
           </div>
         </div>
       </div>
-
-      {/* Confirmation Code Popup */}
-      {showConfirmationPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-            <div className="text-center mb-6">
-              <p className="text-gray-600 mb-4">
-                Mã xác nhận cho nhân viên:{" "}
-                <strong>{selectedEmployee.HoTen}</strong>
-              </p>
-              <div className="bg-gray-100 p-4 rounded-lg">
-                <p className="text-2xl font-mono font-bold text-blue-600">
-                  {confirmationCode}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

@@ -12,6 +12,8 @@ const storage = multer.diskStorage({
             uploadPath += 'chungchi/';
         } else if (file.fieldname === 'hopdong') {
             uploadPath += 'hopdong/';
+        } else if (file.fieldname === 'giaythaisan') {
+            uploadPath += 'giaythaisan/';
         }
         cb(null, uploadPath);
     },
@@ -50,6 +52,14 @@ const fileFilter = (req, file, cb) => {
             cb(new Error('Hợp đồng chỉ chấp nhận file PDF hoặc DOCX!'), false);
         }
     }
+    // Handle giaythaisan uploads (images and PDFs)
+    else if (file.fieldname === 'giaythaisan') {
+        if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Giấy tờ thai sản chỉ chấp nhận file ảnh hoặc PDF!'), false);
+        }
+    }
     else {
         cb(new Error('Loại file không được hỗ trợ!'), false);
     }
@@ -80,8 +90,17 @@ const uploadHopDong = multer({
     }
 });
 
+const uploadGiayThaiSan = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit for maternity docs
+    }
+});
+
 module.exports = {
     uploadAvatar,
     uploadChungChi,
-    uploadHopDong
+    uploadHopDong,
+    uploadGiayThaiSan
 }; 

@@ -37,20 +37,6 @@ export function AttendancePage() {
     rewards: [],
   });
 
-  // const getServerTimeData = async () => {
-  //   try {
-  //     const res = await getTimeServer();
-  //     const serverDateTime = new Date(res.dateTime);
-  //     setCurrentDate(serverDateTime);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.log("Lỗi khi lấy thời gian server: ", error);
-  //     // Fallback to system time if server time fails
-  //     const fallbackTime = new Date();
-  //     setCurrentDate(fallbackTime);
-  //     setLoading(false);
-  //   }
-  // };
 
   const getAllCaLam = async () => {
     try {
@@ -179,7 +165,6 @@ export function AttendancePage() {
           );
         }
       }
-
       await update_chamcong(
         dataUpdate.GioVao,
         dataUpdate.GioRa,
@@ -202,6 +187,49 @@ export function AttendancePage() {
   const handleDeleteShift = (shiftId) => {
     setShifts(shifts.filter((shift) => shift.id !== shiftId));
     setIsModalOpen(false);
+  };
+
+  const handleApproveAllToday = async () => {
+    const todayStr = format(currentDate, "yyyy-MM-dd");
+    // Lọc các lịch làm việc trong ngày hiện tại và chưa duyệt
+    const toApprove = filteredLLVs.filter((llv) => {
+      const chamCong = llv.cham_congs && llv.cham_congs[0];
+      return (
+        llv.NgayLam === todayStr &&
+        chamCong &&
+        chamCong.trangthai === "Chờ duyệt"
+      );
+    });
+    if (toApprove.length === 0) {
+      alert("Không có lịch làm việc nào cần duyệt hôm nay.");
+      return;
+    }
+    let successCount = 0;
+    let failCount = 0;
+    for (const llv of toApprove) {
+      const chamCong = llv.cham_congs[0];
+      try {
+        const res = await update_chamcong(
+          chamCong.GioVao || llv.MaCaLam_ca_lam.ThoiGianBatDau,
+          chamCong.GioRa || llv.MaCaLam_ca_lam.ThoiGianKetThuc,
+          chamCong.DiTre || 0,
+          chamCong.VeSom || 0,
+          chamCong.MaChamCong,
+          llv.NgayLam,
+          llv.MaLLV
+        );
+        if (res.success) successCount++;
+        else failCount++;
+      } catch (err) {
+        failCount++;
+      }
+    }
+    await getAllLichLamViec();
+    alert(
+      `Đã duyệt ${successCount} lịch làm việc thành công. ${
+        failCount > 0 ? failCount + " lịch bị lỗi." : ""
+      }`
+    );
   };
 
 
@@ -252,6 +280,13 @@ export function AttendancePage() {
                   </select>
                 </div>
               )}
+              {/* Nút duyệt tất cả */}
+              <button
+                onClick={handleApproveAllToday}
+                className="ml-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Duyệt tất cả hôm nay
+              </button>
             </div>
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-4">
