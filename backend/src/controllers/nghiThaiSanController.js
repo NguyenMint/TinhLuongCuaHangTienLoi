@@ -1,56 +1,101 @@
-const { NghiThaiSan, TaiKhoan } = require("../models/init-models")(require("../config/connectionDB"));
+const db = require("../models");
 const path = require("path");
+class NghiThaiSanController {
+  async createNghiThaiSan(req, res) {
+    try {
+      const { MaTK, LuongNghiPhep } = req.body;
 
-exports.createNghiThaiSan = async (req, res) => {
-  try {
-    const nts = await NghiThaiSan.create(req.body);
-    res.status(201).json(nts);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+      const phuCapThaiSan = {
+        MaTK,
+        LoaiPhuCap: "Phụ cấp Thai sản",
+        GiaTriPhuCap: LuongNghiPhep,
+        TrangThai: 1,
+        DuocMienThue: 1,
+      };
+      const phucap = await db.PhuCap.create(phuCapThaiSan);
 
-exports.getAllNghiThaiSan = async (req, res) => {
-  try {
-    const list = await NghiThaiSan.findAll({ include: TaiKhoan });
-    res.json(list);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+      req.body.MaPhuCap = phucap.MaPhuCap;
 
-exports.getNghiThaiSanByMaTK = async (req, res) => {
-  try {
-    const list = await NghiThaiSan.findAll({ where: { MaTK: req.params.MaTK } });
-    res.json(list);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+      const nts = await db.NghiThaiSan.create(req.body);
 
-exports.updateNghiThaiSan = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await NghiThaiSan.update(req.body, { where: { MaNTS: id } });
-    res.json({ success: true });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+      res.status(201).json(nts);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
   }
-};
 
-exports.deleteNghiThaiSan = async (req, res) => {
-  try {
-    await NghiThaiSan.destroy({ where: { MaNTS: req.params.id } });
-    res.json({ success: true });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+  async getAllNghiThaiSan(req, res) {
+    try {
+      const list = await db.NghiThaiSan.findAll({ include: db.TaiKhoan });
 
-exports.uploadGiayThaiSan = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+      res.json(list);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-  const filePath = path.join("uploads/giaythaisan", req.file.filename);
-  res.json({ filePath });
-}; 
+
+  async getNghiThaiSanByMaTK(req, res) {
+    try {
+      const list = await db.NghiThaiSan.findAll({
+        where: { MaTK: req.params.MaTK },
+        include: [{ model: db.PhuCap, as: "MaPhuCap_phu_cap" }],
+      });
+      res.json(list);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  async updateNghiThaiSan(req, res) {
+    try {
+      const { id } = req.params;
+      await db.NghiThaiSan.update(req.body, { where: { MaNTS: id } });
+
+      // Cập nhật phụ cấp thai sản nếu có
+      if (req.body.MaPhuCap) {
+        await db.PhuCap.update(
+          { GiaTriPhuCap: req.body.LuongNghiPhep },
+          {
+            where: { MaPhuCap: req.body.MaPhuCap },
+          }
+        );
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
+  async deleteNghiThaiSan(req, res) {
+    try {
+      const nts = await db.NghiThaiSan.findOne({
+        where: { MaNTS: req.params.id },
+      });
+
+      await db.NghiThaiSan.destroy({ where: { MaNTS: req.params.id } });
+
+      if (nts.MaPhuCap) {
+        await db.PhuCap.destroy({ where: { MaPhuCap: nts.MaPhuCap } });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  }
+
+  async uploadGiayThaiSan(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      const filePath = path.join("uploads/giaythaisan", req.file.filename);
+      res.json({ filePath });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+}
+
+module.exports = new NghiThaiSanController();
