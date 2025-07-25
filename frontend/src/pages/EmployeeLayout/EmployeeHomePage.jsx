@@ -42,7 +42,7 @@ export function EmployeeHomePage() {
       const res = await getNghiThaiSanByMaTK(user.MaTK);
       const today = new Date();
       const nts = res.data.find(nts => {
-        if (nts.TrangThai === "Đang nghĩ" || nts.TrangThai === "Đã duyệt") {
+        if (nts.TrangThai == 1) {
           const start = new Date(nts.NgayBatDau);
           const end = new Date(nts.NgayKetThuc);
           return today >= start && today <= end;

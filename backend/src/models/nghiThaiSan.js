@@ -20,8 +20,9 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     TrangThai: {
-      type: DataTypes.ENUM('Chờ duyệt','Đang nghỉ','Đã kết thúc','Đã duyệt'),
-      allowNull: false
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 1
     },
     FileGiayThaiSan: {
       type: DataTypes.STRING(255),
