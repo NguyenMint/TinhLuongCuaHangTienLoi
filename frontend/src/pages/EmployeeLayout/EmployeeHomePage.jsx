@@ -70,10 +70,7 @@ export function EmployeeHomePage() {
   };
 
   const ChamCongVao = async (MaLLV) => {
-    // Get fresh server time before attendance
     try {
-      const res = await getTimeServer();
-      const currentServerTime = new Date(res.dateTime);
       const gioVao = gioHienTai;
       const response = await chamCongVao(ngay, gioVao, MaLLV, false);
       if (!response.success) {
@@ -88,7 +85,7 @@ export function EmployeeHomePage() {
 
   const ChamCongRa = async (MaLLV) => {
     try {
-      const gioRa = gioHienTai();
+      const gioRa = gioHienTai;
       const response = await chamCongRa(ngay, gioRa, MaLLV, false);
       if (!response.success) {
         alert(response.message || "Chấm công thất bại");
