@@ -20,15 +20,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     TrangThai: {
-      type: DataTypes.ENUM('Chờ duyệt','Đang nghĩ','Đã kết thúc','Đã duyệt'),
+      type: DataTypes.ENUM('Chờ duyệt','Đang nghỉ','Đã kết thúc','Đã duyệt'),
       allowNull: false
     },
     FileGiayThaiSan: {
       type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    LuongNghiPhep: {
-      type: DataTypes.DECIMAL(15,2),
       allowNull: false
     },
     MaTK: {
@@ -37,6 +33,14 @@ module.exports = function(sequelize, DataTypes) {
       references: {
         model: 'tai_khoan',
         key: 'MaTK'
+      }
+    },
+    MaPhuCap: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'phu_cap',
+        key: 'MaPhuCap'
       }
     }
   }, {
@@ -57,6 +61,13 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaTK" },
+        ]
+      },
+      {
+        name: "fk_NghiThaiSan_PhuCap",
+        using: "BTREE",
+        fields: [
+          { name: "MaPhuCap" },
         ]
       },
     ]

@@ -282,6 +282,7 @@ export function HomePage() {
             phuCaps={phuCaps}
             chungChis={chungChis}
             selectedEmployee={selectedEmployee}
+            setSelectedEmployee={setSelectedEmployee}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             onEmployeeStatusChange={refreshEmployeeData}
