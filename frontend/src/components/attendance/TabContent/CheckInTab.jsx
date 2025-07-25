@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { format, differenceInMinutes } from "date-fns";
 import { calculatePhat } from "../../../utils/TreSom";
+import { getNghiThaiSanByMaTK } from "../../../api/apiNghiThaiSan";
 
 export const CheckInTab = ({
   isOpen,
@@ -76,32 +77,57 @@ export const CheckInTab = ({
         : 0,
     [isCheckedIn, checkInStatus, checkInTime, startTime]
   );
-  const earlyMinutes = useMemo(
+  const rawEarlyMinutes = useMemo(
     () =>
       isCheckedOut && checkOutStatus === "early"
         ? Math.abs(getTimeDifference(checkOutTime, endTime))
         : 0,
     [isCheckedOut, checkOutStatus, checkOutTime, endTime]
   );
+  const [quyenLoiThaiSan, setQuyenLoiThaiSan] = useState(false);
+  const [veSomThucTe, setVeSomThucTe] = useState(0);
+  const [vuot30p, setVuot30p] = useState(0);
+  
+  useEffect(() => {
+    async function checkThaiSan() {
+      if (!formData.MaTK_tai_khoan?.MaTK || !formData.NgayLam) return;
+      const res = await getNghiThaiSanByMaTK(formData.MaTK_tai_khoan.MaTK);
+      const today = new Date(formData.NgayLam);
+      const nts = res.data.find(nts => {
+        if (nts.TrangThai === "Đang nghĩ" || nts.TrangThai === "Đã duyệt") {
+          const start = new Date(nts.NgayBatDau);
+          const end = new Date(nts.NgayKetThuc);
+          return today >= start && today <= end;
+        }
+        return false;
+      });
+      if (nts) {
+        setQuyenLoiThaiSan(true);
+        setVeSomThucTe(rawEarlyMinutes);
+        setVuot30p(rawEarlyMinutes > 30 ? rawEarlyMinutes - 30 : 0);
+      } else {
+        setQuyenLoiThaiSan(false);
+        setVeSomThucTe(rawEarlyMinutes);
+        setVuot30p(0);
+      }
+    }
+    checkThaiSan();
+  }, [formData.MaTK_tai_khoan?.MaTK, formData.NgayLam, rawEarlyMinutes]);
 
   useEffect(() => {
-    setCheckInLateHours(Math.floor(lateMinutes / 60));
-    setCheckInLateMinutes(lateMinutes % 60);
-  }, [lateMinutes]);
-
-  useEffect(() => {
-    setCheckOutEarlyHours(Math.floor(earlyMinutes / 60));
-    setCheckOutEarlyMinutes(earlyMinutes % 60);
-  }, [earlyMinutes]);
+    setCheckOutEarlyHours(Math.floor((quyenLoiThaiSan && vuot30p > 0 ? vuot30p : rawEarlyMinutes) / 60));
+    setCheckOutEarlyMinutes((quyenLoiThaiSan && vuot30p > 0 ? vuot30p : rawEarlyMinutes) % 60);
+  }, [rawEarlyMinutes, quyenLoiThaiSan, vuot30p]);
 
   // Update cham_congs and violations
   useEffect(() => {
+    const VeSom = quyenLoiThaiSan ? (vuot30p > 0 ? vuot30p : 0) : rawEarlyMinutes;
     const newChamCong = {
       ...formData.cham_congs[0],
       GioVao: isCheckedIn ? checkInTime : null,
       GioRa: isCheckedOut ? checkOutTime : null,
       DiTre: lateMinutes,
-      VeSom: earlyMinutes,
+      VeSom,
     };
 
     let newViolations = (formData.violations || []).filter((v) => !v.isAuto);
@@ -116,11 +142,11 @@ export const CheckInTab = ({
           isAuto: true,
         });
       }
-      if (earlyMinutes > 0) {
+      if (VeSom > 0) {
         newViolations.push({
           MaKTKL: `auto_early_${Date.now()}`,
           LyDo: "Về sớm",
-          MucThuongPhat: calculatePhat(earlyMinutes, luongTheoGio),
+          MucThuongPhat: calculatePhat(VeSom, luongTheoGio),
           DuocMienThue: true,
           isAuto: true,
         });
@@ -141,7 +167,7 @@ export const CheckInTab = ({
         GioVao: isCheckedIn ? checkInTime : "",
         GioRa: isCheckedOut ? checkOutTime : "",
         DiTre: lateMinutes,
-        VeSom: earlyMinutes,
+        VeSom,
         violations: newViolations,
       };
       if (JSON.stringify(updated) !== JSON.stringify(prev)) return updated;
@@ -153,11 +179,13 @@ export const CheckInTab = ({
     checkInTime,
     checkOutTime,
     lateMinutes,
-    earlyMinutes,
+    rawEarlyMinutes,
     luongTheoGio,
     onChange,
     setDataUpdate,
     formData.cham_congs,
+    quyenLoiThaiSan,
+    vuot30p,
   ]);
 
   const tabs = [
@@ -277,28 +305,32 @@ export const CheckInTab = ({
           }`}
         />
         {isCheckedOut && checkOutStatus === "early" && (
-          <div className="flex items-center gap-2 ml-6">
-            <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
-              Về sớm
-            </span>
-            <input
-              type="number"
-              min="0"
-              value={checkOutEarlyHours}
-              onChange={(e) => setCheckOutEarlyHours(e.target.value)}
-              className="w-16 px-2 py-1 border border-gray-300 rounded-md"
-            />
-            <span>giờ</span>
-            <input
-              type="number"
-              min="0"
-              max="59"
-              value={checkOutEarlyMinutes}
-              onChange={(e) => setCheckOutEarlyMinutes(e.target.value)}
-              className="w-16 px-2 py-1 border border-gray-300 rounded-md"
-            />
-            <span>phút</span>
-          </div>
+          quyenLoiThaiSan && veSomThucTe <= 30 ? null : (
+            <div className="flex items-center gap-2 ml-6">
+              <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
+                Về sớm{quyenLoiThaiSan && vuot30p > 0 ? ` (${vuot30p} phút vượt quyền lợi)` : ""}
+              </span>
+              <input
+                type="number"
+                min="0"
+                value={ checkOutEarlyHours }
+                onChange={(e) => setCheckOutEarlyHours(e.target.value)}
+                className="w-16 px-2 py-1 border border-gray-300 rounded-md"
+                disabled={quyenLoiThaiSan && vuot30p === 0}
+              />
+              <span>giờ</span>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                value={checkOutEarlyMinutes}
+                onChange={(e) => setCheckOutEarlyMinutes(e.target.value)}
+                className="w-16 px-2 py-1 border border-gray-300 rounded-md"
+                disabled={quyenLoiThaiSan && vuot30p === 0}
+              />
+              <span>phút</span>
+            </div>
+          )
         )}
         {isCheckedOut && checkOutStatus === "overtime" && (
           <span className="ml-6 px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">

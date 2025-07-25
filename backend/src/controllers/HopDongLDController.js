@@ -72,8 +72,8 @@ class HopDongController {
       if (!hopdong) {
         return res.status(404).json({ message: "Hợp đồng không tồn tại" });
       }
-      const oldAvatarPath = path.join(__dirname, "../../", hopdong.File);
-      fs.unlink(oldAvatarPath, (err) => {
+      const oldHDPath = path.join(__dirname, "../../", hopdong.File);
+      fs.unlink(oldHDPath, (err) => {
         if (err) console.error("Không thể xóa hợp đồng cũ:", err);
       });
       await hopdong.destroy();

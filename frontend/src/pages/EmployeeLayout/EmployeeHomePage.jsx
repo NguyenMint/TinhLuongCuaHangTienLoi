@@ -4,11 +4,13 @@ import { fetchLLVByNhanVien } from "../../api/apiLichLamViec";
 import { chamCongVao, chamCongRa, getTimeServer } from "../../api/apiChamCong";
 import { formatDate, formatTime } from "../../utils/format";
 import { fetchNhanVien } from "../../api/apiTaiKhoan";
+import { getNghiThaiSanByMaTK } from "../../api/apiNghiThaiSan";
 
 export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [loading, setLoading] = useState(false);
+  const [quyenLoiThaiSan, setQuyenLoiThaiSan] = useState(false);
   const NgayHienTai = new Date();
   const ngay = NgayHienTai.toISOString().slice(0, 10);
 
@@ -35,10 +37,21 @@ export function EmployeeHomePage() {
   };
 
   useEffect(() => {
-    refeshInfo();
-    const interval = setInterval(() => {}, 60000); // 60000ms = 1 phút
-
-    return () => clearInterval(interval);
+    async function checkThaiSan() {
+      if (!user?.MaTK) return;
+      const res = await getNghiThaiSanByMaTK(user.MaTK);
+      const today = new Date();
+      const nts = res.data.find(nts => {
+        if (nts.TrangThai === "Đang nghĩ" || nts.TrangThai === "Đã duyệt") {
+          const start = new Date(nts.NgayBatDau);
+          const end = new Date(nts.NgayKetThuc);
+          return today >= start && today <= end;
+        }
+        return false;
+      });
+      setQuyenLoiThaiSan(!!nts);
+    }
+    checkThaiSan();
   }, []);
   useEffect(() => {
     getDKCByNhanVien();
@@ -57,10 +70,7 @@ export function EmployeeHomePage() {
   };
 
   const ChamCongVao = async (MaLLV) => {
-    // Get fresh server time before attendance
     try {
-      const res = await getTimeServer();
-      const currentServerTime = new Date(res.dateTime);
       const gioVao = gioHienTai;
       const response = await chamCongVao(ngay, gioVao, MaLLV, false);
       if (!response.success) {
@@ -75,7 +85,7 @@ export function EmployeeHomePage() {
 
   const ChamCongRa = async (MaLLV) => {
     try {
-      const gioRa = gioHienTai();
+      const gioRa = gioHienTai;
       const response = await chamCongRa(ngay, gioRa, MaLLV, false);
       if (!response.success) {
         alert(response.message || "Chấm công thất bại");
@@ -127,6 +137,13 @@ export function EmployeeHomePage() {
           </span>
         </div>
       </div>
+
+      {quyenLoiThaiSan && (
+        <div className="flex items-center gap-2 bg-pink-100 border-l-4 border-pink-500 text-pink-800 px-4 py-3 rounded mb-6">
+          <AlertCircle className="w-5 h-5" />
+          Trong thời gian nghỉ thai sản, bạn được phép về sớm 30 phút mỗi ngày mà không bị trừ lương.
+        </div>
+      )}
 
       {shifts.length === 0 ? (
         <div className="flex items-center gap-2 bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded mb-6">
