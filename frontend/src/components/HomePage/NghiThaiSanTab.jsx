@@ -33,7 +33,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const timeDiff = end.getTime() - start.getTime();
-    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; 
+    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
   };
 
   // Thêm hàm validate
@@ -83,7 +83,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
   useEffect(() => {
     if (form.NgayBatDau && form.NgayKetThuc) {
       const days = calculateDays(form.NgayBatDau, form.NgayKetThuc);
-      const luong = form.MaPhuCap_phu_cap.GiaTriPhuCap;
+      const luong = form.MaPhuCap_phu_cap?.GiaTriPhuCap;
 
       setForm((prev) => ({
         ...prev,
@@ -156,6 +156,32 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
     } catch (error) {
       console.error("Lỗi khi lưu nghỉ thai sản:", error);
       alert("Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Kiểm tra kích thước file (giới hạn 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File không được vượt quá 10MB");
+        return;
+      }
+
+      setUploading(true);
+      try {
+        const res = await uploadGiayThaiSan(file);
+        setForm((f) => ({
+          ...f,
+          FileGiayThaiSan: res.data.filePath,
+        }));
+      } catch (err) {
+        alert(
+          "Lỗi upload file: " + (err?.response?.data?.error || err.message)
+        );
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -363,32 +389,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                 accept="image/*,application/pdf"
                 className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={uploading}
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    // Kiểm tra kích thước file (giới hạn 10MB)
-                    if (file.size > 10 * 1024 * 1024) {
-                      alert("File không được vượt quá 10MB");
-                      return;
-                    }
-
-                    setUploading(true);
-                    try {
-                      const res = await uploadGiayThaiSan(file);
-                      setForm((f) => ({
-                        ...f,
-                        FileGiayThaiSan: res.data.filePath,
-                      }));
-                    } catch (err) {
-                      alert(
-                        "Lỗi upload file: " +
-                          (err?.response?.data?.error || err.message)
-                      );
-                    } finally {
-                      setUploading(false);
-                    }
-                  }
-                }}
+                onChange={handleFileUpload} // Sử dụng tên hàm mới
                 required={!editing && !form.FileGiayThaiSan}
               />
               {uploading && (
@@ -397,7 +398,16 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                   Đang upload...
                 </div>
               )}
-
+              {form.FileGiayThaiSan && !uploading && (
+                <a
+                  href={`/${form.FileGiayThaiSan}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 text-xs mt-1 inline-block hover:underline"
+                >
+                  ✓ Xem file đã upload
+                </a>
+              )}
               <p className="text-xs text-gray-500 mt-1">
                 Chấp nhận file ảnh (JPG, PNG) hoặc PDF, tối đa 10MB
               </p>

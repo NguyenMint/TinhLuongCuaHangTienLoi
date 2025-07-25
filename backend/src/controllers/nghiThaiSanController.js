@@ -1,5 +1,7 @@
 const db = require("../models");
 const path = require("path");
+const fs = require("fs");
+
 class NghiThaiSanController {
   async createNghiThaiSan(req, res) {
     try {
@@ -49,7 +51,28 @@ class NghiThaiSanController {
   async updateNghiThaiSan(req, res) {
     try {
       const { id } = req.params;
-      await db.NghiThaiSan.update(req.body, { where: { MaNTS: id } });
+
+      const nts = await db.NghiThaiSan.findOne({ where: { MaNTS: id } });
+      if (!nts) {
+        return res.status(404).json({ message: "Nghỉ thai sản không tồn tại" });
+      }
+      let updateData = { ...req.body };
+
+      if (req.FileGiayThaiSan !== nts.FileGiayThaiSan) {
+        if (nts.FileGiayThaiSan) {
+          const oldFilePath = path.join(
+            __dirname,
+            "../../",
+            nts.FileGiayThaiSan
+          );
+
+          if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+          }
+        }
+      }
+
+      await db.NghiThaiSan.update(updateData, { where: { MaNTS: id } });
 
       // Cập nhật phụ cấp thai sản nếu có
       if (req.body.MaPhuCap) {
@@ -78,6 +101,11 @@ class NghiThaiSanController {
       if (nts.MaPhuCap) {
         await db.PhuCap.destroy({ where: { MaPhuCap: nts.MaPhuCap } });
       }
+
+      const oldNTSPath = path.join(__dirname, "../../", nts.FileGiayThaiSan);
+      fs.unlink(oldNTSPath, (err) => {
+        if (err) console.error("Không thể xóa giấy tờ cũ:", err);
+      });
 
       res.json({ success: true });
     } catch (err) {
