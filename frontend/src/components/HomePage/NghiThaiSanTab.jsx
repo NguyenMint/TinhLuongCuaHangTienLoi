@@ -18,7 +18,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
     NgayBatDau: "",
     NgayKetThuc: "",
     TongSoNgayNghi: 0,
-    TrangThai: "Chờ duyệt",
+    TrangThai: 1,
     FileGiayThaiSan: "",
     LuongNghiPhep: 0,
     MaTK: selectedEmployee?.MaTK || "",
@@ -114,7 +114,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
       NgayBatDau: "",
       NgayKetThuc: "",
       TongSoNgayNghi: 0,
-      TrangThai: "Chờ duyệt",
+      TrangThai: 1,
       FileGiayThaiSan: "",
       LuongNghiPhep: 0,
       MaTK: selectedEmployee?.MaTK || "",
@@ -208,12 +208,12 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                 </h3>
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    nts.TrangThai === "Đã duyệt"
+                    nts.TrangThai == 1
                       ? "bg-green-100 text-green-800"
                       : "bg-yellow-100 text-yellow-800"
                   }`}
                 >
-                  {nts.TrangThai}
+                  {nts.TrangThai == 1 ? "Còn hiệu lực" : "Hết hieuu lực"}
                 </span>
               </div>
             </div>
@@ -222,7 +222,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                 Thời gian: {formatDate(nts.NgayBatDau)} đến{" "}
                 {formatDate(nts.NgayKetThuc)}
               </div>
-              <div>Số ngày nghỉ: {nts.TongSoNgayNghi}</div>
+              <div>Thời gian có hiệu lực: {nts.TongSoNgayNghi} ngày</div>
               <div>
                 <button
                   type="button"
@@ -342,10 +342,9 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                   setForm((f) => ({ ...f, TrangThai: e.target.value }))
                 }
               >
-                <option value="Chờ duyệt">Chờ duyệt</option>
-                <option value="Đã duyệt">Đã duyệt</option>
-                <option value="Đang nghỉ">Đang nghỉ</option>
-                <option value="Đã kết thúc">Đã kết thúc</option>
+                <option value="1">Còn hiệu lực</option>
+                <option value="2">Hết hiệu lực</option>
+
               </select>
             </div>
 
@@ -389,7 +388,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                 accept="image/*,application/pdf"
                 className="border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={uploading}
-                onChange={handleFileUpload} // Sử dụng tên hàm mới
+                onChange={handleFileUpload} 
                 required={!editing && !form.FileGiayThaiSan}
               />
               {uploading && (
@@ -397,16 +396,6 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
                   <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600 mr-1"></div>
                   Đang upload...
                 </div>
-              )}
-              {form.FileGiayThaiSan && !uploading && (
-                <a
-                  href={`/${form.FileGiayThaiSan}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 text-xs mt-1 inline-block hover:underline"
-                >
-                  ✓ Xem file đã upload
-                </a>
               )}
               <p className="text-xs text-gray-500 mt-1">
                 Chấp nhận file ảnh (JPG, PNG) hoặc PDF, tối đa 10MB

@@ -36,7 +36,7 @@ export const EmployeeDetail = ({
       const res = await getNghiThaiSanByMaTK(selectedEmployee.MaTK);
       const today = new Date();
       const hasThaiSan = res.data.some((nts) => {
-        if (nts.TrangThai === "Đang nghỉ" || nts.TrangThai === "Đã duyệt") {
+        if (nts.TrangThai == 1) {
           const start = new Date(nts.NgayBatDau);
           const end = new Date(nts.NgayKetThuc);
           return today >= start && today <= end;
