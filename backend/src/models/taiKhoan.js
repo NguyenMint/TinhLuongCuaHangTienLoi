@@ -9,7 +9,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     MaNhanVien: {
       type: DataTypes.STRING(6),
-      allowNull: false
+      allowNull: false,
+      unique: "MaNhanVien"
     },
     HoTen: {
       type: DataTypes.STRING(50),
@@ -163,6 +164,14 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "Email" },
+        ]
+      },
+      {
+        name: "MaNhanVien",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "MaNhanVien" },
         ]
       },
       {
