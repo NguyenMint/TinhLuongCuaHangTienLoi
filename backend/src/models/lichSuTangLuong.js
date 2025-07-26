@@ -9,19 +9,19 @@ module.exports = function(sequelize, DataTypes) {
     },
     LuongCoBanCu: {
       type: DataTypes.DECIMAL(15,2),
-      allowNull: false
+      allowNull: true
     },
     LuongCoBanMoi: {
       type: DataTypes.DECIMAL(15,2),
-      allowNull: false
+      allowNull: true
     },
     BacLuongCu: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     BacLuongMoi: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     NgayApDung: {
       type: DataTypes.DATEONLY,
@@ -34,6 +34,14 @@ module.exports = function(sequelize, DataTypes) {
         model: 'tai_khoan',
         key: 'MaTK'
       }
+    },
+    LuongTheoGioCu: {
+      type: DataTypes.DECIMAL(15,2),
+      allowNull: true
+    },
+    LuongTheoGioMoi: {
+      type: DataTypes.DECIMAL(15,2),
+      allowNull: true
     }
   }, {
     sequelize,
