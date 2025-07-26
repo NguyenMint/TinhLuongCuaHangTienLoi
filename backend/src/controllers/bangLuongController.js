@@ -11,6 +11,7 @@ const { Op, where } = require("sequelize");
 const { formatDate, tinhThueTNCN } = require("../util/util");
 const sequelize = require("../config/connectionDB");
 const taiKhoan = require("../models/taiKhoan");
+const cron = require('node-cron');
 
 async function createBL(MaTK, Thang, Nam) {
   try {
@@ -169,6 +170,98 @@ async function createBL(MaTK, Thang, Nam) {
     return error;
   }
 }
+
+ // AUTO CREATE BL
+ async function  autoCreateMonthlyPayroll() {
+  try {
+    const now = new Date();
+    const thangTruoc = now.getMonth(); //0-11
+    const namTruoc =
+      thangTruoc === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    const thangThucTe = thangTruoc === 0 ? 12 : thangTruoc;
+
+    const allAccounts = await TaiKhoan.findAll({
+      attributes: ["MaTK"],
+      where: { [Op.not]: { MaVaiTro: [3, 1] } },
+      raw: true,
+    });
+
+    if (allAccounts.length === 0) {
+      console.log("Không có nhân viên nào để tạo bảng lương");
+      return {
+        success: false,
+        message: "Không có nhân viên nào để tạo bảng lương",
+      };
+    }
+
+    const results = await Promise.all(
+      allAccounts.map(async (account) => {
+        try {
+          const result = await createBL(account.MaTK, thangThucTe, namTruoc);
+          return { MaTK: account.MaTK, success: true, result };
+        } catch (error) {
+          console.error(
+            `Lỗi tạo bảng lương cho nhân viên ${account.MaTK}:`,
+            error
+          );
+          return { MaTK: account.MaTK, success: false, error: error.message };
+        }
+      })
+    );
+
+    const successCount = results.filter((r) => r.success).length;
+    const failCount = results.filter((r) => !r.success).length;
+
+    console.log(
+      `Hoàn thành tạo bảng lương tự động: ${successCount} thành công, ${failCount} thất bại`
+    );
+
+    return {
+      success: true,
+      message: `Tạo bảng lương tự động thành công cho ${successCount} nhân viên`,
+      details: {
+        thang: thangThucTe,
+        nam: namTruoc,
+        totalEmployees: allAccounts.length,
+        successCount,
+        failCount,
+        results,
+      },
+    };
+  } catch (error) {
+    console.error("Lỗi trong quá trình tạo bảng lương tự động:", error);
+    return {
+      success: false,
+      message: "Lỗi trong quá trình tạo bảng lương tự động",
+      error: error.message,
+    };
+  }
+}
+
+// cron job tự động tạo bảng lương
+function initAutoPayrollScheduler() {
+  cron.schedule(
+    "0 9 1 * *", //minute hour dayOfMonth month dayOfWeek
+    async () => {
+      try {
+        const result = await autoCreateMonthlyPayroll();
+        console.log("Kết quả tạo bảng lương tự động:", result);
+      } catch (error) {
+        console.error("Lỗi trong cron job tạo bảng lương:", error);
+      }
+    },
+    {
+      scheduled: true,
+      timezone: "Asia/Ho_Chi_Minh",
+    }
+  );
+
+  console.log(
+    "Đã khởi tạo scheduler tự động tạo bảng lương - chạy vào 09:00 ngày 1 hàng tháng"
+  );
+}
+
+
 // Create a new salary sheet
 class bangLuongController {
   async create(req, res) {
@@ -192,7 +285,7 @@ class bangLuongController {
 
       const allAccounts = await TaiKhoan.findAll({
         attributes: ["MaTK"],
-        where: { [Op.not]: { MaVaiTro: 3 } },
+        where: { [Op.not]: { MaVaiTro: [3, 1] } },
         raw: true,
       });
 
@@ -559,7 +652,7 @@ class bangLuongController {
             model: ChiTietBangLuong,
             as: "chi_tiet_bang_luongs",
             attributes: [
-                           "Ngay",
+              "Ngay",
               "GioLamViec",
               "LuongMotGio",
               "HeSoLuong",
@@ -619,5 +712,35 @@ class bangLuongController {
       res.status(500).json({ error: "Lỗi server" });
     }
   }
+
+  // testing
+  async triggerAutoPayroll(req, res) {
+    try {
+      console.log("Trigger thủ công tạo bảng lương tự động");
+      const result = await autoCreateMonthlyPayroll();
+
+      if (result.success) {
+        res.status(200).json(result);
+      } else {
+        res.status(500).json(result);
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Lỗi khi trigger tạo bảng lương tự động",
+        error: error.message,
+      });
+    }
+  }
+
+ 
 }
+
+// function initPayrollScheduler() {
+//   const controller = new bangLuongController();
+//   controller.initAutoPayrollScheduler();
+// }
+
 module.exports = new bangLuongController();
+module.exports.initPayrollScheduler = initAutoPayrollScheduler;
+module.exports.autoCreateMonthlyPayroll = autoCreateMonthlyPayroll;
