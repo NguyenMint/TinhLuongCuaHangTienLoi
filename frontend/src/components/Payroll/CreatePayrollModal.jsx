@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export function CreatePayrollModal({ setShowCreatePayroll, onSave }) {
   // Function to get previous month's data
@@ -47,7 +48,7 @@ export function CreatePayrollModal({ setShowCreatePayroll, onSave }) {
     e.preventDefault();
 
     if (!form.Thang || !form.Nam) {
-      alert("Vui lòng chọn tháng và năm!");
+      toast.warning("Vui lòng chọn tháng và năm!");
       return;
     }
 

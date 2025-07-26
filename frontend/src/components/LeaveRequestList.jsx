@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { duyetDon, tuChoiDon } from "../api/apiNgayNghiPhep";
+import { toast } from "react-toastify";
 export const LeaveRequestListModal = ({
   setShowModalDonXinNghis,
   requests,
@@ -23,7 +24,7 @@ export const LeaveRequestListModal = ({
     setDangDuyet(true);
     try {
       await Promise.all(selected.map((maNNP) => duyetDon(maNNP)));
-      alert("Duyệt thành công!");
+      toast.success("Duyệt thành công!");
       setSelected([]);
       setShowModalDonXinNghis(false);
       fecthRequests();
@@ -36,7 +37,7 @@ export const LeaveRequestListModal = ({
     setDangDuyet(true);
     try {
       await Promise.all(selected.map((maNNP) => tuChoiDon(maNNP)));
-      alert("Duyệt thành công!");
+      toast.success("Từ chối thành công!");
       setSelected([]);
       setShowModalDonXinNghis(false);
       fecthRequests();

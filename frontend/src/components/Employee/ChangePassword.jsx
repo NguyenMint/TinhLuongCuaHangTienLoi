@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { changePassword } from "../../api/apiTaiKhoan";
+import { toast } from "react-toastify";
 export function ChangePasswordForm() {
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -8,16 +9,16 @@ export function ChangePasswordForm() {
   const handleSubmit = async(e) => {
     e.preventDefault();
     if (newPassword !== confirmPass) {
-      alert("Nhập lại mật khẩu không khớp");
+      toast.error("Nhập lại mật khẩu không khớp");
       return;
     }
     const result = await changePassword(user.MaTK,password,newPassword);
     console.log(result)
     if (!result.success) {
-      alert(result.message || "Đổi mật khẩu thất bại.");
+      toast.error(result.message || "Đổi mật khẩu thất bại.");
       return;
     }
-    alert("đổi mật khẩu thành công");
+    toast.success("Đổi mật khẩu thành công.");
   };
   return (
     <form onSubmit={handleSubmit} className="bg-gray-50 p-4 rounded mt-2">

@@ -3,6 +3,7 @@ import { XIcon, PlusIcon } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import Shift from "./Shift";
+import { toast } from "react-toastify";
 export const ApproveShiftModal = ({
   isOpen,
   onClose,
@@ -51,7 +52,7 @@ export const ApproveShiftModal = ({
       );
 
       if (selectedShiftIds.length === 0) {
-        alert("Vui lòng chọn ít nhất một ca làm việc.");
+        toast.warning("Vui lòng chọn ít nhất một ca làm việc.");
         return;
       }
 

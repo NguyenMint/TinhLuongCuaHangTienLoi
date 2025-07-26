@@ -5,6 +5,7 @@ import { chamCongVao, chamCongRa, getTimeServer } from "../../api/apiChamCong";
 import { formatDate, formatTime } from "../../utils/format";
 import { fetchNhanVien } from "../../api/apiTaiKhoan";
 import { getNghiThaiSanByMaTK } from "../../api/apiNghiThaiSan";
+import { toast } from "react-toastify";
 
 export function EmployeeHomePage() {
   const [shifts, setShifts] = useState(null);
@@ -74,12 +75,11 @@ export function EmployeeHomePage() {
       const gioVao = gioHienTai;
       const response = await chamCongVao(ngay, gioVao, MaLLV, false);
       if (!response.success) {
-        alert(response.message || "Chấm công thất bại");
+        toast.error(response.message || "Chấm công thất bại");
       }
       getDKCByNhanVien();
     } catch (error) {
       console.log("Lỗi khi chấm công vào: ", error);
-      alert("Không thể lấy thời gian từ server");
     }
   };
 
@@ -88,12 +88,11 @@ export function EmployeeHomePage() {
       const gioRa = gioHienTai;
       const response = await chamCongRa(ngay, gioRa, MaLLV, false);
       if (!response.success) {
-        alert(response.message || "Chấm công thất bại");
+        toast.error(response.message || "Chấm công thất bại");
       }
       getDKCByNhanVien();
     } catch (error) {
       console.log("Lỗi khi chấm công ra: ", error);
-      alert("Không thể lấy thời gian từ server");
     }
   };
 

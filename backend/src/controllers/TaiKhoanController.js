@@ -234,6 +234,9 @@ class TaiKhoanController {
         updateData.Avatar = path.join("uploads/avatars", req.file.filename);
       }
       const isPartTime = taikhoan.LoaiNV === 'PartTime';
+
+      console.log("updateData.BacLuong: " ,updateData.BacLuong, "taikhoan.BacLuong: " ,taikhoan.BacLuong); 
+      console.log("updateData.LuongCoBanHienTai: " ,updateData.LuongCoBanHienTai, "taikhoan.LuongCoBanHienTai: " ,taikhoan.LuongCoBanHienTai); 
       if (isPartTime) {
         if (updateData.LuongTheoGioHienTai !== undefined && taikhoan.LuongTheoGioHienTai != updateData.LuongTheoGioHienTai) {
           await db.LichSuTangLuong.create({
@@ -244,8 +247,8 @@ class TaiKhoanController {
           });
         }
       } else {
-        if ((updateData.BacLuong !== undefined && taikhoan.BacLuong !== updateData.BacLuong) ||
-            (updateData.LuongCoBanHienTai !== undefined && taikhoan.LuongCoBanHienTai != updateData.LuongCoBanHienTai)) {
+        if ((Number(updateData.BacLuong) !== undefined && Number(taikhoan.BacLuong) != Number(updateData.BacLuong)) ||
+            (Number(updateData.LuongCoBanHienTai) !== undefined && Number(taikhoan.LuongCoBanHienTai) != Number(updateData.LuongCoBanHienTai))) {
           await db.LichSuTangLuong.create({
             MaTK: taikhoan.MaTK,
             BacLuongCu: taikhoan.BacLuong,

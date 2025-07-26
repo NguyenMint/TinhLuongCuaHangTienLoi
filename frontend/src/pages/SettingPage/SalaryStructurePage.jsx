@@ -6,6 +6,7 @@ import { UpdateSalaryStructureForm } from "../../components/SalaryStructure/Upda
 import { ConfirmDeleteModal } from "../../components/ModalDelete.jsx";
 import { deleteThangLuong } from "../../api/apiThangLuong.js"; 
 import { formatCurrency } from "../../utils/format";
+import { toast } from "react-toastify";
 export function SalaryStructure() {
   const [fullTime, setFullTime] = useState([]);
   const [partTime, setPartTime] = useState([]);
@@ -34,15 +35,15 @@ export function SalaryStructure() {
       try {
         const result = await deleteThangLuong(maThangLuong);
         if (!result.success) {
-          alert(result.message || "Xóa thang lương thất bại.");
+          toast.error(result.message || "Xóa thang lương thất bại.");
           return;
         }
-        alert("Xóa thang lương thành công!");
+        toast.success("Xóa thang lương thành công!");
         fetchAllThangLuongFullTime();
         fetchAllThangLuongPartTime();
       } catch (error) {
         console.error("Lỗi không xác định:", error);
-        alert("Lỗi không xác định. Vui lòng thử lại.");
+        toast.error("Lỗi không xác định. Vui lòng thử lại.");
       }
       setShowModalDelete(false);
     }

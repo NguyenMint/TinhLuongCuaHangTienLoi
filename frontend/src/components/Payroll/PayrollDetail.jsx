@@ -4,6 +4,7 @@ import { formatCurrency } from "../../utils/format";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
 import { PhieuLuongsTab } from "./PhieuLuongTab";
+import { toast } from "react-toastify";
 export function PayrollDetail({
   payroll,
   onDelete,
@@ -168,10 +169,10 @@ export function PayrollDetail({
       });
       const fileName = `Bang_luong_${payroll.KyLuong}.xlsx`;
       saveAs(blob, fileName);
-      alert("Xuất file Excel thành công!");
+      toast.success("Xuất file Excel thành công!");
     } catch (error) {
       console.error("Lỗi khi export file Excel:", error);
-      alert("Có lỗi xảy ra khi xuất file Excel!");
+      toast.error("Có lỗi xảy ra khi xuất file Excel!");
     }
   };
 

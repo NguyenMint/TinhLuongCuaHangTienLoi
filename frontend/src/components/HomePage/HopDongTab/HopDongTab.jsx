@@ -19,6 +19,7 @@ import { FileViewerModal } from "./FileViewerModal";
 import { EditHopDong } from "./EditHopDong";
 import { AddHopDong } from "./AddHopDong";
 import { deleteHopDong } from "../../../api/apiHopDong";
+import { toast } from "react-toastify";
 
 export const HopDongTab = ({
   hopDongs,
@@ -57,12 +58,12 @@ export const HopDongTab = ({
       try {
         const result = await deleteHopDong(hopdong.MaHDLD);
         if (result && result.success === false) {
-          alert(result.message || "Xóa hợp đồng thất bại.");
+          toast.error(result.message || "Xóa hợp đồng thất bại.");
         } else {
           onSuccess();
         }
       } catch (error) {
-        alert("Đã xảy ra lỗi khi xóa hợp đồng.");
+        toast.error("Đã xảy ra lỗi khi xóa hợp đồng.");
         console.error(error);
       }
     }
@@ -104,7 +105,7 @@ export const HopDongTab = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      alert("Đã xảy ra lỗi khi tải file: " + error.message);
+      toast.error("Đã xảy ra lỗi khi tải file: " + error.message);
       console.error(error);
     }
   };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { xinNghiPhep, getDonXinNghiByNV } from "../../api/apiNgayNghiPhep";
 import { fetchNhanVien } from "../../api/apiTaiKhoan";
+import { toast } from "react-toastify";
 
 export function LeaveRequestForm() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
@@ -15,21 +16,21 @@ export function LeaveRequestForm() {
     e.preventDefault();
     try {
       if (new Date(form.NgayKetThuc) <= new Date(form.NgayBatDau)) {
-        alert("Ngày kết thúc phải sau ngày bắt đầu!");
+        toast.warning("Ngày kết thúc phải sau ngày bắt đầu!");
         return;
       }
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       if (new Date(form.NgayBatDau) < today || new Date(form.NgayKetThuc) < today) {
-        alert("Ngày bắt đầu hoặc ngày kết thúc không được ở quá khứ!");
+        toast.warning("Ngày bắt đầu hoặc ngày kết thúc không được ở quá khứ!");
         return;
       }
       const response = await xinNghiPhep(form);
       if (!response.success) {
-        alert(response.message);
+        toast.error(response.message);
         return;
       }
-      alert("Gửi yêu cầu thành công");
+      toast.success("Gửi yêu cầu thành công");
       setForm({
         NgayBatDau: "",
         NgayKetThuc: "",

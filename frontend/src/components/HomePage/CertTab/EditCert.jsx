@@ -1,5 +1,6 @@
 import { Edit, Plus } from "lucide-react";
 import { updateChungChi } from "../../../api/apiChungChi";
+import { toast } from "react-toastify";
 
 export const EditCert = ({
   editingCertificate,
@@ -28,14 +29,14 @@ export const EditCert = ({
 
       const result = await updateChungChi(formData);
       if (!result.success) {
-        alert(result.message || "Thêm chứng chỉ thất bại.");
+        toast.error(result.message || "Thêm chứng chỉ thất bại.");
         return;
       }
-      alert("Cập nhật chứng chỉ thành công!");
+      toast.success("Cập nhật chứng chỉ thành công!");
       setShowEditModal(false);
       onSuccess();
     } catch (error) {
-      alert("Đã xảy ra lỗi khi thêm chứng chỉ: " + error.message);
+      toast.error("Đã xảy ra lỗi khi thêm chứng chỉ: " + error.message);
     }
   };
   const handleThoiGianHieuLucChange = (e) => {

@@ -9,6 +9,7 @@ import {
 import { Plus, Edit, Trash2, FileText } from "lucide-react";
 import { FileViewerModal } from "./HopDongTab/FileViewerModal";
 import { formatDate } from "../../utils/format";
+import { toast } from "react-toastify";
 
 export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
   const [nghiThaiSans, setNghiThaiSans] = useState([]);
@@ -49,7 +50,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
 
     const now = new Date().toISOString().split("T")[0];
     if (form.NgayKetThuc && now > form.NgayKetThuc) {
-      alert("Hợp đồng đã hết hạn. Vui lòng thêm hợp đồng khác");
+      toast.warning("Hợp đồng đã hết hạn. Vui lòng thêm hợp đồng khác");
       return;
     }
 
@@ -153,7 +154,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
       onSuccess && onSuccess();
     } catch (error) {
       console.error("Lỗi khi lưu nghỉ thai sản:", error);
-      alert("Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
+      toast.error("Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
     }
   };
 
@@ -162,7 +163,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
     if (file) {
       // Kiểm tra kích thước file (giới hạn 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert("File không được vượt quá 10MB");
+        toast.warning("File không được vượt quá 10MB");
         return;
       }
 
@@ -174,7 +175,7 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
           FileGiayThaiSan: res.data.filePath,
         }));
       } catch (err) {
-        alert(
+        toast.error(
           "Lỗi upload file: " + (err?.response?.data?.error || err.message)
         );
       } finally {
