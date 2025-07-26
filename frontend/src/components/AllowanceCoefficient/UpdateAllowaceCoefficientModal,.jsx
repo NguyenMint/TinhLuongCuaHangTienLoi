@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { updateHeSoPhuCap } from "../../api/apiHeSoPC";
+import { toast } from "react-toastify";
 export function UpdateAllowanceCoefficientForm({
   setShowModalUpdate,
   getData,
@@ -26,14 +27,14 @@ export function UpdateAllowanceCoefficientForm({
     try {
       const result = await updateHeSoPhuCap(form);
       if (!result.success) {
-        alert(result.message || "Update hệ số phụ cấp thất bại.");
+        toast.error(result.message || "Update hệ số phụ cấp thất bại.");
         return;
       }
-      alert("Update hệ số phụ cấp thành công!");
+      toast.success("Update hệ số phụ cấp thành công!");
       getData();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalUpdate(false);
   };

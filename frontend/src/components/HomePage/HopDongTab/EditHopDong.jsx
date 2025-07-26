@@ -1,6 +1,7 @@
 import { Edit, Plus } from "lucide-react";
 import { updateChungChi } from "../../../api/apiChungChi";
 import { updateHopDong } from "../../../api/apiHopDong";
+import { toast } from "react-toastify";
 
 export const EditHopDong = ({
   editingHopDong,
@@ -26,14 +27,14 @@ export const EditHopDong = ({
 
       const result = await updateHopDong(formData);
       if (!result.success) {
-        alert(result.message || "Thêm chứng chỉ thất bại.");
+        toast.error(result.message || "Thêm chứng chỉ thất bại.");
         return;
       }
-      alert("Cập nhật chứng chỉ thành công!");
+      toast.success("Cập nhật chứng chỉ thành công!");
       setShowEditModal(false);
       onSuccess();
     } catch (error) {
-      alert("Đã xảy ra lỗi khi thêm chứng chỉ: " + error.message);
+      toast.error("Đã xảy ra lỗi khi thêm chứng chỉ: " + error.message);
     }
   };
   const handleThoiGianHieuLucChange = (e) => {
@@ -54,7 +55,7 @@ export const EditHopDong = ({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file.size > 5 * 1024 * 1024) {
-      alert(
+      toast.warning(
         "Dung lượng file quá lớn. Vui lòng chọn file có kích thước nhỏ hơn!"
       );
       e.target.value = "";

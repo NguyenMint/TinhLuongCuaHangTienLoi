@@ -1,6 +1,7 @@
 import { Save } from "lucide-react";
 import { createChungChi } from "../../../api/apiChungChi";
 import { createHopDong } from "../../../api/apiHopDong";
+import { toast } from "react-toastify";
 
 export const AddHopDong = ({
   editingHopDong,
@@ -12,7 +13,7 @@ export const AddHopDong = ({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file.size > 5 * 1024 * 1024) {
-      alert(
+      toast.warning(
         "Dung lượng file quá lớn. Vui lòng chọn file có kích thước nhỏ hơn!"
       );
       e.target.value = "";
@@ -30,13 +31,13 @@ export const AddHopDong = ({
     e.preventDefault();
 
     if (!editingHopDong.fileObject) {
-      alert("Vui lòng thêm file hợp đồng.");
+      toast.warning("Vui lòng thêm file hợp đồng.");
       return;
     }
 
     const now = new Date().toISOString().split("T")[0];
     if (editingHopDong.NgayKetThuc && now > editingHopDong.NgayKetThuc) {
-      alert("Hợp đồng đã hết hạn. Vui lòng thêm hợp đồng khác");
+      toast.warning("Hợp đồng đã hết hạn. Vui lòng thêm hợp đồng khác");
       return;
     }
 
@@ -54,10 +55,10 @@ export const AddHopDong = ({
       }
       const result = await createHopDong(formData);
       if (!result.success) {
-        alert(result.message || "Thêm hợp đồng thất bại.");
+        toast.error(result.message || "Thêm hợp đồng thất bại.");
         return;
       }
-      alert("Thêm hợp đồng thành công!");
+      toast.success("Thêm hợp đồng thành công!");
       setShowEditModal(false);
       // Reset form state
       setEditingHopDong({
@@ -74,7 +75,7 @@ export const AddHopDong = ({
       });
       onSuccess();
     } catch (error) {
-      alert("Đã xảy ra lỗi khi thêm hợp đồng: " + error.message);
+      toast.error("Đã xảy ra lỗi khi thêm hợp đồng: " + error.message);
     }
   };
 

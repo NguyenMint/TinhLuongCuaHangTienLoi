@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createCaLam } from "../../api/apiCaLam.js";
+import { toast } from "react-toastify";
 
 export function AddShiftForm({ setShowModalAdd, getDataShift }) {
   const [form, setForm] = useState({
@@ -36,7 +37,7 @@ export function AddShiftForm({ setShowModalAdd, getDataShift }) {
       !form.ThoiGianKetThuc ||
       !form.MoTa
     ) {
-      alert("Vui lòng điền đầy đủ thông tin.");
+      toast.warning("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
@@ -44,14 +45,14 @@ export function AddShiftForm({ setShowModalAdd, getDataShift }) {
       
       const result = await createCaLam(form);
       if (!result.success) {
-        alert(result.message || "Thêm ca làm thất bại.");
+        toast.error(result.message || "Thêm ca làm thất bại.");
         return;
       }
-      alert("Thêm ca làm thành công!");
+      toast.success("Thêm ca làm thành công!");
       getDataShift();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalAdd(false);
   };

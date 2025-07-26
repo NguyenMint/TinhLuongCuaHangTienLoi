@@ -10,6 +10,7 @@ import { createKTKL } from "../api/apiKTKL";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { calculatePhat } from "../utils/TreSom";
+import { toast } from "react-toastify";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
@@ -161,7 +162,7 @@ export function AttendancePage() {
         const failedRecords = results.filter((res) => !res.success);
         if (failedRecords.length > 0) {
           console.warn("Một số bản ghi bị lỗi:", failedRecords);
-          alert(
+          toast.warning(
             `Chấm công đã được lưu, nhưng có ${failedRecords.length} bản ghi khen thưởng/vi phạm bị lỗi.`
           );
         }
@@ -178,10 +179,10 @@ export function AttendancePage() {
 
       await getAllLichLamViec();
       setIsModalOpen(false);
-      alert("Đã duyệt chấm công thành công!");
+      toast.success("Đã duyệt chấm công thành công!");
     } catch (error) {
       console.error("Lỗi khi lưu dữ liệu:", error);
-      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Lỗi không xác định"}`);
+      toast.error(`Lỗi khi lưu dữ liệu: ${error.message || "Lỗi không xác định"}`);
     }
   };
 
@@ -201,7 +202,7 @@ export function AttendancePage() {
       );
     });
     if (toApprove.length === 0) {
-      alert("Không có lịch làm việc nào cần duyệt hôm nay.");
+      toast.warning("Không có lịch làm việc nào cần duyệt hôm nay.");
       return;
     }
     let successCount = 0;
@@ -248,7 +249,7 @@ export function AttendancePage() {
       }
     }
     await getAllLichLamViec();
-    alert(
+    toast.success(
       `Đã duyệt ${successCount} lịch làm việc thành công. ${
         failCount > 0 ? failCount + " lịch bị lỗi." : ""
       }`

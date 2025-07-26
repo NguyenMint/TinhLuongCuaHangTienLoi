@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createHeSoPhuCap } from "../../api/apiHeSoPC";
+import { toast } from "react-toastify";
 export function AddAllowanceCoefficientForm({ setShowModalAdd, getData }) {
   const [form, setForm] = useState({
     Ngay: "",
@@ -20,14 +21,14 @@ export function AddAllowanceCoefficientForm({ setShowModalAdd, getData }) {
     try {
       const result = await createHeSoPhuCap(form);
       if (!result.success) {
-        alert(result.message || "Thêm hệ số phụ cấp thất bại.");
+        toast.error(result.message || "Thêm hệ số phụ cấp thất bại.");
         return;
       }
-      alert("Thêm hệ số phụ cấp thành công!");
+      toast.success("Thêm hệ số phụ cấp thành công!");
       getData();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalAdd(false);
   };

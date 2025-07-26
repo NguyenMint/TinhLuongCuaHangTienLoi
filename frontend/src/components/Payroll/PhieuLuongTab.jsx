@@ -3,6 +3,7 @@ import { formatCurrency } from "../../utils/format";
 import { X, FileIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
+import { toast } from "react-toastify";
 export const PhieuLuongsTab = ({ phieuLuong }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -35,7 +36,7 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
         !selectedEmployee.details ||
         selectedEmployee.details.length === 0
       ) {
-        alert("Không có dữ liệu để xuất!");
+        toast.warning("Không có dữ liệu để xuất!");
         return;
       }
       const workbook = new ExcelJS.Workbook();
@@ -146,10 +147,10 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
       });
       const fileName = `ChiTietLuongCa_${selectedEmployee.MaNhanVien}.xlsx`;
       saveAs(blob, fileName);
-      alert("Xuất file Excel chi tiết thành công!");
+      toast.success("Xuất file Excel chi tiết thành công!");
     } catch (error) {
       console.error("Lỗi khi export file Excel chi tiết:", error);
-      alert("Có lỗi xảy ra khi xuất file Excel chi tiết!");
+      toast.error("Có lỗi xảy ra khi xuất file Excel chi tiết!");
     }
   };
   return (

@@ -1,5 +1,6 @@
 import { Save } from "lucide-react";
 import { createChungChi } from "../../../api/apiChungChi";
+import { toast } from "react-toastify";
 
 export const AddCert = ({
   editingCertificate,
@@ -11,7 +12,7 @@ export const AddCert = ({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file.size > 5 * 1024 * 1024) {
-      alert(
+      toast.warning(
         "Dung lượng file quá lớn. Vui lòng chọn file có kích thước nhỏ hơn!"
       );
       e.target.value = "";
@@ -29,13 +30,13 @@ export const AddCert = ({
     e.preventDefault();
 
     if (!editingCertificate.fileObject) {
-      alert("Vui lòng thêm file chứng chỉ.");
+      toast.warning("Vui lòng thêm file chứng chỉ.");
       return;
     }
 
     const now = new Date().toISOString().split("T")[0];
     if (editingCertificate.NgayHetHan && now > editingCertificate.NgayHetHan) {
-      alert("Chứng chỉ đã hết hạn. Vui lòng thêm chứng chỉ khác");
+      toast.warning("Chứng chỉ đã hết hạn. Vui lòng thêm chứng chỉ khác");
       return;
     }
 
@@ -57,10 +58,10 @@ export const AddCert = ({
 
       const result = await createChungChi(formData);
       if (!result.success) {
-        alert(result.message || "Thêm chứng chỉ thất bại.");
+        toast.error(result.message || "Thêm chứng chỉ thất bại.");
         return;
       }
-      alert("Thêm chứng chỉ thành công!");
+      toast.success("Thêm chứng chỉ thành công!");
       setShowEditModal(false);
       // Reset form state
       setEditingCertificate({
@@ -77,7 +78,7 @@ export const AddCert = ({
       });
       onSuccess();
     } catch (error) {
-      alert("Đã xảy ra lỗi khi thêm chứng chỉ: " + error.message);
+      toast.error("Đã xảy ra lỗi khi thêm chứng chỉ: " + error.message);
     }
   };
 

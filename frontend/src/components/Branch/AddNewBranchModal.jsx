@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createChiNhanh } from "../../api/apiChiNhanh";
+import { toast } from "react-toastify";
 
 export function AddBranchForm({ setShowModalAdd, fetchAllBranch }) {
   const [form, setForm] = useState({
@@ -21,20 +22,20 @@ export function AddBranchForm({ setShowModalAdd, fetchAllBranch }) {
       !form.TenChiNhanh ||
       !form.DiaChi
     ) {
-      alert("Vui lòng điền đầy đủ thông tin.");
+      toast.warning("Vui lòng điền đầy đủ thông tin.");
       return;
     }
     try {  
       const result = await createChiNhanh(form);
       if (!result.success) {
-        alert(result.message || "Thêm ca làm thất bại.");
+        toast.error(result.message || "Thêm ca làm thất bại.");
         return;
       }
-      alert("Thêm chi nhánh thành công!");
+      toast.success("Thêm chi nhánh thành công!");
       fetchAllBranch();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalAdd(false);
   };

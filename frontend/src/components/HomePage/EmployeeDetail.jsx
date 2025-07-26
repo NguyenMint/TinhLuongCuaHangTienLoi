@@ -14,6 +14,7 @@ import { NghiThaiSanTab } from "./NghiThaiSanTab";
 import { getNghiThaiSanByMaTK } from "../../api/apiNghiThaiSan";
 import { fetchLichSuTangLuong } from "../../api/apiTaiKhoan";
 import { formatCurrency } from "../../utils/format";
+import { toast } from "react-toastify";
 
 export const EmployeeDetail = ({
   selectedEmployee,
@@ -70,7 +71,7 @@ export const EmployeeDetail = ({
       onEmployeeStatusChange();
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Lỗi: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi: " + (error.message || "Lỗi không xác định"));
     }
   };
 
@@ -84,7 +85,7 @@ export const EmployeeDetail = ({
       onEmployeeStatusChange();
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Lỗi: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi: " + (error.message || "Lỗi không xác định"));
     }
   };
 

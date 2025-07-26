@@ -24,6 +24,8 @@ import { EmployeeShiftRegistrationPage } from "./pages/EmployeeLayout/EmployeeSh
 import { PayrollPage } from "./pages/PayrollPage";
 import { ShiftRequests } from "./pages/ShiftRequestsPage";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 axios.interceptors.response.use(
   response => response,
@@ -222,6 +224,7 @@ function App() {
           }
         />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

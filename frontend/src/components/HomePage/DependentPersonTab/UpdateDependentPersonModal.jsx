@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Save, XCircle } from "lucide-react";
 import { updateNguoiPhuThuoc } from "../../../api/apiNguoiPhuThuoc";
+import { toast } from "react-toastify";
 export const UpdateDependentPersonForm = ({
   employee,
   setShowModalUpdate,
@@ -36,14 +37,14 @@ export const UpdateDependentPersonForm = ({
     try {
       const result = await updateNguoiPhuThuoc(form);
       if (!result.success) {
-        alert(result.message || "Cập nhật người phụ thuộc thất bại.");
+        toast.error(result.message || "Cập nhật người phụ thuộc thất bại.");
         return;
       }
-      alert("Cập nhật người phụ thuộc thành công!");
+      toast.success("Cập nhật người phụ thuộc thành công!");
       fetchNguoiPhuThuoc();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalUpdate(false);
   };

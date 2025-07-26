@@ -8,6 +8,7 @@ import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import ApproveModal from "../components/ShiftRequestsPage/ApproveModal";
 import { ApproveShiftChange } from "../components/ShiftRequestsPage/ApproveShiftChange.jsx";
+import { toast } from "react-toastify";
 export function ShiftRequests() {
   const [shifts, setShifts] = useState([]);
   const [selectedShift, setSelectedShift] = useState(null);
@@ -156,7 +157,7 @@ export function ShiftRequests() {
       console.error("Lỗi khi lưu dữ liệu:", error);
 
       const errorMessage = error.message || "Lỗi không xác định";
-      alert(`Lỗi khi lưu dữ liệu: ${errorMessage}`);
+      toast.error(`Lỗi khi lưu dữ liệu: ${errorMessage}`);
     }
   };
 
@@ -169,7 +170,7 @@ export function ShiftRequests() {
       console.error("Lỗi khi lưu dữ liệu:", error);
 
       const errorMessage = error.message || "Lỗi không xác định";
-      alert(`Lỗi khi lưu dữ liệu: ${errorMessage}`);
+      toast.error(`Lỗi khi lưu dữ liệu: ${errorMessage}`);
     }
   };
 

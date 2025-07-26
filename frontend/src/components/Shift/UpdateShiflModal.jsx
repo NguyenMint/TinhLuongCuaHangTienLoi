@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { updateCaLam } from "../../api/apiCaLam.js";
+import { toast } from "react-toastify";
 
 export function UpdateShiftForm({
   setShowModalUpdate,
@@ -41,7 +42,7 @@ export function UpdateShiftForm({
       !form.ThoiGianKetThuc ||
       !form.MoTa
     ) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
 
@@ -49,14 +50,14 @@ export function UpdateShiftForm({
       console.log(form);
       const result = await updateCaLam(form);
       if (!result.success) {
-        alert(result.message || "Update ca làm thất bại.");
+        toast.error(result.message || "Update ca làm thất bại.");
         return;
       }
-      alert("Update ca làm thành công!");
+      toast.success("Update ca làm thành công!");
       getDataShift();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalUpdate(false);
   };

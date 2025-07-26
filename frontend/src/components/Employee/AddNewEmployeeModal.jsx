@@ -6,6 +6,7 @@ import {
 import { formatCurrency } from "../../utils/format";
 import { getAllQuanLyByChiNhanh } from "../../api/apiTaiKhoan";
 import { createEmployee } from "../../api/apiTaiKhoan";
+import { toast } from "react-toastify";
 export function AddEmployeeModal({
   setShowModalAdd,
   getAllEmployees,
@@ -82,7 +83,7 @@ export function AddEmployeeModal({
       !form.TenNganHang ||
       !form.STK
     ) {
-      alert("Vui lòng điền đầy đủ thông tin!");
+      toast.warning("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
@@ -107,10 +108,10 @@ export function AddEmployeeModal({
     }
     const result = await createEmployee(formData);
     if (!result.success) {
-      alert(result.message || "Thêm nhân viên thất bại.");
+      toast.error(result.message || "Thêm nhân viên thất bại.");
       return;
     }
-    alert("Thêm nhân viên thành công!");
+    toast.success("Thêm nhân viên thành công!");
     getAllEmployees();
     setShowModalAdd(false);
   };
