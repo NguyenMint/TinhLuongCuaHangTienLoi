@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { duyetDon,tuChoiDon } from "../api/apiNgayNghiPhep";
+import { duyetDon, tuChoiDon } from "../api/apiNgayNghiPhep";
 export const LeaveRequestListModal = ({
   setShowModalDonXinNghis,
   requests,
-  fecthRequests
+  fecthRequests,
 }) => {
   const [selected, setSelected] = useState([]);
-  const [dangDuyet,setDangDuyet] = useState(false);
+  const [dangDuyet, setDangDuyet] = useState(false);
   const handleCheckAll = (e) => {
     if (e.target.checked) {
       setSelected(requests.map((req) => req.MaNNP));
@@ -22,33 +22,29 @@ export const LeaveRequestListModal = ({
   const handleDuyet = async () => {
     setDangDuyet(true);
     try {
-        await Promise.all(
-          selected.map((maNNP) => duyetDon(maNNP))
-        );
-        alert("Duyệt thành công!");
-        setSelected([]);
-        setShowModalDonXinNghis(false);
-        fecthRequests();
-      } catch (error) {
-        console.log("Có lỗi khi từ chối đơn: ",error);
-      }
-      setDangDuyet(false);
-  }
+      await Promise.all(selected.map((maNNP) => duyetDon(maNNP)));
+      alert("Duyệt thành công!");
+      setSelected([]);
+      setShowModalDonXinNghis(false);
+      fecthRequests();
+    } catch (error) {
+      console.log("Có lỗi khi từ chối đơn: ", error);
+    }
+    setDangDuyet(false);
+  };
   const handleTuChoi = async () => {
     setDangDuyet(true);
     try {
-        await Promise.all(
-          selected.map((maNNP) => tuChoiDon(maNNP))
-        );
-        alert("Duyệt thành công!");
-        setSelected([]);
-        setShowModalDonXinNghis(false);
-        fecthRequests();
-      } catch (error) {
-        console.log("Có lỗi khi từ chối đơn: ",error);
-      }
-      setDangDuyet(false);
-  }
+      await Promise.all(selected.map((maNNP) => tuChoiDon(maNNP)));
+      alert("Duyệt thành công!");
+      setSelected([]);
+      setShowModalDonXinNghis(false);
+      fecthRequests();
+    } catch (error) {
+      console.log("Có lỗi khi từ chối đơn: ", error);
+    }
+    setDangDuyet(false);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
@@ -93,7 +89,7 @@ export const LeaveRequestListModal = ({
                 </tr>
               ) : (
                 requests.map((req) => (
-                  <tr  className="border-t">
+                  <tr className="border-t">
                     <td className="px-3 py-2 border text-center">
                       <input
                         type="checkbox"
@@ -122,27 +118,29 @@ export const LeaveRequestListModal = ({
             </tbody>
           </table>
           <div className="flex justify-end gap-2 mt-6">
-          <button
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50"
-            onClick={handleDuyet}
-            disabled={selected.length === 0 || dangDuyet}
-          >
-            Duyệt
-          </button>
-          <button
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded disabled:opacity-50"
-            onClick={handleTuChoi}
-            disabled={selected.length === 0 || dangDuyet}
-          >
-            Từ chối
-          </button>
-          <button
-            className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
-          onClick={()=>{setShowModalDonXinNghis(false)}}
-          >
-            Hủy bỏ
-          </button>
-        </div>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded disabled:opacity-50"
+              onClick={handleDuyet}
+              disabled={selected.length === 0 || dangDuyet}
+            >
+              Duyệt
+            </button>
+            <button
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded disabled:opacity-50"
+              onClick={handleTuChoi}
+              disabled={selected.length === 0 || dangDuyet}
+            >
+              Từ chối
+            </button>
+            <button
+              className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+              onClick={() => {
+                setShowModalDonXinNghis(false);
+              }}
+            >
+              Hủy bỏ
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -36,7 +36,6 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
     return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
   };
 
-  // Thêm hàm validate
   const validateForm = () => {
     const newErrors = {};
 
@@ -128,18 +127,17 @@ export const NghiThaiSanTab = ({ selectedEmployee, onSuccess }) => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (MaNTS) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa?")) {
-      await deleteNghiThaiSan(id);
+      await deleteNghiThaiSan(MaNTS);
       onSuccess && onSuccess();
-      setNghiThaiSans(nghiThaiSans.filter((n) => n.MaNTS !== id));
+      setNghiThaiSans(nghiThaiSans.filter((n) => n.MaNTS !== MaNTS));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form trước khi submit
     if (!validateForm()) {
       return;
     }
