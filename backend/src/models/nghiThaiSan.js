@@ -26,7 +26,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     FileGiayThaiSan: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
+      unique: "FileGiayThaiSan"
     },
     MaTK: {
       type: DataTypes.INTEGER,
@@ -55,6 +56,14 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaNTS" },
+        ]
+      },
+      {
+        name: "FileGiayThaiSan",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "FileGiayThaiSan" },
         ]
       },
       {

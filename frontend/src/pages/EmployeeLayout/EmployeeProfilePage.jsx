@@ -3,6 +3,7 @@ import { Calendar, DollarSign, Clock, TrendingUp, Eye } from "lucide-react";
 import { getByNhanVienAndNgay } from "../../api/apiChiTietBangLuong";
 import { formatCurrency, formatDate, formatTime } from "../../utils/format";
 import { fetchNhanVien } from "../../api/apiTaiKhoan";
+import { fetchLichSuTangLuong } from "../../api/apiTaiKhoan";
 export function EmployeeProfilePage() {
   const [user,setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [selectedDate, setSelectedDate] = useState(
@@ -10,6 +11,7 @@ export function EmployeeProfilePage() {
   );
   const [salaryData, setSalaryData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [lichSuTangLuong, setLichSuTangLuong] = useState([]);
   const fetchSalaryData = async (date) => {
     setLoading(true);
     try {
@@ -31,6 +33,8 @@ export function EmployeeProfilePage() {
   };
   useEffect(()=>{
     refeshInfo();
+    // Lấy lịch sử tăng lương
+    fetchLichSuTangLuong(user.MaTK).then(setLichSuTangLuong);
   },[]);
   const calculateDailySummary = (chiTietBangLuong) => {
     return chiTietBangLuong.reduce(
@@ -115,6 +119,43 @@ export function EmployeeProfilePage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Lịch sử tăng lương */}
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Lịch sử tăng lương</h2>
+        {lichSuTangLuong.length === 0 ? (
+          <div className="text-gray-500">Chưa có lịch sử tăng lương</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full border text-sm">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 border">Ngày áp dụng</th>
+                  <th className="px-3 py-2 border">Bậc lương cũ</th>
+                  <th className="px-3 py-2 border">Bậc lương mới</th>
+                  <th className="px-3 py-2 border">Lương cơ bản cũ</th>
+                  <th className="px-3 py-2 border">Lương cơ bản mới</th>
+                  <th className="px-3 py-2 border">Lương theo giờ cũ</th>
+                  <th className="px-3 py-2 border">Lương theo giờ mới</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lichSuTangLuong.map((row, idx) => (
+                  <tr key={idx} className="text-center">
+                    <td className="border px-2 py-1">{row.NgayApDung}</td>
+                    <td className="border px-2 py-1">{row.BacLuongCu ?? '-'}</td>
+                    <td className="border px-2 py-1">{row.BacLuongMoi ?? '-'}</td>
+                    <td className="border px-2 py-1">{row.LuongCoBanCu ? formatCurrency(row.LuongCoBanCu) : '-'}</td>
+                    <td className="border px-2 py-1">{row.LuongCoBanMoi ? formatCurrency(row.LuongCoBanMoi) : '-'}</td>
+                    <td className="border px-2 py-1">{row.LuongTheoGioCu ? formatCurrency(row.LuongTheoGioCu) : '-'}</td>
+                    <td className="border px-2 py-1">{row.LuongTheoGioMoi ? formatCurrency(row.LuongTheoGioMoi) : '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm p-6">
