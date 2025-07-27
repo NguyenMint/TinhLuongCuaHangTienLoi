@@ -11,15 +11,12 @@ export const AddShiftModal = ({
   employee,
   date,
   shifts,
-  onSuccess,
   schedules,
   onSubmit
 }) => {
   // console.log(date);
   // console.log(employee);
   const [selectedShifts, setSelectedShifts] = useState({});
-  const [repeatWeekly, setRepeatWeekly] = useState(false);
-  const [applyToOthers, setApplyToOthers] = useState(false);
   const [availableShifts, setavailableShifts] = useState([]);
 
   useEffect(() => {
@@ -49,8 +46,7 @@ export const AddShiftModal = ({
       return;
     }
 
-    // Call parent's submit function
-    await onSubmit(selectedShifts, repeatWeekly, applyToOthers);
+    await onSubmit(selectedShifts);
   };
 
   if (!isOpen) return null;
