@@ -13,7 +13,6 @@ export function ChangePasswordForm() {
       return;
     }
     const result = await changePassword(user.MaTK,password,newPassword);
-    console.log(result)
     if (!result.success) {
       toast.error(result.message || "Đổi mật khẩu thất bại.");
       return;

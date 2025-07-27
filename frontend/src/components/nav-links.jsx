@@ -5,6 +5,7 @@ import {
   SettingsIcon,
   Coins,
   NotebookPen,
+  LayersIcon
 } from "lucide-react";
 
 import { Link, useLocation } from "react-router-dom";
@@ -32,6 +33,11 @@ const links = [
     name: "Thiết lập",
     href: "/settings",
     icon: SettingsIcon,
+  },
+  {
+    name: "Tiện ích",
+    href: "/utility",
+    icon: LayersIcon,
   },
 ];
 

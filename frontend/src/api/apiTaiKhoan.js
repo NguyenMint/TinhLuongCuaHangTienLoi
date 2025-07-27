@@ -103,7 +103,7 @@ export async function createEmployee(formData) {
       return { sucesss: false, message: error.response.data.message };
     }
     console.error("Lỗi thêm nhân viên:", error);
-    return { sucesss: false, message: "Lỗi kết nối server" };
+    return { success: false, message: "Lỗi kết nối server" };
   }
 }
 
@@ -123,10 +123,10 @@ export async function updateEmployee(formData) {
     return { success: true, data: res.data };
   } catch (error) {
     if (error.response.status === 409) {
-      return { sucesss: false, message: error.response.data.message };
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi update nhân viên:", error);
-    return { sucesss: false, message: "Lỗi kết nối server" };
+    return { success: false, message: "Lỗi kết nối server" };
   }
 }
 
@@ -147,11 +147,32 @@ export const changePassword = async (MaTK, Password, NewPassword) => {
     return { success: true };
   } catch (error) {
     if (error.response.status === 400 || error.response.status === 404) {
-      return { sucesss: false, message: error.response.data.message };
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi đăng nhập:", error);
   }
 };
+
+export const resetPassword = async (MaTK) => {
+  try {
+    await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/taikhoan/resetPass/${MaTK}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return { success: true };
+  } catch (error) {
+    if (error.response.status === 404) {
+      return { success: false, message: error.response.data.message };
+    }
+    console.error("Lỗi đăng nhập:", error);
+  }
+};
+
 export const updateNgungLamViec = async (MaTK) => {
   try {
     const response = await axios.put(
