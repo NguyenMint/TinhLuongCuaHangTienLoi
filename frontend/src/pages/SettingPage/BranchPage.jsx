@@ -5,6 +5,7 @@ import { AddBranchForm } from "../../components/Branch/AddNewBranchModal";
 import { UpdateBranchForm } from "../../components/Branch/UpdateBranchModal";
 import { ConfirmDeleteModal } from "../../components/ModalDelete";
 import { deleteChiNhanh } from "../../api/apiChiNhanh";
+import { toast } from "react-toastify";
 export function BranchPage() {
   const [data, setData] = useState();
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -24,14 +25,14 @@ export function BranchPage() {
     try {
       const result = await deleteChiNhanh(selectedMaCN);
       if (!result.success) {
-        alert(result.message || "Xóa chi nhánh thất bại.");
+        toast.error(result.message || "Xóa chi nhánh thất bại.");
         return;
       }
-      alert("Xóa chi nhánh thành công!");
+      toast.success("Xóa chi nhánh thành công!");
       fetchAllBranch();
     } catch (error) {
       console.error("Lỗi không xác định:", error);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalDelete(false);
   };

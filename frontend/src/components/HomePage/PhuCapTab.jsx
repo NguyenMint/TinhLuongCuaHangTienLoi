@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { createPhuCap, deletePhuCap, updatePhuCap } from "../../api/apiPhuCap";
+import { toast } from "react-toastify";
 
 const allowanceTypes = [
   "Phụ cấp ăn trưa",
@@ -28,7 +29,7 @@ export const PhuCapTab = ({ phuCaps, onSuccess, selectedEmployee }) => {
     try {
       await createPhuCap(newPhuCap);
       onSuccess();
-      alert("Thêm thành công");
+      toast.success("Thêm thành công");
       setNewPhuCap({
         MaTK: selectedEmployee.MaTK,
         LoaiPhuCap: "",
@@ -39,7 +40,7 @@ export const PhuCapTab = ({ phuCaps, onSuccess, selectedEmployee }) => {
       setIsAdding(false);
     } catch (error) {
       console.error("Error deleting PhuCap:", error);
-      alert("Lỗi khi xóa phụ cấp: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi khi xóa phụ cấp: " + (error.message || "Lỗi không xác định"));
     }
   };
 
@@ -49,13 +50,13 @@ export const PhuCapTab = ({ phuCaps, onSuccess, selectedEmployee }) => {
     try {
       const result = await deletePhuCap(MaPhuCap);
       if (result && result.success === false) {
-        alert(result.message || "Xóa phụ cấp thất bại.");
+        toast.error(result.message || "Xóa phụ cấp thất bại.");
       } else {
         onSuccess();
       }
     } catch (error) {
       console.error("Error deleting PhuCap:", error);
-      alert("Lỗi khi xóa phụ cấp: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi khi xóa phụ cấp: " + (error.message || "Lỗi không xác định"));
     }
   };
 
@@ -77,13 +78,13 @@ export const PhuCapTab = ({ phuCaps, onSuccess, selectedEmployee }) => {
     try {
       const result = await updatePhuCap(MaPhuCap);
       if (result && result.success === false) {
-        alert(result.message || "Cập nhật phụ cấp thất bại.");
+        toast.error(result.message || "Cập nhật phụ cấp thất bại.");
       } else {
         onSuccess();
       }
     } catch (error) {
       console.error("Error deleting PhuCap:", error);
-      alert("Lỗi khi xóa phụ cấp: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi khi xóa phụ cấp: " + (error.message || "Lỗi không xác định"));
     }
   };
 

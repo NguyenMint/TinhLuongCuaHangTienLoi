@@ -190,3 +190,20 @@ export const updateTiepTucLamViec = async (MaTK) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+
+export const fetchLichSuTangLuong = async (MaTK) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/lichsutangluong/${MaTK}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy lịch sử tăng lương:", error);
+    return [];
+  }
+};

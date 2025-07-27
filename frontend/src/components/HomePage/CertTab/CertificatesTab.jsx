@@ -18,6 +18,7 @@ import { EditCert } from "./EditCert";
 import { AddCert } from "./AddCert";
 import { createChungChi, deleteChungChi } from "../../../api/apiChungChi";
 import { FileViewerModal } from "./FileViewerModal";
+import { toast } from "react-toastify";
 
 export const CertificatesTab = ({
   chungChis,
@@ -60,12 +61,12 @@ export const CertificatesTab = ({
       try {
         const result = await deleteChungChi(certificate.MaCC);
         if (result && result.success === false) {
-          alert(result.message || "Xóa chứng chỉ thất bại.");
+          toast.error(result.message || "Xóa chứng chỉ thất bại.");
         } else {
           onSuccess();
         }
       } catch (error) {
-        alert("Đã xảy ra lỗi khi xóa chứng chỉ.");
+        toast.error("Đã xảy ra lỗi khi xóa chứng chỉ.");
         console.error(error);
       }
     }
@@ -109,7 +110,7 @@ export const CertificatesTab = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      alert("Đã xảy ra lỗi khi tải file: " + error.message);
+      toast.error("Đã xảy ra lỗi khi tải file: " + error.message);
       console.error(error);
     }
   };

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { updateThangLuong } from "../../api/apiThangLuong";
 import { formatCurrency } from "../../utils/format";
+import { toast } from "react-toastify";
 export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuongFullTime,getAllThangLuongParTime,salaryStructure }) {
   const [form, setForm] = useState({
     LuongCoBan: salaryStructure.LuongCoBan ,
@@ -34,30 +35,30 @@ export function UpdateSalaryStructureForm({ setShowModalUpdate, getAllThangLuong
         !form.LuongCoBan ||
         !form.BacLuong
       ) {
-        alert("Vui lòng điền đầy đủ thông tin.");
+        toast.warning("Vui lòng điền đầy đủ thông tin.");
         return;
       } else if (form.LuongCoBan < 0) {
-          alert("Lương cơ bản không được âm");
+        toast.warning("Lương cơ bản không được âm");
         return;
       }
     } else {
       if (!form.LuongTheoGio || form.LuongTheoGio < 0) {
-        alert("Vui lòng điền đầy đủ thông tin và lương theo giờ >= 0.");
+        toast.warning("Vui lòng điền đầy đủ thông tin và lương theo giờ >= 0.");
         return;
       }
     }
     try {
       const result = await updateThangLuong(form);
       if (!result.success) {
-        alert(result.message || "Cập nhật thang lương thất bại.");
+        toast.error(result.message || "Cập nhật thang lương thất bại.");
         return;
       }
-      alert("Cập nhật thang lương thành công!");
+      toast.success("Cập nhật thang lương thành công!");
       getAllThangLuongFullTime();
       getAllThangLuongParTime();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalUpdate(false);
   };

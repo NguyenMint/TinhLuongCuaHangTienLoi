@@ -17,6 +17,7 @@ import { getChiNhanh } from "../api/apiChiNhanh";
 import { CreatePayrollModal } from "../components/Payroll/CreatePayrollModal";
 import { fetchAllNhanVien } from "../api/apiTaiKhoan";
 import { Pagination } from "../components/Pagination";
+import { toast } from "react-toastify";
 export function PayrollPage() {
   // State variables
   const [payrolls, setPayrolls] = useState([]);
@@ -225,7 +226,7 @@ export function PayrollPage() {
   const handleDelete = async (KyLuong) => {
     if (window.confirm("Bạn có chắc chắn muốn hủy bảng lương này?")) {
       await deleteBangLuong(KyLuong);
-      alert("Bảng lương đã được hủy");
+      toast.success("Bảng lương đã được hủy");
       await fetchAllBangLuong();
       await fetchBLByCN();
       setShowDetail(false);
@@ -245,7 +246,7 @@ export function PayrollPage() {
 
   const handleCreatePayrollModal = async (form) => {
     if (!form.Thang || !form.Nam) {
-      alert("Vui lòng nhập đầy đủ tháng và năm.");
+      toast.warning("Vui lòng nhập đầy đủ tháng và năm.");
       return;
     }
     try {
@@ -254,11 +255,12 @@ export function PayrollPage() {
       if (result) {
         await fetchAllBangLuong();
         await fetchBLByCN();
+        toast.success("Tạo bảng lương thành công!");
       }
       setShowCreatePayroll(false);
       setSelectedEmployees([]);
     } catch (error) {
-      alert("Có lỗi xảy ra khi tạo bảng lương!");
+      toast.error("Có lỗi xảy ra khi tạo bảng lương!");
       console.error("Error creating payroll:", error);
     } finally {
       setLoading(false);

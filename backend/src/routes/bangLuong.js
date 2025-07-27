@@ -15,4 +15,8 @@ router.post("/createAll",authMiddleware, authorizeRoles(1, 3), bangLuongControll
 router.delete("/deleteKyLuong",authMiddleware, authorizeRoles(1, 3), bangLuongController.deleteBL);
 router.get("/:id",authMiddleware, authorizeRoles(1, 3), bangLuongController.findOne);
 
+router.post('/auto-payroll/trigger', bangLuongController.triggerAutoPayroll);
+
+
+
 module.exports = router;

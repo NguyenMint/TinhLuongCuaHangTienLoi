@@ -19,6 +19,7 @@ import { FileViewerModal } from "./FileViewerModal";
 import { EditHopDong } from "./EditHopDong";
 import { AddHopDong } from "./AddHopDong";
 import { deleteHopDong } from "../../../api/apiHopDong";
+import { toast } from "react-toastify";
 
 export const HopDongTab = ({
   hopDongs,
@@ -57,12 +58,12 @@ export const HopDongTab = ({
       try {
         const result = await deleteHopDong(hopdong.MaHDLD);
         if (result && result.success === false) {
-          alert(result.message || "Xóa hợp đồng thất bại.");
+          toast.error(result.message || "Xóa hợp đồng thất bại.");
         } else {
           onSuccess();
         }
       } catch (error) {
-        alert("Đã xảy ra lỗi khi xóa hợp đồng.");
+        toast.error("Đã xảy ra lỗi khi xóa hợp đồng.");
         console.error(error);
       }
     }
@@ -104,7 +105,7 @@ export const HopDongTab = ({
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      alert("Đã xảy ra lỗi khi tải file: " + error.message);
+      toast.error("Đã xảy ra lỗi khi tải file: " + error.message);
       console.error(error);
     }
   };
@@ -139,7 +140,7 @@ export const HopDongTab = ({
                   {hd.TenHD}
                 </h3>
                 <div className="flex items-center">
-                  {hd.TrangThai ? (
+                  {hd.NgayKetThuc > new Date().toISOString() ? (
                     <Check className="w-5 h-5 text-green-300" />
                   ) : (
                     <X className="w-5 h-5 text-red-300" />
@@ -180,12 +181,14 @@ export const HopDongTab = ({
               <div className="flex items-center justify-between pt-2">
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    hd.TrangThai
+                    hd.NgayKetThuc > new Date().toISOString()
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {hd.TrangThai ? "Còn hiệu lực" : "Hết hiệu lực"}
+                  {hd.NgayKetThuc > new Date().toISOString()
+                    ? "Còn hiệu lực"
+                    : "Hết hiệu lực"}
                 </span>
               </div>
             </div>

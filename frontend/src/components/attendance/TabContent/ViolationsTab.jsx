@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { deleteKTKL } from "../../../api/apiKTKL";
+import { toast } from "react-toastify";
 
 const violationTypes = [
   "Ngủ gật trong giờ",
@@ -58,7 +59,7 @@ const ViolationsTab = ({ violations = [], onUpdate, formData }) => {
       onUpdate(updatedViolations);
     } catch (error) {
       console.error("Error deleting violation:", error);
-      alert("Lỗi khi xóa vi phạm: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi khi xóa vi phạm: " + (error.message || "Lỗi không xác định"));
     } finally {
       setIsDeleting(null);
     }

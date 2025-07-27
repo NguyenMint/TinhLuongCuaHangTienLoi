@@ -4,6 +4,7 @@ import { getHeSoPhuCap, deleteHeSoPhuCap } from "../../api/apiHeSoPC";
 import { AddAllowanceCoefficientForm } from "../../components/AllowanceCoefficient/AddNewAllowanceCoefficientModal";
 import { UpdateAllowanceCoefficientForm } from "../../components/AllowanceCoefficient/UpdateAllowaceCoefficientModal,";
 import { ConfirmDeleteModal } from "../../components/ModalDelete";
+import { toast } from "react-toastify";
 export function AllowanceCoefficientPage() {
   const [data, setData] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -66,14 +67,14 @@ export function AllowanceCoefficientPage() {
     try {
       const result = await deleteHeSoPhuCap(maHSN);
       if (!result.success) {
-        alert(result.message || "Xóa Hệ số phụ cấp thất bại.");
+        toast.error(result.message || "Xóa Hệ số phụ cấp thất bại.");
         return;
       }
-      alert("Xóa Hệ số phụ cấp thành công!");
+      toast.success("Xóa Hệ số phụ cấp thành công!");
       fetchHeSoPhuCap();
     } catch (error) {
       console.error("Lỗi không xác định:", error);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalDelete(false);
   };

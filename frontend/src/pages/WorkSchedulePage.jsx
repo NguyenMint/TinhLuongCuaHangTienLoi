@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  BellIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, BellIcon } from "lucide-react";
 import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks, isBefore, startOfDay } from "date-fns";
@@ -17,6 +13,7 @@ import {
 import { fetchCaLam } from "../api/apiCaLam.js";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const WorkSchedule = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -97,7 +94,7 @@ export const WorkSchedule = () => {
     const selectedDate = startOfDay(new Date(date));
 
     if (isBefore(selectedDate, today)) {
-      alert("Không thể thêm ca làm việc cho ngày đã qua.");
+      toast.warning("Không thể thêm ca làm việc cho ngày đã qua.");
       return;
     }
 
@@ -113,22 +110,17 @@ export const WorkSchedule = () => {
   };
 
   // Moved submit function to parent component
-  const handleSubmitShift = async (
-    selectedShifts,
-    repeatWeekly,
-    applyToOthers
-  ) => {
+  const handleSubmitShift = async (selectedShifts) => {
     try {
       const selectedShiftIds = Object.keys(selectedShifts).filter(
         (key) => selectedShifts[key]
       );
 
       if (selectedShiftIds.length === 0) {
-        alert("Vui lòng chọn ít nhất một ca làm việc.");
+        toast.warning("Vui lòng chọn ít nhất một ca làm việc.");
         return;
       }
 
-      // Create requests with proper await
       const requests = selectedShiftIds.map(async (MaCaLam) => {
         const formData = {
           MaTK: selectedEmployee.MaTK,
@@ -143,16 +135,16 @@ export const WorkSchedule = () => {
 
       const hasErrors = results.some((result) => result.message);
       if (hasErrors) {
-        alert("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
+        toast.error("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
         return;
       }
-
+      toast.success("Thêm ca làm việc thành công!");
       // Refresh data and close modal
       await getAllLichLamViec();
       handleModalClose();
     } catch (error) {
       console.error("Error submitting shift:", error);
-      alert("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
+      toast.error("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
     }
   };
 
@@ -200,15 +192,16 @@ export const WorkSchedule = () => {
       )
     ) {
       if (!shift || !shift.MaLLV) {
-        alert("Không tìm thấy mã đăng ký ca hợp lệ để xoá.");
+        toast.warning("Không tìm thấy mã đăng ký ca hợp lệ để xoá.");
         return;
       }
       try {
         const result = await deleteLichLamViec(shift.MaLLV);
         if (!result.success) {
-          alert(result.message || "Xóa ca làm thất bại.");
+          toast.error(result.message || "Xóa ca làm thất bại.");
           return;
         }
+        toast.success("Xoá ca làm việc thành công!");
         await getAllLichLamViec();
       } catch (error) {
         console.error("Lỗi khi xoá ca:", error);

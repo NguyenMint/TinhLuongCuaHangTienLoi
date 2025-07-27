@@ -5,6 +5,7 @@ import { AddDependentPersonForm } from "./AddNewDependentPersonModal";
 import { UpdateDependentPersonForm } from "./UpdateDependentPersonModal";
 import { ConfirmDeleteModal } from "../../ModalDelete";
 import { deleteNguoiPhuThuoc } from "../../../api/apiNguoiPhuThuoc";
+import { toast } from "react-toastify";
 export const DependentPersonList = ({ employee }) => {
   const [dependentPersons, setDependentPersons] = useState([]);
   const [showModalAdd, setShowModalAdd] = useState(false);
@@ -25,14 +26,14 @@ export const DependentPersonList = ({ employee }) => {
     try {
       const result = await deleteNguoiPhuThuoc(selectedMaNPT);
       if (!result.success) {
-        alert(result.message || "Xóa người phụ thuộc thất bại.");
+        toast.error(result.message || "Xóa người phụ thuộc thất bại.");
         return;
       }
-      alert("Xóa người phụ thuộc thành công!");
+      toast.success("Xóa người phụ thuộc thành công!");
       fetchNguoiPhuThuocByNV();
     } catch (error) {
       console.error("Lỗi không xác định:", error);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalDelete(false);
   };

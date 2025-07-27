@@ -20,12 +20,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     TrangThai: {
-      type: DataTypes.ENUM('Chờ duyệt','Đang nghỉ','Đã kết thúc','Đã duyệt'),
-      allowNull: false
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: 1
     },
     FileGiayThaiSan: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
+      unique: "FileGiayThaiSan"
     },
     MaTK: {
       type: DataTypes.INTEGER,
@@ -54,6 +56,14 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "MaNTS" },
+        ]
+      },
+      {
+        name: "FileGiayThaiSan",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "FileGiayThaiSan" },
         ]
       },
       {

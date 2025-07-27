@@ -1,9 +1,39 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export function CreatePayrollModal({ setShowCreatePayroll, onSave }) {
-  const [form, setForm] = useState({
-    Thang: "",
-    Nam: "",
+  // Function to get previous month's data
+  const getPreviousMonth = () => {
+    const now = new Date();
+    const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return {
+      month: prevMonth.getMonth() + 1, // getMonth() returns 0-11, so add 1
+      year: prevMonth.getFullYear()
+    };
+  };
+
+  const isMonthDisabled = (month, year) => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; 
+    
+    if (year > currentYear) {
+      return true;
+    }
+    
+    if (year === currentYear && month > currentMonth) {
+      return true;
+    }
+    
+    return false;
+  };
+
+  const [form, setForm] = useState(() => {
+    const { month, year } = getPreviousMonth();
+    return {
+      Thang: month.toString(),
+      Nam: year.toString(),
+    };
   });
 
   const handleChange = (e) => {
@@ -18,7 +48,7 @@ export function CreatePayrollModal({ setShowCreatePayroll, onSave }) {
     e.preventDefault();
 
     if (!form.Thang || !form.Nam) {
-      alert("Vui lòng chọn tháng và năm!");
+      toast.warning("Vui lòng chọn tháng và năm!");
       return;
     }
 
@@ -56,7 +86,11 @@ export function CreatePayrollModal({ setShowCreatePayroll, onSave }) {
                 >
                   <option value="">-- Chọn tháng --</option>
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                    <option key={m} value={m}>
+                    <option 
+                      key={m} 
+                      value={m}
+                      disabled={isMonthDisabled(m, parseInt(form.Nam))}
+                    >
                       Tháng {m}
                     </option>
                   ))}
@@ -75,10 +109,14 @@ export function CreatePayrollModal({ setShowCreatePayroll, onSave }) {
                 >
                   <option value="">-- Chọn năm --</option>
                   {Array.from(
-                    { length: 2 },
-                    (_, i) => new Date().getFullYear() - 1 + i
+                    { length: 3 }, // Increased to 3 to show more years for better UX
+                    (_, i) => new Date().getFullYear() - 2 + i
                   ).map((y) => (
-                    <option key={y} value={y}>
+                    <option 
+                      key={y} 
+                      value={y}
+                      disabled={y > new Date().getFullYear()}
+                    >
                       Năm {y}
                     </option>
                   ))}

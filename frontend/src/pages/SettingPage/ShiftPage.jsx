@@ -4,6 +4,7 @@ import { deleteCaLam, fetchCaLam } from "../../api/apiCaLam.js";
 import {AddShiftForm} from "../../components/Shift/AddNewShiftModal";
 import {ConfirmDeleteModal} from "../../components/ModalDelete";
 import {UpdateShiftForm} from "../../components/Shift/UpdateShiflModal";
+import { toast } from "react-toastify";
 export function ShiftPage() {
   const [data, setData] = useState();
   const [showModalAdd,setShowModalAdd] = useState(false);
@@ -23,14 +24,14 @@ export function ShiftPage() {
     try {
       const result = await deleteCaLam(maCa);
       if (!result.success) {
-        alert(result.message || "Xóa ca làm thất bại.");
+        toast.error(result.message || "Xóa ca làm thất bại.");
         return;
       }
-      alert("Xóa ca làm thành công!");
+      toast.success("Xóa ca làm thành công!");
       getDataShift();
     } catch (error) {
       console.error("Lỗi không xác định:", error);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalDelete(false);
   }

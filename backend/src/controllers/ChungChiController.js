@@ -2,12 +2,37 @@ const db = require("../models");
 const ChungChi = db.ChungChi;
 const fs = require("fs");
 const path = require("path");
+const { Op, or } = require("sequelize");
 
 class ChungChiController {
+  static async updateExpiredCertificates() {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); 
+
+      await ChungChi.update(
+        { TrangThai: 0 }, 
+        {
+          where: {
+            NgayHetHan: {
+              [Op.lt]: today,
+            },
+            TrangThai: 1,
+          },
+        }
+      );
+    } catch (error) {
+      console.log("ERROR updating expired certificates: " + error);
+    }
+  }
+
   async getByMaTK(req, res) {
     try {
+      await ChungChiController.updateExpiredCertificates();
+
       const chungChi = await ChungChi.findAll({
         where: { MaTK: req.params.matk },
+        order: [["TrangThai", "DESC"]],
       });
       if (!chungChi) {
         return res.status(404).json({ message: "Chứng chỉ không tồn tại" });
@@ -41,7 +66,6 @@ class ChungChiController {
   }
 
   async update(req, res) {
-    
     try {
       const chungChi = await ChungChi.findByPk(req.params.id);
       if (!chungChi) {
@@ -49,15 +73,11 @@ class ChungChiController {
       }
 
       let updateData = { ...req.body };
-      
+
       if (req.file) {
         // Delete old file if exists
         if (chungChi.FileCC) {
-          const oldFilePath = path.join(
-            __dirname,
-            "../../",
-            chungChi.FileCC
-          );
+          const oldFilePath = path.join(__dirname, "../../", chungChi.FileCC);
           if (fs.existsSync(oldFilePath)) {
             fs.unlinkSync(oldFilePath);
           }

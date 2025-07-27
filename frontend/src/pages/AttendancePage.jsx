@@ -9,6 +9,8 @@ import { chamCong, update_chamcong, getTimeServer } from "../api/apiChamCong";
 import { createKTKL } from "../api/apiKTKL";
 import Search from "../components/search.jsx";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
+import { calculatePhat } from "../utils/TreSom";
+import { toast } from "react-toastify";
 
 export function AttendancePage() {
   const [shifts, setShifts] = useState([]);
@@ -160,7 +162,7 @@ export function AttendancePage() {
         const failedRecords = results.filter((res) => !res.success);
         if (failedRecords.length > 0) {
           console.warn("Một số bản ghi bị lỗi:", failedRecords);
-          alert(
+          toast.warning(
             `Chấm công đã được lưu, nhưng có ${failedRecords.length} bản ghi khen thưởng/vi phạm bị lỗi.`
           );
         }
@@ -177,10 +179,10 @@ export function AttendancePage() {
 
       await getAllLichLamViec();
       setIsModalOpen(false);
-      alert("Đã duyệt chấm công thành công!");
+      toast.success("Đã duyệt chấm công thành công!");
     } catch (error) {
       console.error("Lỗi khi lưu dữ liệu:", error);
-      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Lỗi không xác định"}`);
+      toast.error(`Lỗi khi lưu dữ liệu: ${error.message || "Lỗi không xác định"}`);
     }
   };
 
@@ -190,18 +192,17 @@ export function AttendancePage() {
   };
 
   const handleApproveAllToday = async () => {
-    const todayStr = format(currentDate, "yyyy-MM-dd");
-    // Lọc các lịch làm việc trong ngày hiện tại và chưa duyệt
+    const today = format(currentDate, "yyyy-MM-dd");
     const toApprove = filteredLLVs.filter((llv) => {
       const chamCong = llv.cham_congs && llv.cham_congs[0];
       return (
-        llv.NgayLam === todayStr &&
+        llv.NgayLam === today &&
         chamCong &&
         chamCong.trangthai === "Chờ duyệt"
       );
     });
     if (toApprove.length === 0) {
-      alert("Không có lịch làm việc nào cần duyệt hôm nay.");
+      toast.warning("Không có lịch làm việc nào cần duyệt hôm nay.");
       return;
     }
     let successCount = 0;
@@ -218,6 +219,29 @@ export function AttendancePage() {
           llv.NgayLam,
           llv.MaLLV
         );
+        const luongTheoGio = llv.MaTK_tai_khoan?.LuongTheoGioHienTai;
+        if (luongTheoGio) {
+          if (chamCong.DiTre && chamCong.DiTre > 0) {
+            await createKTKL({
+              MaLLV: llv.MaLLV,
+              ThuongPhat: 0,
+              LyDo: "Đi trễ",
+              MucThuongPhat: calculatePhat(chamCong.DiTre, luongTheoGio),
+              DuocMienThue: 1,
+              MaTK: llv.MaTK_tai_khoan.MaTK,
+            });
+          }
+          if (chamCong.VeSom && chamCong.VeSom > 0) {
+            await createKTKL({
+              MaLLV: llv.MaLLV,
+              ThuongPhat: 0,
+              LyDo: "Về sớm",
+              MucThuongPhat: calculatePhat(chamCong.VeSom, luongTheoGio),
+              DuocMienThue: 1,
+              MaTK: llv.MaTK_tai_khoan.MaTK,
+            });
+          }
+        }
         if (res.success) successCount++;
         else failCount++;
       } catch (err) {
@@ -225,7 +249,7 @@ export function AttendancePage() {
       }
     }
     await getAllLichLamViec();
-    alert(
+    toast.success(
       `Đã duyệt ${successCount} lịch làm việc thành công. ${
         failCount > 0 ? failCount + " lịch bị lỗi." : ""
       }`

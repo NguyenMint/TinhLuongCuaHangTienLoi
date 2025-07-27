@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { deleteKTKL } from "../../../api/apiKTKL";
+import { toast } from "react-toastify";
 
 const rewardTypes = [
   "Đi làm đúng giờ",
@@ -58,7 +59,7 @@ const RewardsTab = ({ rewards = [], onUpdate, formData }) => {
       onUpdate(updatedRewards);
     } catch (error) {
       console.error("Error deleting reward:", error);
-      alert("Lỗi khi xóa vi phạm: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi khi xóa vi phạm: " + (error.message || "Lỗi không xác định"));
     } finally {
       setIsDeleting(null);
     }

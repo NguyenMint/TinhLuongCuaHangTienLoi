@@ -12,6 +12,9 @@ import { DependentPersonList } from "./DependentPersonTab/DependentPersonList";
 import { LeaveRequestTab } from "./LeaveRequestHistoryTab/LeaveRequestList";
 import { NghiThaiSanTab } from "./NghiThaiSanTab";
 import { getNghiThaiSanByMaTK } from "../../api/apiNghiThaiSan";
+import { fetchLichSuTangLuong } from "../../api/apiTaiKhoan";
+import { formatCurrency } from "../../utils/format";
+import { toast } from "react-toastify";
 
 export const EmployeeDetail = ({
   selectedEmployee,
@@ -28,6 +31,7 @@ export const EmployeeDetail = ({
   setSelectedEmployee,
 }) => {
   const [quyenLoiThaiSan, setQuyenLoiThaiSan] = useState(false);
+  const [lichSuTangLuong, setLichSuTangLuong] = useState([]);
 
   useEffect(() => {
     let ignore = false;
@@ -36,7 +40,7 @@ export const EmployeeDetail = ({
       const res = await getNghiThaiSanByMaTK(selectedEmployee.MaTK);
       const today = new Date();
       const hasThaiSan = res.data.some((nts) => {
-        if (nts.TrangThai === "Đang nghỉ" || nts.TrangThai === "Đã duyệt") {
+        if (nts.TrangThai == 1) {
           const start = new Date(nts.NgayBatDau);
           const end = new Date(nts.NgayKetThuc);
           return today >= start && today <= end;
@@ -51,6 +55,12 @@ export const EmployeeDetail = ({
     };
   }, [selectedEmployee, showDetail]);
 
+  useEffect(() => {
+    if (showDetail && selectedEmployee) {
+      fetchLichSuTangLuong(selectedEmployee.MaTK).then(setLichSuTangLuong);
+    }
+  }, [showDetail, selectedEmployee]);
+
   const handleDungLam = async (MaTK) => {
     const confirmed = window.confirm(
       "Bạn có chắc chắn cho nhân viên này ngừng làm việc?"
@@ -61,7 +71,7 @@ export const EmployeeDetail = ({
       onEmployeeStatusChange();
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Lỗi: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi: " + (error.message || "Lỗi không xác định"));
     }
   };
 
@@ -75,7 +85,7 @@ export const EmployeeDetail = ({
       onEmployeeStatusChange();
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Lỗi: " + (error.message || "Lỗi không xác định"));
+      toast.error("Lỗi: " + (error.message || "Lỗi không xác định"));
     }
   };
 
@@ -212,7 +222,45 @@ export const EmployeeDetail = ({
             {/* Tab content */}
             <div className="p-4">
               {activeTab === "info" && (
-                <InfoTab selectedEmployee={selectedEmployee} />
+                <>
+                  <InfoTab selectedEmployee={selectedEmployee} />
+                  {/* Lịch sử tăng lương */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-2">Lịch sử tăng lương</h3>
+                    {lichSuTangLuong.length === 0 ? (
+                      <div className="text-gray-500">Chưa có lịch sử tăng lương</div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full border text-sm">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="px-3 py-2 border">Ngày áp dụng</th>
+                              <th className="px-3 py-2 border">Bậc lương cũ</th>
+                              <th className="px-3 py-2 border">Bậc lương mới</th>
+                              <th className="px-3 py-2 border">Lương cơ bản cũ</th>
+                              <th className="px-3 py-2 border">Lương cơ bản mới</th>
+                              <th className="px-3 py-2 border">Lương theo giờ cũ</th>
+                              <th className="px-3 py-2 border">Lương theo giờ mới</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {lichSuTangLuong.map((row, idx) => (
+                              <tr key={idx} className="text-center">
+                                <td className="border px-2 py-1">{row.NgayApDung}</td>
+                                <td className="border px-2 py-1">{row.BacLuongCu ?? '-'}</td>
+                                <td className="border px-2 py-1">{row.BacLuongMoi ?? '-'}</td>
+                                <td className="border px-2 py-1">{row.LuongCoBanCu ? formatCurrency(row.LuongCoBanCu) : '-'}</td>
+                                <td className="border px-2 py-1">{row.LuongCoBanMoi ? formatCurrency(row.LuongCoBanMoi) : '-'}</td>
+                                <td className="border px-2 py-1">{row.LuongTheoGioCu ? formatCurrency(row.LuongTheoGioCu) : '-'}</td>
+                                <td className="border px-2 py-1">{row.LuongTheoGioMoi ? formatCurrency(row.LuongTheoGioMoi) : '-'}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
               {activeTab === "chungchi" && (
                 <CertificatesTab

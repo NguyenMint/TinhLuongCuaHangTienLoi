@@ -4,21 +4,19 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import Shift from "./Shift";
 import { createLLV } from "../../api/apiLichLamViec";
+import { toast } from "react-toastify";
 export const AddShiftModal = ({
   isOpen,
   onClose,
   employee,
   date,
   shifts,
-  onSuccess,
   schedules,
   onSubmit
 }) => {
   // console.log(date);
   // console.log(employee);
   const [selectedShifts, setSelectedShifts] = useState({});
-  const [repeatWeekly, setRepeatWeekly] = useState(false);
-  const [applyToOthers, setApplyToOthers] = useState(false);
   const [availableShifts, setavailableShifts] = useState([]);
 
   useEffect(() => {
@@ -44,12 +42,11 @@ export const AddShiftModal = ({
       Object.keys(selectedShifts).filter((key) => selectedShifts[key])
         .length === 0
     ) {
-      alert("Vui lòng chọn ít nhất một ca làm việc.");
+      toast.warning("Vui lòng chọn ít nhất một ca làm việc.");
       return;
     }
 
-    // Call parent's submit function
-    await onSubmit(selectedShifts, repeatWeekly, applyToOthers);
+    await onSubmit(selectedShifts);
   };
 
   if (!isOpen) return null;

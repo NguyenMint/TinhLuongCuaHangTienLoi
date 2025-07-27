@@ -129,7 +129,7 @@ class TaiKhoanController {
         if (req.file) {
           const filePath = path.join(
             __dirname,
-            "../../uploads/avatars",
+            "../../",
             req.file.filename
           );
           fs.unlink(filePath, (err) => {
@@ -188,7 +188,7 @@ class TaiKhoanController {
         if (req.file) {
           const filePath = path.join(
             __dirname,
-            "../../uploads/avatars",
+            "../../",
             req.file.filename
           );
           fs.unlink(filePath, (err) => {
@@ -233,7 +233,35 @@ class TaiKhoanController {
         });
         updateData.Avatar = path.join("uploads/avatars", req.file.filename);
       }
+      const isPartTime = taikhoan.LoaiNV === 'PartTime';
+
+      if (isPartTime) {
+        if (updateData.LuongTheoGioHienTai !== undefined && taikhoan.LuongTheoGioHienTai != updateData.LuongTheoGioHienTai) {
+          await db.LichSuTangLuong.create({
+            MaTK: taikhoan.MaTK,
+            LuongTheoGioCu: taikhoan.LuongTheoGioHienTai,
+            LuongTheoGioMoi: updateData.LuongTheoGioHienTai,
+            NgayApDung: new Date()
+          });
+        }
+      } else {
+        if ((Number(updateData.BacLuong) !== undefined && Number(taikhoan.BacLuong) != Number(updateData.BacLuong)) ||
+            (Number(updateData.LuongCoBanHienTai) !== undefined && Number(taikhoan.LuongCoBanHienTai) != Number(updateData.LuongCoBanHienTai))) {
+          await db.LichSuTangLuong.create({
+            MaTK: taikhoan.MaTK,
+            BacLuongCu: taikhoan.BacLuong,
+            BacLuongMoi: updateData.BacLuong !== undefined ? updateData.BacLuong : taikhoan.BacLuong,
+            LuongCoBanCu: taikhoan.LuongCoBanHienTai,
+            LuongTheoGioCu: taikhoan.LuongTheoGioHienTai,
+            LuongTheoGioMoi: updateData.LuongTheoGioHienTai !== undefined ? updateData.LuongTheoGioHienTai : taikhoan.LuongTheoGioHienTai,
+            LuongCoBanMoi: updateData.LuongCoBanHienTai !== undefined ? updateData.LuongCoBanHienTai : taikhoan.LuongCoBanHienTai,
+            NgayApDung: new Date()
+          });
+        }
+      }
       await taikhoan.update(updateData);
+
+
       res.status(200).json(taikhoan);
     } catch (error) {
       console.error("Lỗi khi update tài khoản:", error);

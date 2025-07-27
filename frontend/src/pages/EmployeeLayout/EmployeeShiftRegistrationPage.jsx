@@ -11,6 +11,7 @@ import {
   huyDangKyCa,
   huyXinChuyenCa,
 } from "../../api/apiLichLamViec";
+import { toast } from "react-toastify";
 export const EmployeeShiftRegistrationPage = () => {
   const currentDate = new Date();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -44,7 +45,7 @@ export const EmployeeShiftRegistrationPage = () => {
     const today = startOfDay(new Date());
     const selectedDate = startOfDay(new Date(day));
     if (isBefore(selectedDate, today)) {
-      alert("Không thể đăng ký ca làm việc cho ngày đã qua.");
+      toast.error("Không thể đăng ký ca làm việc cho ngày đã qua.");
       return;
     }
     const formData = {
@@ -54,10 +55,10 @@ export const EmployeeShiftRegistrationPage = () => {
     };
     const response = await dangKyCa(formData);
     if (!response.success) {
-      alert("Đăng ký ca làm thất bại");
+      toast.error("Đăng ký ca làm thất bại");
       return;
     }
-    alert("Đăng ký ca thành công");
+    toast.success("Đăng ký ca thành công");
     fetchLichLamViecByNhanVien();
   };
   const handleXinChuyenCa = async (MaCa, day) => {
@@ -65,7 +66,7 @@ export const EmployeeShiftRegistrationPage = () => {
     const today = startOfDay(new Date());
     const selectedDate = startOfDay(new Date(day));
     if (isBefore(selectedDate, today)) {
-      alert("Không thể xin chuyển ca làm việc cho ngày đã qua.");
+      toast.error("Không thể xin chuyển ca làm việc cho ngày đã qua.");
       return;
     }
     const formData = {
@@ -76,10 +77,10 @@ export const EmployeeShiftRegistrationPage = () => {
     };
     const response = await xinChuyenCa(formData);
     if (!response.success) {
-      alert(response.message || "Xin chuyển ca làm thất bại");
+      toast.error(response.message || "Xin chuyển ca làm thất bại");
       return;
     }
-    alert("Xin chuyển ca thành công");
+    toast.success("Xin chuyển ca thành công");
     setShowLichLamViec(false);
     setShowControl(false);
     setSelectedLLV(null);
@@ -88,22 +89,22 @@ export const EmployeeShiftRegistrationPage = () => {
   const handleHuyDangKy = async () => {
     const response = await huyDangKyCa(selectedLLV.MaLLV);
     if (!response.success) {
-      alert(response.message || "Hủy đăng ký ca thất bại");
+      toast.error(response.message || "Hủy đăng ký ca thất bại");
       setShowControl(false);
       return;
     }
-    alert("Hủy ca thành công");
+    toast.success("Hủy ca thành công");
     setShowControl(false);
     fetchLichLamViecByNhanVien();
   };
   const handleHuyXinChuyenCa = async () => {
     const response = await huyXinChuyenCa(selectedLLV.MaLLV);
     if (!response.success) {
-      alert(response.message || "Hủy đăng ký ca thất bại");
+      toast.error(response.message || "Hủy đăng ký ca thất bại");
       setShowControl(false);
       return;
     }
-    alert("Hủy chuyển ca thành công");
+    toast.success("Hủy chuyển ca thành công");
     setShowControl(false);
     fetchLichLamViecByNhanVien();
   };

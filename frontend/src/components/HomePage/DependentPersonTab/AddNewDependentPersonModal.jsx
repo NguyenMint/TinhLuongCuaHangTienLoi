@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Save, XCircle } from "lucide-react";
 import { createNguoiPhuThuoc } from "../../../api/apiNguoiPhuThuoc";
+import { toast } from "react-toastify";
 export const AddDependentPersonForm = ({
   employee,
   setShowModalAdd,
@@ -35,14 +36,14 @@ export const AddDependentPersonForm = ({
     try {
       const result = await createNguoiPhuThuoc(form);
       if (!result.success) {
-        alert(result.message || "Thêm người phụ thuộc thất bại.");
+        toast.error(result.message || "Thêm người phụ thuộc thất bại.");
         return;
       }
-      alert("Thêm người phụ thuộc thành công!");
+      toast.success("Thêm người phụ thuộc thành công!");
       fetchNguoiPhuThuoc();
     } catch (err) {
       console.error("Lỗi không xác định:", err);
-      alert("Lỗi không xác định. Vui lòng thử lại.");
+      toast.error("Lỗi không xác định. Vui lòng thử lại.");
     }
     setShowModalAdd(false);
   };
