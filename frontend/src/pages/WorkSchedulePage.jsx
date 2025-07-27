@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  BellIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, BellIcon } from "lucide-react";
 import { ScheduleTable } from "../components/Shift/ScheduleTable";
 import { AddShiftModal } from "../components/Shift/AddShiftModal";
 import { format, addWeeks, subWeeks, isBefore, startOfDay } from "date-fns";
@@ -114,11 +110,7 @@ export const WorkSchedule = () => {
   };
 
   // Moved submit function to parent component
-  const handleSubmitShift = async (
-    selectedShifts,
-    repeatWeekly,
-    applyToOthers
-  ) => {
+  const handleSubmitShift = async (selectedShifts) => {
     try {
       const selectedShiftIds = Object.keys(selectedShifts).filter(
         (key) => selectedShifts[key]
@@ -129,7 +121,6 @@ export const WorkSchedule = () => {
         return;
       }
 
-      // Create requests with proper await
       const requests = selectedShiftIds.map(async (MaCaLam) => {
         const formData = {
           MaTK: selectedEmployee.MaTK,
@@ -147,7 +138,7 @@ export const WorkSchedule = () => {
         toast.error("Có lỗi xảy ra khi thêm ca làm việc. Vui lòng thử lại.");
         return;
       }
-
+      toast.success("Thêm ca làm việc thành công!");
       // Refresh data and close modal
       await getAllLichLamViec();
       handleModalClose();
@@ -210,6 +201,7 @@ export const WorkSchedule = () => {
           toast.error(result.message || "Xóa ca làm thất bại.");
           return;
         }
+        toast.success("Xoá ca làm việc thành công!");
         await getAllLichLamViec();
       } catch (error) {
         console.error("Lỗi khi xoá ca:", error);
