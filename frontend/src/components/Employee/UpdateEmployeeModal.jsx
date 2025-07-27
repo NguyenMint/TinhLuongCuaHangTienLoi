@@ -105,7 +105,7 @@ export function UpdateEmployeeModal({
     }
     const result = await updateEmployee(formData);
     if (!result.success) {
-      toast.error(result.message || "Update nhân viên thất bại.");
+      toast.error(result.message || "Cập nhật nhân viên thất bại.");
       return;
     }
     if (currentUser && currentUser.MaTK === employee.MaTK) {
@@ -117,10 +117,10 @@ export function UpdateEmployeeModal({
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       toast.success(
-        "Update nhân viên thành công! Thông tin cá nhân của bạn đã được cập nhật."
+        "Cập nhật nhân viên thành công!"
       );
     } else {
-      toast.success("Update nhân viên thành công!");
+      toast.success("Cập nhật nhân viên thành công!");
     }
     refreshEmployeeData();
     setShowModalUpdate(false);
@@ -194,7 +194,7 @@ export function UpdateEmployeeModal({
         className="bg-white p-6 rounded shadow-lg w-full max-w-4xl mx-auto relative z-10"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-xl font-bold mb-4 text-center">Update nhân viên</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">Cập nhật nhân viên</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block mb-1 font-medium">Họ tên</label>
@@ -437,7 +437,7 @@ export function UpdateEmployeeModal({
             type="submit"
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
           >
-            Update nhân viên
+            Cập nhật nhân viên
           </button>
         </div>
       </form>

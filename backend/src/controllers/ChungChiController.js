@@ -17,9 +17,7 @@ class ChungChiController {
             NgayHetHan: {
               [Op.lt]: today,
             },
-            TrangThai: {
-              [Op.eq]: [1], 
-            },
+            TrangThai: 1,
           },
         }
       );

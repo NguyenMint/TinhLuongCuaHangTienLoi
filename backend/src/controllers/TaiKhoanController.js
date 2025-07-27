@@ -129,7 +129,7 @@ class TaiKhoanController {
         if (req.file) {
           const filePath = path.join(
             __dirname,
-            "../../uploads/avatars",
+            "../../",
             req.file.filename
           );
           fs.unlink(filePath, (err) => {
@@ -235,8 +235,6 @@ class TaiKhoanController {
       }
       const isPartTime = taikhoan.LoaiNV === 'PartTime';
 
-      console.log("updateData.BacLuong: " ,updateData.BacLuong, "taikhoan.BacLuong: " ,taikhoan.BacLuong); 
-      console.log("updateData.LuongCoBanHienTai: " ,updateData.LuongCoBanHienTai, "taikhoan.LuongCoBanHienTai: " ,taikhoan.LuongCoBanHienTai); 
       if (isPartTime) {
         if (updateData.LuongTheoGioHienTai !== undefined && taikhoan.LuongTheoGioHienTai != updateData.LuongTheoGioHienTai) {
           await db.LichSuTangLuong.create({
