@@ -14,7 +14,10 @@ import { getChungChi } from "../api/apiChungChi.js";
 import { getAllPhuCap } from "../api/apiPhuCap.js";
 import { getHopDong } from "../api/apiHopDong.js";
 import { getDonXinNghi } from "../api/apiNgayNghiPhep.js";
+import { resetPassword } from "../api/apiTaiKhoan.js";
 import { LeaveRequestListModal } from "../components/LeaveRequestList.jsx";
+import { ConfirmResetPassword } from "../components/Employee/ConfirmResetPassword.jsx";
+import { toast } from "react-toastify";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -35,6 +38,7 @@ export function HomePage() {
   const [donXinNghis, setDonXinNghis] = useState([]);
   const [showModalListDonXinNghis, setShowModalListDonXinNghis] =
     useState(false);
+  const [showModalResetPass, setShowModalResetPass] = useState(false);
   // 3 useState đóng mở thêm sửa nhân viên
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
@@ -100,6 +104,24 @@ export function HomePage() {
       setDonXinNghis(response);
     } catch (error) {
       console.error("Lỗi khi lấy đơn xin nghĩ:", error);
+    }
+  };
+  const handleResetPassword = async () => {
+    try {
+      if (!selectedEmployee) {
+        toast.error("Vui lòng chọn nhân viên để đặt lại mật khẩu");
+        return;
+      }
+      const response = await resetPassword(selectedEmployee.MaTK);
+      if (response.success) {
+        setShowModalResetPass(false);
+       toast.success("Đặt lại mật khẩu thành công");
+      }
+      else {
+        toast.error(response.message || "Lỗi khi đặt lại mật khẩu");
+      }
+    } catch (error) {
+      console.error("Lỗi khi reset mật khẩu:", error);
     }
   };
   useEffect(() => {
@@ -289,6 +311,7 @@ export function HomePage() {
             setShowModalUpdate={setShowModalUpdate}
             showDetail={showDetail}
             setShowDetail={setShowDetail}
+            setShowModalResetPass={setShowModalResetPass}
             onSuccess={() => {
               if (selectedEmployee) {
                 fetchPhuCap(selectedEmployee.MaTK);
@@ -303,6 +326,12 @@ export function HomePage() {
             setShowModalDonXinNghis={setShowModalListDonXinNghis}
             requests={donXinNghis}
             fecthRequests={fetchDonXinNghi}
+          />
+        )}
+        {showModalResetPass && (
+          <ConfirmResetPassword
+            setShowModalResetPass={setShowModalResetPass}
+            onAccept={handleResetPassword}
           />
         )}
       </div>

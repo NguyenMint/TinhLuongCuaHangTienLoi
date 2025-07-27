@@ -29,6 +29,7 @@ export const EmployeeDetail = ({
   phuCaps,
   hopDongs,
   setSelectedEmployee,
+  setShowModalResetPass
 }) => {
   const [quyenLoiThaiSan, setQuyenLoiThaiSan] = useState(false);
   const [lichSuTangLuong, setLichSuTangLuong] = useState([]);
@@ -306,6 +307,14 @@ export const EmployeeDetail = ({
 
             {/* Action buttons */}
             <div className="flex sticky bottom-0 justify-end space-x-2 p-4 border-t bg-gray-50">
+            <button
+                onClick={() => {
+                  setShowModalResetPass(true);
+                }}
+                className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md"
+              >
+                Reset mật khẩu
+              </button>
               <button
                 onClick={() => {
                   setShowModalUpdate(true);

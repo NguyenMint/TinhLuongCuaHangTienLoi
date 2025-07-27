@@ -14,6 +14,7 @@ import { ShiftPage } from "./pages/SettingPage/ShiftPage";
 import { SalaryStructure } from "./pages/SettingPage/SalaryStructurePage";
 import { AllowanceCoefficientPage } from "./pages/SettingPage/AllowanceCoefficientPage";
 import { BranchPage } from "./pages/SettingPage/BranchPage";
+import {UtilityPage} from "./pages/UtilityPage";
 // role nhan vien page
 import { EmployeeHomePage } from "./pages/EmployeeLayout/EmployeeHomePage";
 import { SidebarEmployee } from "./components/SidebarEmployee";
@@ -146,6 +147,16 @@ function App() {
             <ProtectedRoute allowedRoles={[3, 1]}>
               <MainLayout>
                 <PayrollPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/utility"
+          element={
+            <ProtectedRoute allowedRoles={[3, 1]}>
+              <MainLayout>
+                <UtilityPage />
               </MainLayout>
             </ProtectedRoute>
           }

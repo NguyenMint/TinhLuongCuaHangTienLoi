@@ -11,6 +11,7 @@ function authMiddleware(req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
+    console.error("Token không hợp lệ:", err);
     return res.status(401).json({ message: "Token không hợp lệ hoặc hết hạn" });
   }
 }
