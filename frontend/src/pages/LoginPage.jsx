@@ -38,7 +38,7 @@ export const LoginPage = () => {
       if (result.success) {
         localStorage.setItem("token", result.data.access_token);
         localStorage.setItem("user", JSON.stringify(result.data.user));
-        if(result.data.user.MaVaiTro===2){
+        if (result.data.user.MaVaiTro === 2) {
           navigate("/employee-home");
         } else {
           navigate("/");
@@ -50,7 +50,7 @@ export const LoginPage = () => {
         });
       }
     }
-    console.log("User",localStorage.getItem("user"));
+    console.log("User", localStorage.getItem("user"));
   };
 
   return (
@@ -58,7 +58,7 @@ export const LoginPage = () => {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
         <div>
           <div className="flex justify-center">
-            <img src="/logo.jpg" className="h-16 w-auto"/>
+            <img src="/logo.jpg" className="h-16 w-auto" />
           </div>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -105,32 +105,6 @@ export const LoginPage = () => {
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
               )}
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Duy trì đăng nhập
-              </label>
-            </div>
-            <div className="text-sm">
-              <a
-                href="/"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Quên mật khẩu?
-              </a>
             </div>
           </div>
           <div>
