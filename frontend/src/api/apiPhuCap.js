@@ -16,6 +16,22 @@ export const getAllPhuCap = async (MaTK) => {
     return { success: false, message: "Lỗi kết nối đến server" };
   }
 };
+export const getAllPhuCapConHieuLuc = async (MaNhanVien) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/phucap/conHieuLuc/${MaNhanVien}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi lấy Phụ cấp:", error);
+    return { success: false, message: "Lỗi kết nối đến server" };
+  }
+};
 export const deletePhuCap = async (MaPhuCap) => {
   try {
     const response = await axios.delete(
