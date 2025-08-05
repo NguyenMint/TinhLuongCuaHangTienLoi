@@ -579,7 +579,6 @@ class bangLuongController {
                 [Op.ne]: "Ngừng làm việc",
               },
             },
-
           },
           {
             model: ChiTietBangLuong,
@@ -634,7 +633,7 @@ class bangLuongController {
           TongPhuCap: payroll.TongPhuCap,
           TongThuong: payroll.TongThuong,
           TongPhat: payroll.TongPhat,
-          ThuNhapTruocThue:payroll.ThuNhapTruocThue,
+          ThuNhapTruocThue: payroll.ThuNhapTruocThue,
           MucGiamTruGiaCanh: payroll.MucGiamTruGiaCanh,
           ThuNhapChiuThue: payroll.ThuNhapChiuThue,
           ThuePhaiDong: payroll.ThuePhaiDong,
@@ -744,6 +743,9 @@ class bangLuongController {
           TongThuong: payroll.TongThuong,
           TongPhat: payroll.TongPhat,
           ThuePhaiDong: payroll.ThuePhaiDong,
+          ThuNhapTruocThue: payroll.ThuNhapTruocThue,
+          MucGiamTruGiaCanh: payroll.MucGiamTruGiaCanh,
+          ThuNhapChiuThue: payroll.ThuNhapChiuThue,
           LuongThucNhan: payroll.LuongThucNhan,
           details: payroll.chi_tiet_bang_luongs.map((detail) => ({
             Ngay: detail.Ngay,
