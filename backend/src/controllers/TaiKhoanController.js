@@ -230,6 +230,7 @@ class TaiKhoanController {
       }
       if (req.file && req.file.filename !== "default.png") {
         const oldAvatarPath = path.join(__dirname, "../../", taikhoan.Avatar);
+        
         fs.unlink(oldAvatarPath, (err) => {
           if (err) console.error("Không thể xóa avatar cũ:", err);
         });

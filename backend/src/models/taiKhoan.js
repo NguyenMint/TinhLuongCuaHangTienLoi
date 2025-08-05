@@ -29,12 +29,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     SoDienThoai: {
-      type: DataTypes.STRING(15),
+      type: DataTypes.STRING(11),
       allowNull: false,
       unique: "SoDienThoai"
     },
     CCCD: {
-      type: DataTypes.STRING(15),
+      type: DataTypes.STRING(12),
       allowNull: false,
       unique: "CCCD"
     },
