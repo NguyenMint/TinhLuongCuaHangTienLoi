@@ -228,12 +228,13 @@ class TaiKhoanController {
           return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
         }
       }
-      if (req.file) {
+      if (req.file && req.file.filename !== "default.png") {
         const oldAvatarPath = path.join(__dirname, "../../", taikhoan.Avatar);
+        
         fs.unlink(oldAvatarPath, (err) => {
           if (err) console.error("Không thể xóa avatar cũ:", err);
         });
-        updateData.Avatar = path.join("uploads/avatars", req.file.filename);
+        updateData.Avatar = path.join("uploads/avatars/", req.file.filename);
       }
       const isPartTime = taikhoan.LoaiNV === 'PartTime';
 
