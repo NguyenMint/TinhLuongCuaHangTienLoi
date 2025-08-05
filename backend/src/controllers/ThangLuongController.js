@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const db = require("../models");
 const ThangLuong = db.ThangLuong;
 const { Op } = db.Sequelize;
@@ -121,6 +122,19 @@ class ThangLuongController {
       const thangLuong = await ThangLuong.findByPk(req.params.id);
       if (!thangLuong) {
         return res.status(404).json({ message: "Thang lương không tồn tại" });
+      }
+      let nhanVien = null;
+      if (thangLuong.LoaiNV === "FullTime") {
+        nhanVien = await db.TaiKhoan.findOne({
+          where:{BacLuong: thangLuong.BacLuong, LuongCoBanHienTai: thangLuong.LuongCoBan}
+        });
+      }else {
+        nhanVien = await db.TaiKhoan.findOne({
+          where:{LuongTheoGioHienTai: thangLuong.LuongTheoGio}
+        });
+      }
+      if(nhanVien){
+        return res.status(400).json({ message: "Không thể xóa thang lương đang được sử dụng" });
       }
       await thangLuong.destroy();
       res.status(200).json({ message: "Xóa thang lương thành công" });

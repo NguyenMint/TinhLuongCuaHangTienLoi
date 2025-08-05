@@ -71,7 +71,7 @@ export const deleteCaLam = async (MaCaLam) => {
     );
     return { success: true, data: response.data.message };
   } catch (error) {
-    if (error.response.status === 404) {
+    if (error.response.status === 404 || error.response.status === 400) {
       return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi tạo Ca làm:", error);

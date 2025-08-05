@@ -71,7 +71,7 @@ export const deleteChiNhanh = async (maCN) => {
     );
     return { success: true, data: response.data };
   } catch (error) {
-    if (error.response?.status === 404) {
+    if (error.response.status === 404 || error.response.status === 400) {
       return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi xóa chi nhánh:", error);

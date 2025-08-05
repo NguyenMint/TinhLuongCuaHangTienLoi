@@ -52,7 +52,10 @@ class CaLamController {
             if (!caLam) {
                 return res.status(404).json({ message: "Ca làm không tồn tại" });
             }
-            
+            const lichLamViec = await db.LichLamViec.findOne({where:{MaCaLam: caLam.MaCa}});
+            if(lichLamViec){
+                return res.status(400).json({ message: "Không thể xóa ca làm này vì đã có lịch làm việc liên quan" });
+            }
             await caLam.destroy();
             res.status(200).json({ message: "Xóa ca làm thành công" });
         } catch (error) {
