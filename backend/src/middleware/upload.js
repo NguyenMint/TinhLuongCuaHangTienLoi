@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const date = new Date().toISOString().replace(/[-:.]/g,'');
         const ext = path.extname(file.originalname);
-        cb(null, `${date}${ext}`);     
+        let maTK = req.body.MaTK || (req.params && req.params.MaTK) || '';
+        let filename = maTK ? `${maTK}_${date}${ext}` : `${date}${ext}`;
+        cb(null, filename);     
     }
 });
 
