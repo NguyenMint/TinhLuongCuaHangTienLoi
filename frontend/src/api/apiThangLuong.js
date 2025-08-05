@@ -104,8 +104,8 @@ export const deleteThangLuong = async (MaThangLuong) => {
     );
     return { success: true, data: response.data.message };
   } catch (error) {
-    if (error.response?.status === 404) {
-      return { success: false, message: "Thang lương không tồn tại" };
+    if (error.response.status === 404 || error.response.status === 400) {
+      return { success: false, message: error.response.data.message };
     }
     console.error("Lỗi xóa thang lương:", error);
     return { success: false, message: "Lỗi kết nối đến server" };

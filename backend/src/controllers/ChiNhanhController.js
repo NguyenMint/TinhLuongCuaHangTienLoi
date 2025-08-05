@@ -60,6 +60,12 @@ class ChiNhanhController {
       if(!chinhanh){
         return res.status(404).json({message:"Chi Nhánh không tồn tại"});
       }
+      const nhanVien = await db.TaiKhoan.findOne({
+        where:{MaCN}
+      });
+      if(nhanVien){
+        return res.status(400).json({message:"Chi nhánh này đang có nhân viên, không thể xóa"});
+      }
       await chinhanh.destroy();
       res.status(200).json({message:"Xóa thành công"});
     } catch (error) {
