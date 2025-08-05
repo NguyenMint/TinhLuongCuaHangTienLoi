@@ -1,21 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatCurrency } from "../../utils/format";
 import { X, FileIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
 import { toast } from "react-toastify";
+import { getAllPhuCapConHieuLuc } from "../../api/apiPhuCap";
 export const PhieuLuongsTab = ({ phieuLuong }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [detailData, setDetailData] = useState([]);
   const [expandedDetails, setExpandedDetails] = useState({});
-  
+  const [phuCaps, setPhuCaps] = useState([]);
   // Hàm mở modal và lấy dữ liệu chi tiết
-  const openDetailModal = async (employee) => {
+  const openDetailModal = (employee) => {
+    fetchPhuCaps(employee.MaNhanVien);
     setShowModal(true);
     setSelectedEmployee(employee);
   };
-
+  const fetchPhuCaps = async (MaNV) => {
+    try{
+      const response = await getAllPhuCapConHieuLuc(MaNV);
+      console.log("Phu Caps:",response);
+      setPhuCaps(response);
+    } catch (error) {
+      console.error("Error fetching Phu Caps:", error);
+      toast.error("Đã xảy ra lỗi khi lấy phụ cấp.");
+    }
+  };
   // Hàm đóng modal
   const closeModal = () => {
     setShowModal(false);
@@ -166,7 +177,10 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
             <th className="border border-gray-300 p-2">Thưởng</th>
             <th className="border border-gray-300 p-2">Phạt</th>
             <th className="border border-gray-300 p-2">Tổng Lương</th>
-            <th className="border border-gray-300 p-2">Thuế</th>
+            <th className="border border-gray-300 p-2">Thu Nhập Trước Thuế</th>
+            <th className="border border-gray-300 p-2">Mức Giảm Trừ Gia Cảnh</th>
+            <th className="border border-gray-300 p-2">Thu Nhập Chịu Thuế</th>
+            <th className="border border-gray-300 p-2">Thuế phải đóng</th>
             <th className="border border-gray-300 p-2">Lương Thực Nhận</th>
           </tr>
         </thead>
@@ -200,6 +214,15 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
               </td>
               <td className="border border-gray-300 p-2 text-right">
                 {formatCurrency(employee.TongLuong)}
+              </td>
+              <td className="border border-gray-300 p-2 text-right">
+                {formatCurrency(employee.ThuNhapTruocThue)}
+              </td>
+              <td className="border border-gray-300 p-2 text-right">
+                {formatCurrency(employee.MucGiamTruGiaCanh)}
+              </td>
+              <td className="border border-gray-300 p-2 text-right">
+                {formatCurrency(employee.ThuNhapChiuThue)}
               </td>
               <td className="border border-gray-300 p-2 text-right">
                 {formatCurrency(employee.ThuePhaiDong)}
@@ -363,6 +386,28 @@ export const PhieuLuongsTab = ({ phieuLuong }) => {
                 ) : (
                   <tr>
                     <td colSpan="10">Không có dữ liệu chấm công</td>
+                  </tr>
+                )}
+                {phuCaps.length > 0 && (
+                  <tr>
+                    <td colSpan="10">
+                      <div className="bg-gray-50 p-3 border-t border-gray-200">
+                        <h4 className="font-semibold text-sm mb-2 text-gray-700">
+                          Chi tiết phụ cấp:
+                        </h4>
+                        <div className="space-y-2">
+                          {phuCaps.map((phuCap, index) => (
+                            <div key={index} className="p-2 border-b border-gray-200">
+                              <div className="flex justify-start gap-6 items-center">
+                                <span className="font-medium">{phuCap.LoaiPhuCap}</span>
+                                <span className="font-bold">{formatCurrency(phuCap.GiaTriPhuCap)}</span>
+                                <span className="text-red-500">({phuCap.TrangThai? "Được miễn thuế" : "Không được miễn thuế" })</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                 )}
               </tbody>

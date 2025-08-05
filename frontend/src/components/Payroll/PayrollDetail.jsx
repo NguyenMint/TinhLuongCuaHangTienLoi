@@ -17,7 +17,7 @@ export function PayrollDetail({
     try {
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Bảng lương");
-      worksheet.mergeCells("A1:K1");
+      worksheet.mergeCells("A1:N1");
       const titleRow = worksheet.getRow(1);
       titleRow.height = 30;
       titleRow.getCell(1).value = "DANH SÁCH BẢNG LƯƠNG NHÂN VIÊN";
@@ -56,6 +56,9 @@ export function PayrollDetail({
         "Tổng thưởng",
         "Tổng phạt",
         "Tổng lương",
+        "Thu nhập trước thuế",
+        "Mức giảm trừ gia cảnh",
+        "Thu nhập chịu thuế",
         "Thuế phải đóng",
         "Lương thực nhận",
       ];
@@ -94,6 +97,9 @@ export function PayrollDetail({
             parseFloat(employee.TongThuong) || 0,
             parseFloat(employee.TongPhat) || 0,
             parseFloat(employee.TongLuong) || 0,
+            parseFloat(employee.ThuNhapTruocThue) || 0,
+            parseFloat(employee.MucGiamTruGiaCanh) || 0,
+            parseFloat(employee.ThuNhapChiuThue) || 0,
             parseFloat(employee.ThuePhaiDong) || 0,
             parseFloat(employee.LuongThucNhan) || 0,
           ]);
@@ -105,6 +111,9 @@ export function PayrollDetail({
           row.getCell(9).numFmt = "#,##0";
           row.getCell(10).numFmt = "#,##0";
           row.getCell(11).numFmt = "#,##0";
+          row.getCell(12).numFmt = "#,##0";
+          row.getCell(13).numFmt = "#,##0";
+          row.getCell(14).numFmt = "#,##0";
 
           row.getCell(1).alignment = { horizontal: "center" };
           row.getCell(2).alignment = { horizontal: "center" };
@@ -116,15 +125,18 @@ export function PayrollDetail({
           row.getCell(9).alignment = { horizontal: "right" };
           row.getCell(10).alignment = { horizontal: "right" };
           row.getCell(11).alignment = { horizontal: "right" };
+          row.getCell(12).alignment = { horizontal: "right" };
+          row.getCell(13).alignment = { horizontal: "right" };
+          row.getCell(14).alignment = { horizontal: "right" };
         });
 
         const totalRow = worksheet.addRow([]);
-        worksheet.mergeCells(`A${totalRow.number}:J${totalRow.number}`);
+        worksheet.mergeCells(`A${totalRow.number}:M${totalRow.number}`);
         const labelCell = totalRow.getCell(1);
         labelCell.value = "TỔNG CỘNG";
         labelCell.alignment = { horizontal: "right", vertical: "middle" };
 
-        const valueCell = totalRow.getCell(11);
+        const valueCell = totalRow.getCell(14);
         valueCell.value = parseFloat(payroll.TongLuongThucNhan) || 0;
 
         totalRow.eachCell({ includeEmpty: true }, (cell) => {
@@ -135,7 +147,7 @@ export function PayrollDetail({
             fgColor: { argb: "4472C4" },
           };
         });
-        valueCell.numFmt = "#,##0.##";
+        valueCell.numFmt = "#,##0";
         valueCell.alignment = { horizontal: "right", vertical: "middle" };
       }
 
@@ -143,6 +155,9 @@ export function PayrollDetail({
         { width: 8 },
         { width: 15 },
         { width: 30 },
+        { width: 20 },
+        { width: 20 },
+        { width: 20 },
         { width: 20 },
         { width: 20 },
         { width: 20 },
