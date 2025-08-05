@@ -6,6 +6,7 @@ const LichLamViec = db.LichLamViec;
 const ChamCong = db.ChamCong;
 const CaLam = db.CaLam;
 const chiTietBangLuongController = require("../controllers/chiTietBangLuongController");
+const { sendMail } = require('../util/util');
 class NgayNghiPhepController {
   async xinNghiPhep(req, res) {
     try {
@@ -107,6 +108,18 @@ class NgayNghiPhepController {
           await taiKhoan.update({
             SoNgayChuaNghi: soNgayConLai,
           });
+        }
+        try {
+          if (taiKhoan && taiKhoan.Email) {
+            await sendMail({
+              to: taiKhoan.Email,
+              subject: 'Thông báo duyệt đơn nghỉ phép',
+              text: `Đơn xin nghỉ phép từ ${nghiPhep.NgayBatDau} đến ${nghiPhep.NgayKetThuc} của bạn đã được duyệt.`,
+              html: `<p>Đơn xin nghỉ phép từ <b>${nghiPhep.NgayBatDau}</b> đến <b>${nghiPhep.NgayKetThuc}</b> của bạn đã được duyệt.</p>`
+            });
+          }
+        } catch (err) {
+          console.warn('Không thể gửi email thông báo:', err.message);
         }
       }
       res.status(200).json(nghiPhep);
