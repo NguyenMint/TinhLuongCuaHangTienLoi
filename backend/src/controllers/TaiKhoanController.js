@@ -154,7 +154,6 @@ class TaiKhoanController {
         deleteUploadedFile();
         return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
       }
-      // Nếu không có file avatar thì gán avatar mặc định
       let avatarPath;
       if (!req.file) {
         avatarPath = "uploads/avatars/default.png";
