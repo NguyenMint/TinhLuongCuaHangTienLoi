@@ -18,6 +18,8 @@ import { resetPassword } from "../api/apiTaiKhoan.js";
 import { LeaveRequestListModal } from "../components/LeaveRequestList.jsx";
 import { ConfirmResetPassword } from "../components/Employee/ConfirmResetPassword.jsx";
 import { toast } from "react-toastify";
+import { saveAs } from "file-saver";
+import ExcelJS from "exceljs";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -115,9 +117,8 @@ export function HomePage() {
       const response = await resetPassword(selectedEmployee.MaTK);
       if (response.success) {
         setShowModalResetPass(false);
-       toast.success("Đặt lại mật khẩu thành công");
-      }
-      else {
+        toast.success("Đặt lại mật khẩu thành công");
+      } else {
         toast.error(response.message || "Lỗi khi đặt lại mật khẩu");
       }
     } catch (error) {
@@ -188,8 +189,112 @@ export function HomePage() {
     console.log("Import file clicked");
   };
 
-  const handleExportFile = () => {
-    console.log("Export file clicked");
+  const handleExportFile = async () => {
+    console.log(filteredEmployees);
+    try {
+      if (!filteredEmployees || filteredEmployees.length === 0) {
+        toast.warning("Không có dữ liệu để xuất!");
+        return;
+      }
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("DanhSachNhanVien");
+      worksheet.mergeCells("A1:K1");
+      const titleRow = worksheet.getRow(1);
+      titleRow.height = 30;
+      titleRow.getCell(1).value = "DANH SÁCH NHÂN VIÊN";
+      titleRow.getCell(1).font = {
+        bold: true,
+        size: 16,
+        name: "Arial",
+        color: { argb: "000000" },
+      };
+      titleRow.getCell(1).alignment = {
+        horizontal: "center",
+        vertical: "middle",
+      };
+      const headers = [
+        "STT",
+        "Mã NV",
+        "Họ tên",
+        "Giới tính",
+        "Ngày sinh",
+        "Địa chỉ",
+        "SĐT",
+        "Email",
+        "Trạng thái",
+        "Loại NV",
+        "Chi nhánh",
+      ];
+      const headerRow = worksheet.addRow(headers);
+      headerRow.eachCell({ includeEmpty: true }, (cell) => {
+        cell.font = {
+          bold: true,
+          color: { argb: "FFFFFF" },
+          size: 12,
+        };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "4472C4" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+        };
+      });
+      let stt = 1;
+      filteredEmployees.forEach((emp) => {
+        worksheet.addRow([
+          stt++,
+          emp.MaNhanVien,
+          emp.HoTen,
+          emp.GioiTinh ? "Nam" : "Nữ",
+          emp.NgaySinh,
+          emp.DiaChi,
+          emp.SoDienThoai,
+          emp.Email,
+          emp.TrangThai,
+          emp.LoaiNV,
+          emp.MaCN_chi_nhanh.TenChiNhanh || emp.MaCN || "",
+        ]);
+      });
+      worksheet.columns = [
+        { width: 6 },
+        { width: 12 },
+        { width: 20 },
+        { width: 8 },
+        { width: 12 },
+        { width: 25 },
+        { width: 15 },
+        { width: 22 },
+        { width: 15 },
+        { width: 12 },
+        { width: 18 },
+      ];
+      worksheet.eachRow((row, rowNumber) => {
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          if (rowNumber > 2) {
+            cell.alignment = { horizontal: "center", vertical: "middle" };
+          }
+        });
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const fileName = `DanhSachNhanVien.xlsx`;
+      saveAs(blob, fileName);
+      toast.success("Xuất file Excel thành công!");
+    } catch (error) {
+      console.error("Lỗi khi export file Excel:", error);
+      toast.error("Có lỗi xảy ra khi xuất file Excel!");
+    }
   };
 
   const handleSearch = async (query) => {
@@ -251,13 +356,13 @@ export function HomePage() {
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
               >
                 Nhập file
-              </button>
+              </button>*/}
               <button
                 onClick={handleExportFile}
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2"
               >
-                Xuất file
-              </button> */}
+                Xuất file nhân viên
+              </button>
             </div>
           </div>
 
