@@ -4,7 +4,11 @@ import { FilterSidebar } from "../components/HomePage/FilterSidebar.jsx";
 import { EmployeeTable } from "../components/HomePage/EmployeeTable.jsx";
 import { EmployeeDetail } from "../components/HomePage/EmployeeDetail.jsx";
 import Search from "../components/search.jsx";
-import { fetchAllNhanVien, searchEmployee } from "../api/apiTaiKhoan.js";
+import {
+  createEmployee,
+  fetchAllNhanVien,
+  searchEmployee,
+} from "../api/apiTaiKhoan.js";
 import { useEffect } from "react";
 import { getChiNhanh } from "../api/apiChiNhanh.js";
 import { AddEmployeeModal } from "../components/Employee/AddNewEmployeeModal.jsx";
@@ -20,6 +24,7 @@ import { ConfirmResetPassword } from "../components/Employee/ConfirmResetPasswor
 import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
+import * as XLSX from "xlsx";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -41,9 +46,11 @@ export function HomePage() {
   const [showModalListDonXinNghis, setShowModalListDonXinNghis] =
     useState(false);
   const [showModalResetPass, setShowModalResetPass] = useState(false);
-  // 3 useState đóng mở thêm sửa nhân viên
+  // 4 useState đóng mở thêm sửa nhân viên, xem trước dữ liệu nhập file
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
+  const [importedEmployees, setImportedEmployees] = useState([]);
+  const [showImportPreview, setShowImportPreview] = useState(false);
 
   // Tính toán phân trang
   const [currentPage, setCurrentPage] = useState(1);
@@ -185,8 +192,113 @@ export function HomePage() {
     console.log("Add employee clicked");
   };
 
-  const handleImportFile = () => {
-    console.log("Import file clicked");
+  const columnMapping = {
+    "Họ tên": "HoTen",
+    Email: "Email",
+    "Số điện thoại": "SoDienThoai",
+    "Ngày sinh": "NgaySinh",
+    "Địa chỉ": "DiaChi",
+    "Mã chi nhánh": "MaCN",
+    CCCD: "CCCD",
+    "Tên ngân hàng": "TenNganHang",
+    STK: "STK",
+    "Loại NV": "LoaiNV",
+    "Bậc lương": "BacLuong",
+    "Lương cơ bản hiện tại": "LuongCoBanHienTai",
+    "Lương theo giờ hiện tại": "LuongTheoGioHienTai",
+    "Số ngày nghỉ phép": "SoNgayNghiPhep",
+    "Mã vai trò": "MaVaiTro",
+    "Trạng thái": "TrangThai",
+    "Giới tính": "GioiTinh",
+    "Quản lý bởi": "QuanLyBoi"
+  };
+
+  const handleImportFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: "binary" });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      let data = XLSX.utils.sheet_to_json(ws, { defval: "" });
+      // Map tiếng Việt sang trường hệ thống
+      data = data.map((row) => {
+        const mapped = {};
+        Object.entries(row).forEach(([key, value]) => {
+          const mappedKey = columnMapping[key] || key;
+          mapped[mappedKey] = value;
+        });
+        return mapped;
+      });
+      setImportedEmployees(data);
+      setShowImportPreview(true);
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  const handleSubmitImport = async () => {
+    let successCount = 0;
+    let failCount = 0;
+    let errorRows = [];
+    for (let idx = 0; idx < importedEmployees.length; idx++) {
+      const emp = importedEmployees[idx];
+      // Kiểm tra trường bắt buộc
+      if (
+        !emp.HoTen ||
+        !emp.Email ||
+        !emp.SoDienThoai ||
+        !emp.NgaySinh ||
+        !emp.DiaChi ||
+        !emp.MaCN ||
+        !emp.CCCD ||
+        !emp.TenNganHang ||
+        !emp.STK ||
+        !emp.GioiTinh ||
+        !emp.QuanLyBoi
+      ) {
+        failCount++;
+        errorRows.push({ idx: idx + 1, error: "Thiếu trường bắt buộc" });
+        continue;
+      }
+      try {
+        const formData = new FormData();
+        Object.entries(emp).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        if (!formData.get("LoaiNV")) formData.set("LoaiNV", "FullTime");
+        if (!formData.get("MaVaiTro")) formData.set("MaVaiTro", 2);
+        if (!formData.get("TrangThai")) formData.set("TrangThai", "Đang làm");
+        const result = await createEmployee(formData);
+        if (result.success) {
+          successCount++;
+        } else {
+          failCount++;
+          errorRows.push({
+            idx: idx + 1,
+            error: result.message || "Lỗi không xác định",
+          });
+        }
+      } catch (err) {
+        failCount++;
+        errorRows.push({
+          idx: idx + 1,
+          error: err.message || "Lỗi không xác định",
+        });
+      }
+    }
+    let msg = `Nhập thành công ${successCount} nhân viên, thất bại ${failCount}`;
+    if (errorRows.length > 0) {
+      msg +=
+        ":\n" + errorRows.map((e) => `Dòng ${e.idx}: ${e.error}`).join("\n");
+    }
+    toast[msg.includes("thất bại") ? "error" : "success"](msg, {
+      autoClose: 5000,
+    });
+    setShowImportPreview(false);
+    setImportedEmployees([]);
+    await getAllNhanVien();
   };
 
   const handleExportFile = async () => {
@@ -310,6 +422,59 @@ export function HomePage() {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("TemplateImportNhanVien");
+    const headers = [
+      "Họ tên",
+      "Email",
+      "Số điện thoại",
+      "Ngày sinh",
+      "Địa chỉ",
+      "Mã chi nhánh",
+      "CCCD",
+      "Tên ngân hàng",
+      "STK",
+      "Loại NV",
+      "Bậc lương",
+      "Lương cơ bản hiện tại",
+      "Lương theo giờ hiện tại",
+      "Số ngày nghỉ phép",
+      "Mã vai trò",
+      "Trạng thái",
+      "Giới tính",
+      "Quản lý bởi",
+    ];
+    worksheet.addRow(headers);
+    // Ví dụ
+    worksheet.addRow([
+      "Nguyễn Văn A",
+      "a@example.com",
+      "0912345678",
+      "1990-01-01",
+      "123 Đường ABC, Quận 1",
+      "1",
+      "123456789",
+      "Vietcombank",
+      "0122456789",
+      "FullTime",
+      "1",
+      "10000000",
+      "0",
+      "12",
+      "2",
+      "Đang làm",
+      "1",
+      "1",
+    ]);
+    worksheet.columns = headers.map(() => ({ width: 18 }));
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "Template_Import_NhanVien.xlsx");
+  };
+
   return (
     <div className="flex">
       <div className="md:flex flex-1">
@@ -352,11 +517,26 @@ export function HomePage() {
                 Thêm nhân viên
               </button>
               <button
-                onClick={handleImportFile}
+                onClick={() =>
+                  document.getElementById("import-employee-input").click()
+                }
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
               >
                 Nhập file
               </button>
+              <button
+                onClick={handleDownloadTemplate}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2"
+              >
+                Tải file mẫu
+              </button>
+              <input
+                id="import-employee-input"
+                type="file"
+                accept=".xlsx, .xls"
+                style={{ display: "none" }}
+                onChange={handleImportFile}
+              />
               <button
                 onClick={handleExportFile}
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2"
@@ -438,6 +618,53 @@ export function HomePage() {
             setShowModalResetPass={setShowModalResetPass}
             onAccept={handleResetPassword}
           />
+        )}
+        {showImportPreview && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded shadow-lg max-w-2xl w-full">
+              <h2 className="text-lg font-bold mb-4">
+                Xem trước dữ liệu import
+              </h2>
+              <div className="overflow-x-auto max-h-96">
+                <table className="min-w-full border">
+                  <thead>
+                    <tr>
+                      {Object.keys(importedEmployees[0] || {}).map((key) => (
+                        <th key={key} className="border px-2 py-1">
+                          {key}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {importedEmployees.map((row, idx) => (
+                      <tr key={idx} className="hover:bg-gray-100">
+                        {Object.values(row).map((val, i) => (
+                          <td key={i} className="border px-2 py-1">
+                            {val}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  onClick={() => setShowImportPreview(false)}
+                  className="px-4 py-2 bg-gray-300 rounded"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleSubmitImport}
+                  className="px-4 py-2 bg-green-500 text-white rounded"
+                >
+                  Nhập dữ liệu
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
