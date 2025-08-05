@@ -154,10 +154,13 @@ class TaiKhoanController {
         deleteUploadedFile();
         return res.status(409).json({ message: "Đã tồn tại Email này rồi" });
       }
+      // Nếu không có file avatar thì gán avatar mặc định
+      let avatarPath;
       if (!req.file) {
-        return res.status(400).json({ message: "Vui lòng upload avatar" });
+        avatarPath = "uploads/avatars/default.png";
+      } else {
+        avatarPath = path.join("uploads/avatars/", req.file.filename);
       }
-      const avatarPath = path.join("uploads/avatars/", req.file.filename);
       const hashedPassword = await bcrypt.hash("1", 10);
       const newTaiKhoan = await TaiKhoan.create({
         ...req.body,
