@@ -103,7 +103,7 @@ const ShiftModal = ({
 
   const tabs = [
     { id: "checkin", label: "Chấm công" },
-    { id: "history", label: "Lịch sử chấm công" },
+    // { id: "history", label: "Lịch sử chấm công" },
     { id: "violations", label: "Phạt vi phạm" },
     { id: "rewards", label: "Thưởng" },
   ];

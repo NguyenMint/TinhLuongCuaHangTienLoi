@@ -94,7 +94,7 @@ export const CheckInTab = ({
       const res = await getNghiThaiSanByMaTK(formData.MaTK_tai_khoan.MaTK);
       const today = new Date(formData.NgayLam);
       const nts = res.data.find(nts => {
-        if (nts.TrangThai === "Đang nghĩ" || nts.TrangThai === "Đã duyệt") {
+        if (nts.TrangThai == 1) {
           const start = new Date(nts.NgayBatDau);
           const end = new Date(nts.NgayKetThuc);
           return today >= start && today <= end;
@@ -188,15 +188,15 @@ export const CheckInTab = ({
     vuot30p,
   ]);
 
-  const tabs = [
-    { id: "working", label: "Đang làm việc" },
-    { id: "excused", label: "Nghỉ có phép" },
-    { id: "unexcused", label: "Nghỉ không phép" },
-  ];
+  // const tabs = [
+  //   { id: "working", label: "Đang làm việc" },
+  //   { id: "excused", label: "Nghỉ có phép" },
+  //   { id: "unexcused", label: "Nghỉ không phép" },
+  // ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-6">
+      {/* <div className="flex items-center gap-6">
         <label className="block text-sm font-medium text-gray-700">
           Chấm công
         </label>
@@ -213,7 +213,7 @@ export const CheckInTab = ({
             <span className="text-sm text-gray-900">{status.label}</span>
           </label>
         ))}
-      </div>
+      </div> */}
       <div className="flex items-center gap-4 mb-6">
         <label className="flex items-center gap-2">
           <input
@@ -268,11 +268,11 @@ export const CheckInTab = ({
             <span>phút</span>
           </div>
         )}
-        {isCheckedIn && checkInStatus === "overtime" && (
+        {/* {isCheckedIn && checkInStatus === "overtime" && (
           <span className="ml-6 px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
             Tăng ca
           </span>
-        )}
+        )} */}
       </div>
       <div className="flex items-center gap-4">
         <label className="flex items-center gap-2">

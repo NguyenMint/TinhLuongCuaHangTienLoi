@@ -3,7 +3,7 @@ const db = require("../models");
 const { createSalaryDetail } = require("./chiTietBangLuongController");
 const ChamCong = db.ChamCong;
 const { NghiThaiSan } = db;
-const { sendMail } = require('../util/util');
+const { sendMail, formatDate } = require("../util/util");
 class ChamCongController {
   async chamcong(req, res) {
     try {
@@ -33,7 +33,7 @@ class ChamCongController {
         const [gioVao, phutVao] = timeStr.split(":").map(Number);
         return gioVao * 60 + phutVao;
       };
-      if (GioVao) { 
+      if (GioVao) {
         const vaoChuan = timeToMinutes(ThoiGianBatDau);
         const vaoThucTe = timeToMinutes(GioVao);
         if (vaoThucTe - vaoChuan > 10) {
@@ -66,9 +66,9 @@ class ChamCongController {
             NgayKetThuc: { [db.Sequelize.Op.gte]: NgayChamCong },
           },
         });
-        if (nts ) {
-          VeSom = 0; 
-          if(raChuan - raThucTe > 30){
+        if (nts) {
+          VeSom = 0;
+          if (raChuan - raThucTe > 30) {
             VeSom = raChuan - raThucTe - 30;
           }
         } else if (raChuan - raThucTe > 10) {
@@ -173,17 +173,30 @@ class ChamCongController {
         const lichLamViec = chamCongRecord.MaLLV_lich_lam_viec;
         if (lichLamViec) {
           const taiKhoan = await db.TaiKhoan.findByPk(lichLamViec.MaTK);
+          const ncc = formatDate(new Date(NgayChamCong));
           if (taiKhoan && taiKhoan.Email) {
             await sendMail({
               to: taiKhoan.Email,
-              subject: 'Thông báo chấm công',
-              text: `Chấm công ngày ${NgayChamCong} của bạn đã được duyệt và hoàn thành. Vui lòng truy cập tài khoản để kiểm tra lại!`,
-              html: `<p>Chấm công ngày <b>${NgayChamCong}</b> của bạn đã được duyệt và hoàn thành.<br/><br/>Vui lòng truy cập tài khoản để kiểm tra lại: <a href="http://localhost:3000/login">Tài khoản</a></p>`
+              subject: "Thông báo chấm công",
+              text: `Xin chào ${
+                taiKhoan.HoTen || "bạn"
+              },\n\nChấm công ngày ${ncc} của bạn đã được duyệt và hoàn tất.\n\nBạn có thể đăng nhập vào hệ thống để kiểm tra chi tiết lịch làm việc, thời gian vào/ra, hoặc khiếu nại nếu có sai sót.\n\nTrân trọng,\nPhòng nhân sự`,
+              html: `
+    <p>Xin chào <b>${taiKhoan.HoTen || "bạn"}</b>,</p>
+    <p>Chấm công ngày <b>${ncc}</b> của bạn đã được duyệt và hoàn tất.</p>
+    <p>Bạn có thể đăng nhập vào hệ thống để:</p>
+    <ul>
+      <li>Xem chi tiết lịch làm việc</li>
+      <li>Kiểm tra thời gian vào/ra</li>
+      <li>Gửi khiếu nại nếu phát hiện sai sót</li>
+    </ul>
+    <p><a href="http://localhost:3000/login" target="_blank">Nhấn vào đây để đăng nhập</a></p>
+    <p>Trân trọng,<br/>Phòng nhân sự</p>`,
             });
           }
         }
       } catch (err) {
-        console.warn('Không thể gửi email thông báo:', err.message);
+        console.warn("Không thể gửi email thông báo:", err.message);
       }
 
       return res.status(201).json(updatedRecord);

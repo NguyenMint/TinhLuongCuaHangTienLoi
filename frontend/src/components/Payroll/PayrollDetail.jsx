@@ -215,7 +215,7 @@ export function PayrollDetail({
         >
           Phiếu lương
         </button>
-        <button
+        {/* <button
           className={`px-6 py-3 font-medium ${
             activeTab === "history"
               ? "border-b-2 border-green-500 text-green-500"
@@ -224,7 +224,7 @@ export function PayrollDetail({
           onClick={() => setActiveTab("history")}
         >
           Lịch sử thanh toán
-        </button>
+        </button> */}
         <div className="flex-1" />
         <button
           onClick={closeDetailModal}

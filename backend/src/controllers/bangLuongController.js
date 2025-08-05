@@ -11,7 +11,7 @@ const { Op, where } = require("sequelize");
 const { formatDate, tinhThueTNCN } = require("../util/util");
 const sequelize = require("../config/connectionDB");
 const taiKhoan = require("../models/taiKhoan");
-const cron = require('node-cron');
+const cron = require("node-cron");
 
 async function createBL(MaTK, Thang, Nam) {
   try {
@@ -171,8 +171,8 @@ async function createBL(MaTK, Thang, Nam) {
   }
 }
 
- // AUTO CREATE BL
- async function  autoCreateMonthlyPayroll() {
+// AUTO CREATE BL
+async function autoCreateMonthlyPayroll() {
   try {
     const now = new Date();
     const thangTruoc = now.getMonth(); //0-11
@@ -182,7 +182,14 @@ async function createBL(MaTK, Thang, Nam) {
 
     const allAccounts = await TaiKhoan.findAll({
       attributes: ["MaTK"],
-      where: { [Op.not]: { MaVaiTro: [3, 1] } },
+      where: {
+        MaVaiTro: {
+          [Op.notIn]: [1, 3],
+        },
+        TrangThai: {
+          [Op.ne]: "Ngừng làm việc",
+        },
+      },
       raw: true,
     });
 
@@ -261,7 +268,6 @@ function initAutoPayrollScheduler() {
   );
 }
 
-
 // Create a new salary sheet
 class bangLuongController {
   async create(req, res) {
@@ -285,7 +291,14 @@ class bangLuongController {
 
       const allAccounts = await TaiKhoan.findAll({
         attributes: ["MaTK"],
-        where: { [Op.not]: { MaVaiTro: [3, 1] } },
+        where: {
+          MaVaiTro: {
+            [Op.notIn]: [1, 3],
+          },
+          TrangThai: {
+            [Op.ne]: "Ngừng làm việc",
+          },
+        },
         raw: true,
       });
 
@@ -454,7 +467,15 @@ class bangLuongController {
         ],
         include: [
           {
-            where: { MaCN: macn },
+            where: {
+              MaCN: macn,
+              MaVaiTro: {
+                [Op.notIn]: [1, 3],
+              },
+              TrangThai: {
+                [Op.ne]: "Ngừng làm việc",
+              },
+            },
             model: TaiKhoan,
             as: "MaTK_tai_khoan",
             attributes: ["MaCN"],
@@ -548,7 +569,17 @@ class bangLuongController {
           {
             model: TaiKhoan,
             as: "MaTK_tai_khoan",
-            attributes: ["MaNhanVien", "HoTen"]
+
+            attributes: ["MaNhanVien", "HoTen"],
+            where: {
+              MaVaiTro: {
+                [Op.notIn]: [1, 3],
+              },
+              TrangThai: {
+                [Op.ne]: "Ngừng làm việc",
+              },
+            },
+
           },
           {
             model: ChiTietBangLuong,
@@ -646,7 +677,15 @@ class bangLuongController {
         where: { KyLuong: kyLuong },
         include: [
           {
-            where: { MaCN: maCN },
+            where: {
+              MaCN: maCN,
+              MaVaiTro: {
+                [Op.notIn]: [1, 3],
+              },
+              TrangThai: {
+                [Op.ne]: "Ngừng làm việc",
+              },
+            },
             model: TaiKhoan,
             as: "MaTK_tai_khoan",
             attributes: ["MaNhanVien", "HoTen"],
@@ -666,6 +705,27 @@ class bangLuongController {
               "TienPhuCap",
               "TienPhat",
               "tongtien",
+            ],
+            include: [
+              {
+                model: ChamCong,
+                as: "cham_congs",
+                attributes: ["MaChamCong"],
+                include: [
+                  {
+                    model: LichLamViec,
+                    as: "MaLLV_lich_lam_viec",
+                    attributes: ["MaLLV"],
+                    include: [
+                      {
+                        model: KhenThuongKyLuat,
+                        as: "khen_thuong_ky_luats",
+                        attributes: ["ThuongPhat", "LyDo", "MucThuongPhat"],
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
         ],
@@ -735,8 +795,6 @@ class bangLuongController {
       });
     }
   }
-
- 
 }
 
 // function initPayrollScheduler() {

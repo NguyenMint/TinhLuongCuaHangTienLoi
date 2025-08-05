@@ -160,24 +160,6 @@ export const EditHopDong = ({
         />
       </div>
 
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          id="trangThaiAdd"
-          checked={editingHopDong.TrangThai}
-          onChange={(e) =>
-            setEditingHopDong({
-              ...editingHopDong,
-              TrangThai: e.target.checked,
-            })
-          }
-          className="mr-2"
-        />
-        <label htmlFor="trangThaiAdd" className="text-sm text-gray-700">
-          Còn hiệu lực
-        </label>
-      </div>
-
       <div className="flex gap-2 pt-4">
         <button
           onClick={handleSaveUpdate}

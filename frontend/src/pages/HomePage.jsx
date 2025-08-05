@@ -356,7 +356,7 @@ export function HomePage() {
       msg +=
         ":\n" + errorRows.map((e) => `Dòng ${e.idx}: ${e.error}`).join("\n");
     }
-    toast[msg.includes("thất bại") ? "error" : "success"](msg, {
+    toast.info(msg, {
       autoClose: 5000,
     });
     setShowImportPreview(false);
@@ -577,7 +577,7 @@ export function HomePage() {
             <div className="">
               <button
                 onClick={() => setShowModalAdd(true)}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
                 Thêm nhân viên
               </button>
@@ -591,7 +591,7 @@ export function HomePage() {
               </button>
               <button
                 onClick={handleDownloadTemplate}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ml-2"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
               >
                 Tải file mẫu
               </button>
@@ -604,7 +604,7 @@ export function HomePage() {
               />
               <button
                 onClick={handleExportFile}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-yellow-600 ml-2"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2"
               >
                 Xuất file nhân viên
               </button>
