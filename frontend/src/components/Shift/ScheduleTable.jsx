@@ -106,14 +106,14 @@ export const ScheduleTable = ({
         <tbody className="bg-white divide-y divide-gray-200">
           {employees && employees.length > 0 ? (
             employees.map((employee) => (
-              <tr key={employee.MaTK}>
+              <tr key={employee.MaNhanVien}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
                     <div className="text-sm font-medium text-gray-900">
                       {employee.HoTen}
                     </div>
                     <div className="text-sm text-gray-500">
-                      Mã: {employee.MaTK}
+                      Mã: {employee.MaNhanVien}
                     </div>
                   </div>
                 </td>

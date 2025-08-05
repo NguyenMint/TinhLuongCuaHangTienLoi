@@ -19,7 +19,6 @@ export const EditCert = ({
       formData.append("NgayCap", editingCertificate.NgayCap);
       formData.append("NgayHetHan", editingCertificate.NgayHetHan);
       formData.append("GhiChu", editingCertificate.GhiChu || "");
-      formData.append("TrangThai", editingCertificate.TrangThai);
       formData.append("MaTK", editingCertificate.MaTK);
 
       // Append file if exists
@@ -194,24 +193,6 @@ export const EditCert = ({
           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows="3"
         />
-      </div>
-
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          id="trangThaiAdd"
-          checked={editingCertificate.TrangThai}
-          onChange={(e) =>
-            setEditingCertificate({
-              ...editingCertificate,
-              TrangThai: e.target.checked,
-            })
-          }
-          className="mr-2"
-        />
-        <label htmlFor="trangThaiAdd" className="text-sm text-gray-700">
-          Còn hiệu lực
-        </label>
       </div>
 
       <div className="flex gap-2 pt-4">
