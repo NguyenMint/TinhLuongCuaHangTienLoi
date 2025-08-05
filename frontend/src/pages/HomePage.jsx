@@ -225,7 +225,6 @@ export function HomePage() {
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
       let data = XLSX.utils.sheet_to_json(ws, { defval: "" });
-      // Map tiếng Việt sang trường hệ thống
       data = data.map((row) => {
         const mapped = {};
         Object.entries(row).forEach(([key, value]) => {

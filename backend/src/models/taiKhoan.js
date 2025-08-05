@@ -40,8 +40,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     Avatar: {
       type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: "Avatar"
+      allowNull: false
     },
     LoaiNV: {
       type: DataTypes.ENUM('PartTime','FullTime','Mangager'),
@@ -140,14 +139,6 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "CCCD" },
-        ]
-      },
-      {
-        name: "Avatar",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "Avatar" },
         ]
       },
       {
