@@ -25,7 +25,10 @@ import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
 import * as XLSX from "xlsx";
-import { getAllThangLuongFullTime, getAllThangLuongPartTime } from "../api/apiThangLuong";
+import {
+  getAllThangLuongFullTime,
+  getAllThangLuongPartTime,
+} from "../api/apiThangLuong";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -144,7 +147,6 @@ export function HomePage() {
       fetchPhuCap(selectedEmployee.MaTK);
       fetchChungChi(selectedEmployee.MaTK);
       fetchHopDong(selectedEmployee.MaTK);
-
     }
   }, [selectedEmployee]);
 
@@ -212,7 +214,7 @@ export function HomePage() {
     "Mã vai trò": "MaVaiTro",
     "Trạng thái": "TrangThai",
     "Giới tính": "GioiTinh",
-    "Quản lý bởi": "QuanLyBoi"
+    "Quản lý bởi": "QuanLyBoi",
   };
 
   const handleImportFile = (e) => {
@@ -278,10 +280,15 @@ export function HomePage() {
       try {
         // Mapping mã quản lý (QuanLyBoi: mã nhân viên => MaTK)
         let maQuanLy = emp.QuanLyBoi;
-        let foundManager = allAccounts.find(acc => acc.MaNhanVien === maQuanLy);
+        let foundManager = allAccounts.find(
+          (acc) => acc.MaNhanVien === maQuanLy
+        );
         if (!foundManager) {
           failCount++;
-          errorRows.push({ idx: idx + 1, error: `Không tìm thấy mã quản lý: ${maQuanLy}` });
+          errorRows.push({
+            idx: idx + 1,
+            error: `Không tìm thấy mã quản lý: ${maQuanLy}`,
+          });
           continue;
         }
         emp.QuanLyBoi = foundManager.MaTK;
@@ -291,20 +298,33 @@ export function HomePage() {
         let maVaiTro = emp.MaVaiTro || 2;
         let thangLuong;
         if (loaiNV === "FullTime") {
-          thangLuong = thangLuongFullTime.find(tl => Number(tl.BacLuong) === Number(bacLuong) && Number(tl.MaVaiTro) === Number(maVaiTro));
+          thangLuong = thangLuongFullTime.find(
+            (tl) =>
+              Number(tl.BacLuong) === Number(bacLuong) &&
+              Number(tl.MaVaiTro) === Number(maVaiTro)
+          );
         } else {
-          thangLuong = thangLuongPartTime.find(tl => Number(tl.BacLuong) === Number(bacLuong) && Number(tl.MaVaiTro) === Number(maVaiTro));
+          thangLuong = thangLuongPartTime.find(
+            (tl) =>
+              Number(tl.BacLuong) === Number(bacLuong) &&
+              Number(tl.MaVaiTro) === Number(maVaiTro)
+          );
         }
         if (!thangLuong) {
           failCount++;
-          errorRows.push({ idx: idx + 1, error: `Không tìm thấy thang lương phù hợp (Bậc: ${bacLuong}, Loại: ${loaiNV}, Vai trò: ${maVaiTro})` });
+          errorRows.push({
+            idx: idx + 1,
+            error: `Không tìm thấy thang lương phù hợp (Bậc: ${bacLuong}, Loại: ${loaiNV}, Vai trò: ${maVaiTro})`,
+          });
           continue;
         }
         emp.LuongCoBanHienTai = thangLuong.LuongCoBan || 0;
         emp.LuongTheoGioHienTai = thangLuong.LuongTheoGio || 0;
         // Chuẩn hóa giới tính
-        if (emp.GioiTinh === "Nam" || emp.GioiTinh === true) emp.GioiTinh = true;
-        else if (emp.GioiTinh === "Nữ" || emp.GioiTinh === false) emp.GioiTinh = false;
+        if (emp.GioiTinh === "Nam" || emp.GioiTinh === true)
+          emp.GioiTinh = true;
+        else if (emp.GioiTinh === "Nữ" || emp.GioiTinh === false)
+          emp.GioiTinh = false;
         // Chuẩn hóa các trường khác nếu cần
         const formData = new FormData();
         Object.entries(emp).forEach(([key, value]) => {
@@ -318,18 +338,27 @@ export function HomePage() {
           successCount++;
         } else {
           failCount++;
-          errorRows.push({ idx: idx + 1, error: result.message || "Lỗi không xác định" });
+          errorRows.push({
+            idx: idx + 1,
+            error: result.message || "Lỗi không xác định",
+          });
         }
       } catch (err) {
         failCount++;
-        errorRows.push({ idx: idx + 1, error: err.message || "Lỗi không xác định" });
+        errorRows.push({
+          idx: idx + 1,
+          error: err.message || "Lỗi không xác định",
+        });
       }
     }
     let msg = `Nhập thành công ${successCount} nhân viên, thất bại ${failCount}`;
     if (errorRows.length > 0) {
-      msg += ":\n" + errorRows.map(e => `Dòng ${e.idx}: ${e.error}`).join("\n");
+      msg +=
+        ":\n" + errorRows.map((e) => `Dòng ${e.idx}: ${e.error}`).join("\n");
     }
-    toast[msg.includes('thất bại') ? 'error' : 'success'](msg, {autoClose: 5000});
+    toast[msg.includes("thất bại") ? "error" : "success"](msg, {
+      autoClose: 5000,
+    });
     setShowImportPreview(false);
     setImportedEmployees([]);
     await getAllNhanVien();
@@ -389,21 +418,27 @@ export function HomePage() {
         };
       });
       let stt = 1;
-      filteredEmployees.forEach((emp) => {
-        worksheet.addRow([
-          stt++,
-          emp.MaNhanVien,
-          emp.HoTen,
-          emp.GioiTinh ? "Nam" : "Nữ",
-          emp.NgaySinh,
-          emp.DiaChi,
-          emp.SoDienThoai,
-          emp.Email,
-          emp.TrangThai,
-          emp.LoaiNV,
-          emp.MaCN_chi_nhanh.TenChiNhanh || emp.MaCN || "",
-        ]);
-      });
+      filteredEmployees
+        .sort((a, b) =>
+          a.MaCN_chi_nhanh.TenChiNhanh.localeCompare(
+            b.MaCN_chi_nhanh.TenChiNhanh
+          )
+        )
+        .forEach((emp) => {
+          worksheet.addRow([
+            stt++,
+            emp.MaNhanVien,
+            emp.HoTen,
+            emp.GioiTinh ? "Nam" : "Nữ",
+            emp.NgaySinh,
+            emp.DiaChi,
+            emp.SoDienThoai,
+            emp.Email,
+            emp.TrangThai,
+            emp.LoaiNV,
+            emp.MaCN_chi_nhanh.TenChiNhanh || emp.MaCN || "",
+          ]);
+        });
       worksheet.columns = [
         { width: 6 },
         { width: 12 },
@@ -475,7 +510,7 @@ export function HomePage() {
       "Số ngày nghỉ phép",
       "Trạng thái",
       "Giới tính",
-      "Quản lý bởi"
+      "Quản lý bởi",
     ];
     worksheet.addRow(headers);
     // Ví dụ
@@ -495,7 +530,7 @@ export function HomePage() {
       "12",
       "Đang làm",
       "Nam",
-      "QL0001"
+      "QL0001",
     ]);
     worksheet.columns = headers.map(() => ({ width: 18 }));
     const buffer = await workbook.xlsx.writeBuffer();
