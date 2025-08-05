@@ -548,7 +548,7 @@ class bangLuongController {
           {
             model: TaiKhoan,
             as: "MaTK_tai_khoan",
-            attributes: ["MaNhanVien", "HoTen"],
+            attributes: ["MaNhanVien", "HoTen"]
           },
           {
             model: ChiTietBangLuong,
@@ -603,6 +603,9 @@ class bangLuongController {
           TongPhuCap: payroll.TongPhuCap,
           TongThuong: payroll.TongThuong,
           TongPhat: payroll.TongPhat,
+          ThuNhapTruocThue:payroll.ThuNhapTruocThue,
+          MucGiamTruGiaCanh: payroll.MucGiamTruGiaCanh,
+          ThuNhapChiuThue: payroll.ThuNhapChiuThue,
           ThuePhaiDong: payroll.ThuePhaiDong,
           LuongThucNhan: payroll.LuongThucNhan,
           details: payroll.chi_tiet_bang_luongs.map((detail) => ({

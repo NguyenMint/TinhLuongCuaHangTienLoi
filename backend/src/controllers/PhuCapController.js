@@ -11,7 +11,22 @@ class PhuCapController {
       console.log("ERROR: " + error);
     }
   }
-
+  async getAllByTKConHieuLuc(req, res) {
+    try {
+      const taiKhoan = await db.TaiKhoan.findOne({
+        where: { MaNhanVien: req.params.MaNhanVien },
+      });
+      if (!taiKhoan) {
+        return res.status(404).json({ message: "Tài khoản không tồn tại" });
+      }
+      const PhuCaps = await PhuCap.findAll({
+        where: { MaTK: taiKhoan.MaTK, TrangThai: 1 },
+      });
+      res.status(200).json(PhuCaps);
+    } catch (error) {
+      console.log("ERROR: " + error);
+    }
+  }
   async create(req, res) {
     try {
       const phucap = await PhuCap.create(req.body);
