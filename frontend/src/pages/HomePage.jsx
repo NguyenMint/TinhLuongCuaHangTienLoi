@@ -25,6 +25,7 @@ import { toast } from "react-toastify";
 import { saveAs } from "file-saver";
 import ExcelJS from "exceljs";
 import * as XLSX from "xlsx";
+import { getAllThangLuongFullTime, getAllThangLuongPartTime } from "../api/apiThangLuong";
 export function HomePage() {
   // State for filters
   const [statusFilter, setStatusFilter] = useState("working");
@@ -143,6 +144,7 @@ export function HomePage() {
       fetchPhuCap(selectedEmployee.MaTK);
       fetchChungChi(selectedEmployee.MaTK);
       fetchHopDong(selectedEmployee.MaTK);
+
     }
   }, [selectedEmployee]);
 
@@ -242,6 +244,18 @@ export function HomePage() {
     let successCount = 0;
     let failCount = 0;
     let errorRows = [];
+    // Lấy dữ liệu thang lương và tài khoản quản lý
+    let thangLuongFullTime = [];
+    let thangLuongPartTime = [];
+    let allAccounts = [];
+    try {
+      thangLuongFullTime = await getAllThangLuongFullTime();
+      thangLuongPartTime = await getAllThangLuongPartTime();
+      allAccounts = await fetchAllNhanVien();
+    } catch (err) {
+      toast.error("Không thể lấy dữ liệu thang lương hoặc tài khoản quản lý");
+      return;
+    }
     for (let idx = 0; idx < importedEmployees.length; idx++) {
       const emp = importedEmployees[idx];
       // Kiểm tra trường bắt buộc
@@ -263,6 +277,36 @@ export function HomePage() {
         continue;
       }
       try {
+        // Mapping mã quản lý (QuanLyBoi: mã nhân viên => MaTK)
+        let maQuanLy = emp.QuanLyBoi;
+        let foundManager = allAccounts.find(acc => acc.MaNhanVien === maQuanLy);
+        if (!foundManager) {
+          failCount++;
+          errorRows.push({ idx: idx + 1, error: `Không tìm thấy mã quản lý: ${maQuanLy}` });
+          continue;
+        }
+        emp.QuanLyBoi = foundManager.MaTK;
+        // Mapping lương từ bảng thang lương
+        let bacLuong = emp.BacLuong || 1;
+        let loaiNV = emp.LoaiNV || "FullTime";
+        let maVaiTro = emp.MaVaiTro || 2;
+        let thangLuong;
+        if (loaiNV === "FullTime") {
+          thangLuong = thangLuongFullTime.find(tl => Number(tl.BacLuong) === Number(bacLuong) && Number(tl.MaVaiTro) === Number(maVaiTro));
+        } else {
+          thangLuong = thangLuongPartTime.find(tl => Number(tl.BacLuong) === Number(bacLuong) && Number(tl.MaVaiTro) === Number(maVaiTro));
+        }
+        if (!thangLuong) {
+          failCount++;
+          errorRows.push({ idx: idx + 1, error: `Không tìm thấy thang lương phù hợp (Bậc: ${bacLuong}, Loại: ${loaiNV}, Vai trò: ${maVaiTro})` });
+          continue;
+        }
+        emp.LuongCoBanHienTai = thangLuong.LuongCoBan || 0;
+        emp.LuongTheoGioHienTai = thangLuong.LuongTheoGio || 0;
+        // Chuẩn hóa giới tính
+        if (emp.GioiTinh === "Nam" || emp.GioiTinh === true) emp.GioiTinh = true;
+        else if (emp.GioiTinh === "Nữ" || emp.GioiTinh === false) emp.GioiTinh = false;
+        // Chuẩn hóa các trường khác nếu cần
         const formData = new FormData();
         Object.entries(emp).forEach(([key, value]) => {
           formData.append(key, value);
@@ -275,27 +319,18 @@ export function HomePage() {
           successCount++;
         } else {
           failCount++;
-          errorRows.push({
-            idx: idx + 1,
-            error: result.message || "Lỗi không xác định",
-          });
+          errorRows.push({ idx: idx + 1, error: result.message || "Lỗi không xác định" });
         }
       } catch (err) {
         failCount++;
-        errorRows.push({
-          idx: idx + 1,
-          error: err.message || "Lỗi không xác định",
-        });
+        errorRows.push({ idx: idx + 1, error: err.message || "Lỗi không xác định" });
       }
     }
     let msg = `Nhập thành công ${successCount} nhân viên, thất bại ${failCount}`;
     if (errorRows.length > 0) {
-      msg +=
-        ":\n" + errorRows.map((e) => `Dòng ${e.idx}: ${e.error}`).join("\n");
+      msg += ":\n" + errorRows.map(e => `Dòng ${e.idx}: ${e.error}`).join("\n");
     }
-    toast[msg.includes("thất bại") ? "error" : "success"](msg, {
-      autoClose: 5000,
-    });
+    toast[msg.includes('thất bại') ? 'error' : 'success'](msg, {autoClose: 5000});
     setShowImportPreview(false);
     setImportedEmployees([]);
     await getAllNhanVien();
@@ -437,13 +472,11 @@ export function HomePage() {
       "STK",
       "Loại NV",
       "Bậc lương",
-      "Lương cơ bản hiện tại",
-      "Lương theo giờ hiện tại",
-      "Số ngày nghỉ phép",
       "Mã vai trò",
+      "Số ngày nghỉ phép",
       "Trạng thái",
       "Giới tính",
-      "Quản lý bởi",
+      "Quản lý bởi"
     ];
     worksheet.addRow(headers);
     // Ví dụ
@@ -459,13 +492,11 @@ export function HomePage() {
       "0122456789",
       "FullTime",
       "1",
-      "10000000",
-      "0",
-      "12",
       "2",
+      "12",
       "Đang làm",
-      "1",
-      "1",
+      "Nam",
+      "QL0001"
     ]);
     worksheet.columns = headers.map(() => ({ width: 18 }));
     const buffer = await workbook.xlsx.writeBuffer();
