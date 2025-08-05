@@ -1,4 +1,5 @@
  const { Op } = require("sequelize");
+const nodemailer = require('nodemailer');
 
 function getSoNgayTrongThang(thoigian) {
   const [nam, thang] = thoigian.split("-").map(Number);
@@ -47,10 +48,32 @@ function tinhThueTNCN(thuNhapChiuThue) {
   }
   return thue;
 }
+
+async function sendMail({ to, subject, text, html }) {
+  // Configure your SMTP transport here
+  let transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS,     },
+  });
+
+  let mailOptions = {
+    from: process.env.EMAIL_USER,
+    to,
+    subject,
+    text,
+    html,
+  };
+
+  return transporter.sendMail(mailOptions);
+}
+
 module.exports = {
   getSoNgayTrongThang,
   tinhTongGioLamCaLam,
   formatDate,
   isWeekend,
-  tinhThueTNCN
+  tinhThueTNCN,
+  sendMail,
 };

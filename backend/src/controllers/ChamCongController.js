@@ -3,6 +3,7 @@ const db = require("../models");
 const { createSalaryDetail } = require("./chiTietBangLuongController");
 const ChamCong = db.ChamCong;
 const { NghiThaiSan } = db;
+const { sendMail } = require('../util/util');
 class ChamCongController {
   async chamcong(req, res) {
     try {
@@ -166,6 +167,23 @@ class ChamCongController {
         });
       } catch (err) {
         console.warn("Không thể tạo bảng lương:", err.message);
+      }
+
+      try {
+        const lichLamViec = chamCongRecord.MaLLV_lich_lam_viec;
+        if (lichLamViec) {
+          const taiKhoan = await db.TaiKhoan.findByPk(lichLamViec.MaTK);
+          if (taiKhoan && taiKhoan.Email) {
+            await sendMail({
+              to: taiKhoan.Email,
+              subject: 'Thông báo chấm công',
+              text: `Chấm công ngày ${NgayChamCong} của bạn đã được duyệt và hoàn thành. Vui lòng truy cập tài khoản để kiểm tra lại <a href="http://localhost:3000/login">Tài khoản</a>`,
+              html: `<p>Chấm công ngày <b>${NgayChamCong}</b> của bạn đã được duyệt và hoàn thành. <br/>Vui lòng truy cập tài khoản để kiểm tra lại: <a href="http://localhost:3000/login">Tài khoản</a></p>`
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Không thể gửi email thông báo:', err.message);
       }
 
       return res.status(201).json(updatedRecord);
