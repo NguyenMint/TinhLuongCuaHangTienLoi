@@ -177,8 +177,8 @@ class ChamCongController {
             await sendMail({
               to: taiKhoan.Email,
               subject: 'Thông báo chấm công',
-              text: `Chấm công ngày ${NgayChamCong} của bạn đã được duyệt và hoàn thành.`,
-              html: `<p>Chấm công ngày <b>${NgayChamCong}</b> của bạn đã được duyệt và hoàn thành. Vui lòng truy cập tài khoản để kiểm tra lại <a href="http://localhost:3000/login">Tài khoản</a></p>`
+              text: `Chấm công ngày ${NgayChamCong} của bạn đã được duyệt và hoàn thành. Vui lòng truy cập tài khoản để kiểm tra lại <a href="http://localhost:3000/login">Tài khoản</a>`,
+              html: `<p>Chấm công ngày <b>${NgayChamCong}</b> của bạn đã được duyệt và hoàn thành. <br/>Vui lòng truy cập tài khoản để kiểm tra lại: <a href="http://localhost:3000/login">Tài khoản</a></p>`
             });
           }
         }

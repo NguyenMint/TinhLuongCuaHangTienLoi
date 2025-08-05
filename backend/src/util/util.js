@@ -52,11 +52,10 @@ function tinhThueTNCN(thuNhapChiuThue) {
 async function sendMail({ to, subject, text, html }) {
   // Configure your SMTP transport here
   let transporter = nodemailer.createTransport({
-    service: 'gmail', // or your email provider
+    service: 'gmail', 
     auth: {
-      user: process.env.EMAIL_USER, // set in .env
-      pass: process.env.EMAIL_PASS, // set in .env
-    },
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS,     },
   });
 
   let mailOptions = {
